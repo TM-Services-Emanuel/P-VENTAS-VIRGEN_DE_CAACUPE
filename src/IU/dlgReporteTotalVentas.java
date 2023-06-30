@@ -219,6 +219,8 @@ public class dlgReporteTotalVentas extends javax.swing.JDialog {
                 "", "", "", "", "", "", "", "", "", ""
             }
         ));
+        tbContable.getTableHeader().setResizingAllowed(false);
+        tbContable.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(tbContable);
 
         javax.swing.GroupLayout DialogExportLayout = new javax.swing.GroupLayout(DialogExport.getContentPane());
