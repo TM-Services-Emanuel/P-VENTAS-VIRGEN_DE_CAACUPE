@@ -14,6 +14,7 @@ public class GestionarFactura {
         String cod = generarCodigos.getCodigo("SELECT MAX(fac_codigo) from factura");
         return cod;
     }
+
     public static String getFactura() {
         String cod = generarCodigos.getCodigo("SELECT MAX(fac_factura) from factura");
         return cod;
@@ -47,13 +48,13 @@ public class GestionarFactura {
 
     public static String actFactura(String cod, String usuario) {
         String msg;
-        StringBuilder sql = new StringBuilder("UPDATE factura SET fac_indicador='N', usu='"+usuario+"' WHERE fac_codigo=");
+        StringBuilder sql = new StringBuilder("UPDATE factura SET fac_indicador='N', usu='" + usuario + "' WHERE fac_codigo=");
         sql.append(cod).append("");
         msg = Operacion.exeOperacion(sql.toString());
 //        msg = Operacion.exeOperacion("UPDATE factura SET fac_indicador='N' WHERE fac_codigo=" + cod + "");
         return msg;
     }
-    
+
     public static String actFacturaMovil(String cod, String idemision) {
         String msg;
         StringBuilder sql = new StringBuilder("UPDATE ventas_1 SET estado='N' WHERE idventas=");
@@ -62,7 +63,7 @@ public class GestionarFactura {
 //        msg = Operacion.exeOperacion("UPDATE factura SET fac_indicador='N' WHERE fac_codigo=" + cod + "");
         return msg;
     }
-    
+
     public static String actFacturaMovil1(String cod, String idemision) {
         String msg;
         StringBuilder sql = new StringBuilder("UPDATE ventas SET estado='N' WHERE idventas=");
@@ -142,7 +143,7 @@ public class GestionarFactura {
         sql.append(" ORDER BY `p-ventabd_v_c`.factura.fac_codigo ASC");
         return Operacion.getTabla(sql.toString());
     }
-    
+
     public static List listFacturas1(int idV, String fecha) {
         StringBuilder sql = new StringBuilder("SELECT `p-ventabd_v_c`.factura.fac_codigo,");
         sql.append("`p-ventabd_v_c`.factura.idemision,");
@@ -170,19 +171,29 @@ public class GestionarFactura {
         sql.append(" AND `p-ventabd_v_c`.factura.idemision = `bd_v_c`.puntoemision.idemision");
         sql.append(" AND `bd_v_c`.puntoemision.idtimbrado= `bd_v_c`.timbrado.idtimbrado");
         sql.append(" AND `p-ventabd_v_c`.factura.fac_fecha='").append(fecha).append("'");
-        sql.append(" AND `p-ventabd_v_c`.vendedor.ven_codigo=").append(idV); 
+        sql.append(" AND `p-ventabd_v_c`.vendedor.ven_codigo=").append(idV);
         sql.append(" ORDER BY `p-ventabd_v_c`.factura.fac_codigo ASC");
         return Operacion.getTabla(sql.toString());
     }
-    
-   /* public static List listFacturasMoviles() {
+        
+        
+
+    public static List listVentaContaduria(String fecha1, String fecha2) {
+        StringBuilder sql = new StringBuilder("SELECT ruc, desccliente, fecha, timbrado, fac, diez, cinco, exenta, fac_totalfinal, CONCAT (condicion, indi) AS condicion FROM v_ventatotal2");
+        sql.append(" WHERE v_ventatotal2.fecha >='").append(fecha1).append("'");
+        sql.append(" AND v_ventatotal2.fecha <='").append(fecha2).append("'");
+        sql.append(" AND v_ventatotal2.tipo='F'");
+        sql.append(" ORDER BY  v_ventatotal2.idemision ASC ,  v_ventatotal2.cod ASC");
+        return Operacion.getTabla(sql.toString());
+    }
+
+    /* public static List listFacturasMoviles() {
         StringBuilder sql = new StringBuilder("SELECT id,idemision,timbra,estable,pexp,nrofactura,condicion,");
         sql.append("fecha,hora,ruc,razon_social,totalfinal,nombre,estado");
         sql.append(" FROM v_ventas1");
         sql.append(" ORDER BY idemision ASC");
         return OperacionMovil.getTabla(sql.toString());
     }*/
-    
     public static List listFacturasMovil1() {
         StringBuilder sql = new StringBuilder("SELECT id,idemision,timbra,fechadesde,fechahasta,estable,pexp,factura,condicion,");
         sql.append("fecha,hora,ruc,razon_social,totalfinal,nombre,estado,exenta,iva5,iva10");
@@ -199,7 +210,7 @@ public class GestionarFactura {
         sql.append(" ORDER BY id ASC");
         return OperacionMovil.getTabla(sql.toString());
     }
-    
+
     public static List listFacturasMovilesT1(String idT) {
         StringBuilder sql = new StringBuilder("SELECT id,idemision,timbra,fechadesde,fechahasta,estable,pexp,factura,condicion,");
         sql.append("fecha,hora,ruc,razon_social,totalfinal,nombre,estado,exenta,iva5,iva10");
@@ -208,7 +219,7 @@ public class GestionarFactura {
         sql.append(" ORDER BY idemision ASC, id ASC");
         return OperacionMovil.getTabla(sql.toString());
     }
-    
+
     /*public static List listFacturasMovilesT1(String idT) {
         StringBuilder sql = new StringBuilder("SELECT id,idemision,timbra,estable,pexp,factura,condicion,");
         sql.append("fecha,hora,ruc,razon_social,totalfinal,nombre,estado");
@@ -217,7 +228,7 @@ public class GestionarFactura {
         sql.append(" ORDER BY id ASC");
         return OperacionMovil.getTabla(sql.toString());
     }*/
-    public static List listFacturasMovilesTPE(String idPE,String idT) {
+    public static List listFacturasMovilesTPE(String idPE, String idT) {
         StringBuilder sql = new StringBuilder("SELECT id,idemision,timbra,estable,pexp,nrofactura,condicion,");
         sql.append("fecha,hora,ruc,razon_social,totalfinal,nombre,estado");
         sql.append(" FROM v_ventas1");
@@ -226,8 +237,8 @@ public class GestionarFactura {
         sql.append(" ORDER BY id ASC");
         return OperacionMovil.getTabla(sql.toString());
     }
-    
-    public static List listFacturasMovilesTPE1(String idPE,String idT) {
+
+    public static List listFacturasMovilesTPE1(String idPE, String idT) {
         StringBuilder sql = new StringBuilder("SELECT id,idemision,timbra,fechadesde,fechahasta,estable,pexp,factura,condicion,");
         sql.append("fecha,hora,ruc,razon_social,totalfinal,nombre,estado,exenta,iva5,iva10");
         sql.append(" FROM v_ventas_1");
@@ -236,7 +247,7 @@ public class GestionarFactura {
         sql.append(" ORDER BY id ASC");
         return OperacionMovil.getTabla(sql.toString());
     }
-    
+
     /*public static List listFacturasMovilesTPE1(String idPE,String idT) {
         StringBuilder sql = new StringBuilder("SELECT id,idemision,timbra,estable,pexp,factura,condicion,");
         sql.append("fecha,hora,ruc,razon_social,totalfinal,nombre,estado");
@@ -246,7 +257,6 @@ public class GestionarFactura {
         sql.append(" ORDER BY id ASC");
         return OperacionMovil.getTabla(sql.toString());
     }*/
-    
     public static List listFacturasCredito(String cliente) {
         StringBuilder sql = new StringBuilder("SELECT factura.fac_codigo,");
         sql.append("clientes.cli_razonsocial,");
@@ -269,6 +279,7 @@ public class GestionarFactura {
         sql.append(" ORDER BY factura.fac_codigo ASC");
         return Operacion.getTabla(sql.toString());
     }
+
     public static List listFacturasCreditoPendiente(String cliente) {
         StringBuilder sql = new StringBuilder("SELECT factura.fac_codigo,");
         sql.append("clientes.cli_razonsocial,");
@@ -292,6 +303,7 @@ public class GestionarFactura {
         sql.append(" ORDER BY factura.fac_codigo ASC");
         return Operacion.getTabla(sql.toString());
     }
+
     public static List listFacturasCreditoActivo(String cliente) {
         StringBuilder sql = new StringBuilder("SELECT factura.fac_codigo,");
         sql.append("clientes.cli_razonsocial,");
@@ -315,6 +327,7 @@ public class GestionarFactura {
         sql.append(" ORDER BY factura.fac_codigo ASC");
         return Operacion.getTabla(sql.toString());
     }
+
     public static List listFacturasCreditoPendienteActivo(String cliente) {
         StringBuilder sql = new StringBuilder("SELECT factura.fac_codigo,");
         sql.append("clientes.cli_razonsocial,");
@@ -414,7 +427,7 @@ public class GestionarFactura {
         sql.append(" WHERE `p-ventabd_v_c`.factura.fac_codigo=").append(cod);
         return Operacion.getTabla(sql.toString());
     }
-    
+
     public static List listDetallesVentasMovil(String cod, String idemision) {
         StringBuilder sql = new StringBuilder("SELECT cod_interno,producto,cant,precio,total");
         sql.append(" FROM v_detalleventa1");
@@ -422,7 +435,7 @@ public class GestionarFactura {
         sql.append(" AND idemision=").append(idemision);
         return OperacionMovil.getTabla(sql.toString());
     }
-    
+
     public static List listDetallesVentasMovil1(String cod, String idemision) {
         StringBuilder sql = new StringBuilder("SELECT cod_interno,cod_barra,producto,cant,precio,total,impuesto_aplicado,um,promo");
         sql.append(" FROM v_detalleventa_1");
@@ -443,5 +456,4 @@ public class GestionarFactura {
         sql.append(" WHERE (factura.fac_codigo = ").append(cod).append(")");
         return Operacion.getTabla(sql.toString());
     }*/
-
 }

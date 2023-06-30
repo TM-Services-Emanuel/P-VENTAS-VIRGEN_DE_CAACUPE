@@ -4,9 +4,13 @@ import Componentes.ConexionBD;
 import Componentes.Fecha;
 import Componentes.Mensajes;
 import Componentes.Reporte;
+import Componentes.clsExportarExcel1;
+import Controladores.CabecerasTablas;
+import Controladores.controlFactura;
 import static IU.dlgEmpresa.conM;
 import java.awt.BorderLayout;
 import java.awt.Toolkit;
+import java.io.IOException;
 import org.mariadb.jdbc.MariaDbConnection;
 import org.mariadb.jdbc.MariaDbStatement;
 import java.sql.*;
@@ -29,6 +33,7 @@ public class dlgReporteTotalVentas extends javax.swing.JDialog {
     public static MariaDbConnection conM;
     static String Fdesde;
     static String Fhasta;
+    CabecerasTablas cabe = new CabecerasTablas();
 
     public dlgReporteTotalVentas(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -37,6 +42,8 @@ public class dlgReporteTotalVentas extends javax.swing.JDialog {
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/Iconos/logo1.png")));
         CargarFecha();
         invisible();
+        cabe.VentasContaduria(tbContable);
+        CabecerasTablas.limpiarTablas(tbContable);
     }
 
     private void CargarFecha() {
@@ -119,6 +126,15 @@ public class dlgReporteTotalVentas extends javax.swing.JDialog {
 
         GrupoReporte = new javax.swing.ButtonGroup();
         buttonGroup1 = new javax.swing.ButtonGroup();
+        DialogExport = new javax.swing.JDialog();
+        jPanel3 = new javax.swing.JPanel();
+        rSButtonIconUno2 = new RSMaterialComponent.RSButtonIconUno();
+        rSPanelImage1 = new rojeru_san.rspanel.RSPanelImage();
+        rSButtonIconUno1 = new RSMaterialComponent.RSButtonIconUno();
+        jSeparator2 = new javax.swing.JSeparator();
+        jLabel3 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tbContable = new javax.swing.JTable();
         Blanco = new org.edisoncor.gui.panel.PanelImage();
         Oscuro = new org.edisoncor.gui.panel.PanelImage();
         jPanel2 = new javax.swing.JPanel();
@@ -141,11 +157,88 @@ public class dlgReporteTotalVentas extends javax.swing.JDialog {
         jLabel2 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
         cbContable = new javax.swing.JCheckBox();
+        cbContable1 = new javax.swing.JCheckBox();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         itemNuevoGenerar = new javax.swing.JMenuItem();
         jSeparator3 = new javax.swing.JPopupMenu.Separator();
         itemSalir = new javax.swing.JMenuItem();
+
+        DialogExport.setUndecorated(true);
+
+        jPanel3.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 102, 102)));
+        jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        rSButtonIconUno2.setBackground(new java.awt.Color(255, 255, 255));
+        rSButtonIconUno2.setBackgroundHover(new java.awt.Color(255, 0, 0));
+        rSButtonIconUno2.setForegroundText(new java.awt.Color(255, 0, 0));
+        rSButtonIconUno2.setIcons(rojeru_san.efectos.ValoresEnum.ICONS.CLOSE);
+        rSButtonIconUno2.setTypeBorder(RSMaterialComponent.RSButtonIconUno.TYPEBORDER.CIRCLE);
+        rSButtonIconUno2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rSButtonIconUno2ActionPerformed(evt);
+            }
+        });
+        jPanel3.add(rSButtonIconUno2, new org.netbeans.lib.awtextra.AbsoluteConstraints(154, 3, 25, 25));
+
+        rSPanelImage1.setImagen(new javax.swing.ImageIcon(getClass().getResource("/Recursos/CONTENEDOR2.png"))); // NOI18N
+        rSPanelImage1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        rSButtonIconUno1.setBackground(new java.awt.Color(255, 255, 255));
+        rSButtonIconUno1.setBackgroundHover(new java.awt.Color(0, 102, 51));
+        rSButtonIconUno1.setForegroundText(new java.awt.Color(0, 102, 51));
+        rSButtonIconUno1.setIcons(rojeru_san.efectos.ValoresEnum.ICONS.EXPLICIT);
+        rSButtonIconUno1.setTypeBorder(RSMaterialComponent.RSButtonIconUno.TYPEBORDER.CIRCLE);
+        rSButtonIconUno1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rSButtonIconUno1ActionPerformed(evt);
+            }
+        });
+        rSPanelImage1.add(rSButtonIconUno1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 20, 70, 70));
+
+        jSeparator2.setForeground(new java.awt.Color(204, 204, 204));
+        rSPanelImage1.add(jSeparator2, new org.netbeans.lib.awtextra.AbsoluteConstraints(15, 105, 120, 3));
+
+        jLabel3.setFont(new java.awt.Font("Roboto", 1, 11)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(17, 35, 46));
+        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel3.setText("Descargar Documento");
+        rSPanelImage1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(15, 110, 120, -1));
+
+        jPanel3.add(rSPanelImage1, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 90, 150, 140));
+
+        tbContable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null}
+            },
+            new String [] {
+                "", "", "", "", "", "", "", "", "", ""
+            }
+        ));
+        jScrollPane1.setViewportView(tbContable);
+
+        javax.swing.GroupLayout DialogExportLayout = new javax.swing.GroupLayout(DialogExport.getContentPane());
+        DialogExport.getContentPane().setLayout(DialogExportLayout);
+        DialogExportLayout.setHorizontalGroup(
+            DialogExportLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(DialogExportLayout.createSequentialGroup()
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(31, 31, 31)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 911, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        DialogExportLayout.setVerticalGroup(
+            DialogExportLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(DialogExportLayout.createSequentialGroup()
+                .addGroup(DialogExportLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 353, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(26, Short.MAX_VALUE))
+        );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Generador de Reportes");
@@ -344,7 +437,7 @@ public class dlgReporteTotalVentas extends javax.swing.JDialog {
                                         .addComponent(txtFHasta, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(dcFHasta, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                        .addGap(0, 2, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -370,7 +463,7 @@ public class dlgReporteTotalVentas extends javax.swing.JDialog {
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(txtFHasta, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(5, 5, 5))
         );
 
         buttonGroup1.add(cbContable);
@@ -378,25 +471,36 @@ public class dlgReporteTotalVentas extends javax.swing.JDialog {
         cbContable.setText("Reporte orientado a Contabilidad");
         cbContable.setOpaque(false);
 
+        buttonGroup1.add(cbContable1);
+        cbContable1.setFont(new java.awt.Font("Roboto", 1, 11)); // NOI18N
+        cbContable1.setText("Datos para Contabilidad (Excel)");
+        cbContable1.setOpaque(false);
+        cbContable1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbContable1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout BlancoLayout = new javax.swing.GroupLayout(Blanco);
         Blanco.setLayout(BlancoLayout);
         BlancoLayout.setHorizontalGroup(
             BlancoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(Oscuro, javax.swing.GroupLayout.DEFAULT_SIZE, 358, Short.MAX_VALUE)
+            .addComponent(Oscuro, javax.swing.GroupLayout.DEFAULT_SIZE, 387, Short.MAX_VALUE)
             .addGroup(BlancoLayout.createSequentialGroup()
                 .addGap(10, 10, 10)
                 .addGroup(BlancoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(BlancoLayout.createSequentialGroup()
-                        .addComponent(cbResumido)
-                        .addGap(0, 231, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, BlancoLayout.createSequentialGroup()
-                        .addGroup(BlancoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(BlancoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(cbResumido)
+                            .addComponent(cbCompleto))
+                        .addGap(18, 18, 18)
+                        .addGroup(BlancoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(cbContable, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(BlancoLayout.createSequentialGroup()
-                                .addComponent(cbCompleto)
-                                .addGap(18, 18, 18)
-                                .addComponent(cbContable, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addContainerGap())))
+                                .addComponent(cbContable1, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 7, Short.MAX_VALUE)))))
+                .addContainerGap())
         );
         BlancoLayout.setVerticalGroup(
             BlancoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -407,7 +511,9 @@ public class dlgReporteTotalVentas extends javax.swing.JDialog {
                     .addComponent(cbCompleto)
                     .addComponent(cbContable))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cbResumido)
+                .addGroup(BlancoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cbResumido)
+                    .addComponent(cbContable1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -448,7 +554,7 @@ public class dlgReporteTotalVentas extends javax.swing.JDialog {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(Blanco, javax.swing.GroupLayout.PREFERRED_SIZE, 358, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(Blanco, javax.swing.GroupLayout.DEFAULT_SIZE, 387, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -509,7 +615,7 @@ public class dlgReporteTotalVentas extends javax.swing.JDialog {
                     }
                 }
 
-            }else if (cbContable.isSelected()) {
+            } else if (cbContable.isSelected()) {
                 if (rbRankingA.isSelected()) {
                     LevantarReporte("\\Reports\\ventas\\DetalleVentasFG_Conta.jasper", "desde", Date.valueOf(lbFechaActualR.getText().trim()), "hasta", Date.valueOf(lbFechaActualR.getText().trim()));
                 } else if (rbRankingF.isSelected()) {
@@ -521,6 +627,46 @@ public class dlgReporteTotalVentas extends javax.swing.JDialog {
                         Mensajes.error("Error en los parametros fijados.\nFavor verifique las fechas Desde y Hasta.");
                     } else {
                         LevantarReporte("\\Reports\\ventas\\DetalleVentasFG_Conta.jasper", "desde", Date.valueOf(txtFDesdeR.getText().trim()), "hasta", Date.valueOf(txtFHastaR.getText().trim()));
+                    }
+                }
+
+            } else if (cbContable1.isSelected()) {
+                if (rbRankingA.isSelected()) {
+                    //LevantarReporte("\\Reports\\ventas\\DetalleVentasFG_Conta.jasper", "desde", Date.valueOf(lbFechaActualR.getText().trim()), "hasta", Date.valueOf(lbFechaActualR.getText().trim()));
+                    try {
+                        //DialogExport.setSize(182, 240);
+                        CabecerasTablas.limpiarTablas(tbContable);
+                        controlFactura.listVentasContaduria(tbContable, lbFechaActualR.getText().trim(), lbFechaActualR.getText().trim());
+
+                    } catch (Exception e) {
+                        System.out.println(e);
+                    }
+                    //DialogExport.setSize(1200, 450);
+                    DialogExport.setSize(183, 241);
+                    DialogExport.setLocationRelativeTo(this);
+                    DialogExport.setModal(true);
+                    DialogExport.setVisible(true);
+                } else if (rbRankingF.isSelected()) {
+                    if (txtFDesde.getText().trim().isEmpty()) {
+                        Mensajes.informacion("Fije la fecha desde");
+                    } else if (txtFHasta.getText().trim().isEmpty()) {
+                        Mensajes.informacion("Fije la fecha hasta");
+                    } else if (Date.valueOf(txtFDesdeR.getText().trim()).after(Date.valueOf(txtFHastaR.getText().trim()))) {
+                        Mensajes.error("Error en los parametros fijados.\nFavor verifique las fechas Desde y Hasta.");
+                    } else {
+                        //LevantarReporte("\\Reports\\ventas\\DetalleVentasFG_Conta.jasper", "desde", Date.valueOf(txtFDesdeR.getText().trim()), "hasta", Date.valueOf(txtFHastaR.getText().trim()));
+                        try {
+                            //DialogExport.setSize(182, 240);
+                            CabecerasTablas.limpiarTablas(tbContable);
+                            controlFactura.listVentasContaduria(tbContable, txtFDesdeR.getText().trim(), txtFHastaR.getText().trim());
+
+                        } catch (Exception e) {
+                            System.out.println(e);
+                        }
+                        DialogExport.setSize(183, 241);
+                        DialogExport.setLocationRelativeTo(this);
+                        DialogExport.setModal(true);
+                        DialogExport.setVisible(true);
                     }
                 }
 
@@ -570,6 +716,29 @@ public class dlgReporteTotalVentas extends javax.swing.JDialog {
     private void txtFDesdeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFDesdeActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtFDesdeActionPerformed
+
+    private void cbContable1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbContable1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cbContable1ActionPerformed
+
+    private void rSButtonIconUno2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSButtonIconUno2ActionPerformed
+        // TODO add your handling code here:
+        DialogExport.dispose();
+    }//GEN-LAST:event_rSButtonIconUno2ActionPerformed
+
+    private void rSButtonIconUno1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSButtonIconUno1ActionPerformed
+        // TODO add your handling code here:
+        if (tbContable.getRowCount() <= 0) {
+            Mensajes.informacion("La tabla de registros se encuentra vacía.\nVerifique si las fechas (Desde/Hasta) son correctos.");
+        } else {
+            try {
+                clsExportarExcel1 Export = new clsExportarExcel1();
+                Export.exportarExcelVentaCabecera(tbContable, this);
+            } catch (IOException ex) {
+                //Logger.getLogger(dlgClientes.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_rSButtonIconUno1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -646,6 +815,7 @@ public class dlgReporteTotalVentas extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private org.edisoncor.gui.panel.PanelImage Blanco;
+    private javax.swing.JDialog DialogExport;
     private javax.swing.ButtonGroup GrupoReporte;
     private org.edisoncor.gui.panel.PanelImage Oscuro;
     private javax.swing.JButton btnGenerar;
@@ -653,6 +823,7 @@ public class dlgReporteTotalVentas extends javax.swing.JDialog {
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JCheckBox cbCompleto;
     private javax.swing.JCheckBox cbContable;
+    private javax.swing.JCheckBox cbContable1;
     private javax.swing.JCheckBox cbResumido;
     public static datechooser.beans.DateChooserCombo dcFDesde;
     public static datechooser.beans.DateChooserCombo dcFHasta;
@@ -660,16 +831,24 @@ public class dlgReporteTotalVentas extends javax.swing.JDialog {
     private javax.swing.JMenuItem itemSalir;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JLabel lbFechaActual;
     private javax.swing.JLabel lbFechaActualR;
+    private RSMaterialComponent.RSButtonIconUno rSButtonIconUno1;
+    private RSMaterialComponent.RSButtonIconUno rSButtonIconUno2;
+    private rojeru_san.rspanel.RSPanelImage rSPanelImage1;
     private javax.swing.JRadioButton rbRankingA;
     private javax.swing.JRadioButton rbRankingF;
+    private javax.swing.JTable tbContable;
     public static javax.swing.JTextField txtFDesde;
     public static javax.swing.JTextField txtFDesdeR;
     public static javax.swing.JTextField txtFHasta;

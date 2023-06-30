@@ -929,6 +929,27 @@ public class controlFactura {
             tb.addRow(fila);
         }
     }
+    
+    public static void listVentasContaduria(JTable tabla, String fecha1, String fecha2)//Lista las facturas realizadas
+    {
+        List lista;
+        lista = GestionarFactura.listVentaContaduria(fecha1, fecha2);
+        for (int i = 1; i < lista.size(); i++) {
+            DefaultTableModel tb = (DefaultTableModel) tabla.getModel();
+            Object[] fila = (Object[]) lista.get(i);
+            fila[0] = fila[0].toString();
+            fila[1] = fila[1].toString();
+            fila[2] = Fecha.formatoFechaDinver(fila[2].toString());
+            fila[3] = fila[3].toString();
+            fila[4] = fila[4].toString();
+            fila[5] = fila[5].toString();
+            fila[6] = fila[6].toString();
+            fila[7] = fila[7].toString();
+            fila[8] = fila[8].toString();
+            fila[9] = fila[9].toString();
+            tb.addRow(fila);
+        }
+    }
 
     public static void listFacturasMoviles(JTable tabla)//Lista las facturas realizadas
     {

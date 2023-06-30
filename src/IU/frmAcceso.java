@@ -43,10 +43,10 @@ public final class frmAcceso extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        btnEntrar = new javax.swing.JButton();
         lblMensaje = new javax.swing.JLabel();
         txtUsuario = new RSMaterialComponent.RSTextFieldMaterial();
         psPasword = new RSMaterialComponent.RSPasswordMaterial();
+        btnEntrar = new RSMaterialComponent.RSButtonIconOne();
         rSButtonIconOne1 = new RSMaterialComponent.RSButtonIconOne();
         lblHost = new javax.swing.JLabel();
         jLabel19 = new javax.swing.JLabel();
@@ -55,12 +55,11 @@ public final class frmAcceso extends javax.swing.JFrame {
         setUndecorated(true);
         setResizable(false);
 
-        panelImage1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 102, 102)));
-        panelImage1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Recursos/0-102-102.png"))); // NOI18N
+        panelImage1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Recursos/ACCESO.png"))); // NOI18N
         panelImage1.setPreferredSize(new java.awt.Dimension(690, 418));
         panelImage1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel5.setBackground(new java.awt.Color(102, 102, 102));
+        jPanel5.setBackground(new java.awt.Color(0, 102, 102));
 
         lblIP.setBackground(new java.awt.Color(255, 255, 255));
         lblIP.setFont(new java.awt.Font("Roboto", 0, 11)); // NOI18N
@@ -84,7 +83,7 @@ public final class frmAcceso extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        panelImage1.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 430, 354, 20));
+        panelImage1.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(-6, 430, 360, 20));
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Recursos/icon.png"))); // NOI18N
@@ -94,23 +93,12 @@ public final class frmAcceso extends javax.swing.JFrame {
         jPanel1.setOpaque(false);
 
         jLabel4.setFont(new java.awt.Font("Roboto", 1, 18)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel4.setText("USUARIO");
 
         jLabel5.setFont(new java.awt.Font("Roboto", 1, 18)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel5.setText("CONTRASEÑA");
-
-        btnEntrar.setBackground(new java.awt.Color(255, 255, 255));
-        btnEntrar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/like30.png"))); // NOI18N
-        btnEntrar.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        btnEntrar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEntrarActionPerformed(evt);
-            }
-        });
 
         lblMensaje.setFont(new java.awt.Font("Roboto", 1, 11)); // NOI18N
         lblMensaje.setForeground(new java.awt.Color(255, 255, 255));
@@ -118,7 +106,7 @@ public final class frmAcceso extends javax.swing.JFrame {
 
         txtUsuario.setForeground(new java.awt.Color(0, 0, 0));
         txtUsuario.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        txtUsuario.setColorMaterial(new java.awt.Color(255, 0, 0));
+        txtUsuario.setColorMaterial(new java.awt.Color(0, 102, 102));
         txtUsuario.setFont(new java.awt.Font("Roboto", 1, 18)); // NOI18N
         txtUsuario.setPlaceholder("");
         txtUsuario.addActionListener(new java.awt.event.ActionListener() {
@@ -134,7 +122,7 @@ public final class frmAcceso extends javax.swing.JFrame {
 
         psPasword.setForeground(new java.awt.Color(0, 0, 0));
         psPasword.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        psPasword.setColorMaterial(new java.awt.Color(255, 0, 0));
+        psPasword.setColorMaterial(new java.awt.Color(0, 102, 102));
         psPasword.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
         psPasword.setPlaceholder("");
         psPasword.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -143,6 +131,17 @@ public final class frmAcceso extends javax.swing.JFrame {
             }
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 psPaswordKeyTyped(evt);
+            }
+        });
+
+        btnEntrar.setBackground(new java.awt.Color(255, 255, 255));
+        btnEntrar.setBackgroundHover(new java.awt.Color(0, 102, 102));
+        btnEntrar.setForegroundText(new java.awt.Color(0, 102, 102));
+        btnEntrar.setIcons(rojeru_san.efectos.ValoresEnum.ICONS.CHECK);
+        btnEntrar.setTypeBorder(RSMaterialComponent.RSButtonIconOne.TYPEBORDER.CIRCLE);
+        btnEntrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEntrarActionPerformed(evt);
             }
         });
 
@@ -160,10 +159,13 @@ public final class frmAcceso extends javax.swing.JFrame {
                             .addComponent(jLabel4))
                         .addGap(13, 13, Short.MAX_VALUE)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btnEntrar, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)
-                            .addComponent(txtUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                            .addComponent(txtUsuario, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)
                             .addComponent(psPasword, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE))))
                 .addGap(20, 20, 20))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnEntrar, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -179,8 +181,7 @@ public final class frmAcceso extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblMensaje, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnEntrar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addComponent(btnEntrar, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         panelImage1.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 254, 330, 160));
@@ -198,12 +199,11 @@ public final class frmAcceso extends javax.swing.JFrame {
         panelImage1.add(rSButtonIconOne1, new org.netbeans.lib.awtextra.AbsoluteConstraints(337, 1, 15, 15));
 
         lblHost.setFont(new java.awt.Font("HelveticaCondensed", 1, 20)); // NOI18N
-        lblHost.setForeground(new java.awt.Color(255, 255, 255));
         lblHost.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblHost.setText("NOMBRE HOST");
         lblHost.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
         lblHost.setVerifyInputWhenFocusTarget(false);
-        panelImage1.add(lblHost, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 200, 333, 40));
+        panelImage1.add(lblHost, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 190, 333, 40));
 
         jLabel19.setFont(new java.awt.Font("Roboto", 1, 11)); // NOI18N
         jLabel19.setForeground(new java.awt.Color(255, 255, 255));
@@ -216,7 +216,7 @@ public final class frmAcceso extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 0, 0)
+                .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(panelImage1, javax.swing.GroupLayout.PREFERRED_SIZE, 353, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         layout.setVerticalGroup(
@@ -228,19 +228,6 @@ public final class frmAcceso extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void btnEntrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEntrarActionPerformed
-        // TODO add your handling code here:
-        try {
-            ControlLogeo.logear();
-            controlPerfil.perfil();
-            this.dispose();
-        } catch (Exception e) {
-            txtUsuario.requestFocus();
-            txtUsuario.selectAll();
-            System.out.println("Error al cargar Principal: "+e.toString());
-        }
-    }//GEN-LAST:event_btnEntrarActionPerformed
 
     private void txtUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUsuarioActionPerformed
         // TODO add your handling code here:
@@ -289,6 +276,19 @@ public final class frmAcceso extends javax.swing.JFrame {
         // TODO add your handling code here:
         System.exit(0);
     }//GEN-LAST:event_rSButtonIconOne1ActionPerformed
+
+    private void btnEntrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEntrarActionPerformed
+        // TODO add your handling code here:
+        try {
+            ControlLogeo.logear();
+            controlPerfil.perfil();
+            this.dispose();
+        } catch (Exception e) {
+            txtUsuario.requestFocus();
+            txtUsuario.selectAll();
+            System.out.println("Error al cargar Principal: "+e.toString());
+        }
+    }//GEN-LAST:event_btnEntrarActionPerformed
 
     void cargarIcono() {
         try {
@@ -361,7 +361,7 @@ public final class frmAcceso extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    public static javax.swing.JButton btnEntrar;
+    public static RSMaterialComponent.RSButtonIconOne btnEntrar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel4;

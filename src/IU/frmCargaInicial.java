@@ -89,8 +89,11 @@ public final class frmCargaInicial extends javax.swing.JFrame {
     private void initComponents() {
 
         lblCarga = new javax.swing.JLabel();
-        jProgressBar1 = new javax.swing.JProgressBar();
+        rSProgressMaterial1 = new RSMaterialComponent.RSProgressMaterial();
+        jLabel19 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
+        jProgressBar1 = new javax.swing.JProgressBar();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
@@ -104,7 +107,23 @@ public final class frmCargaInicial extends javax.swing.JFrame {
         lblCarga.setFocusable(false);
         lblCarga.setInheritsPopupMenu(false);
         lblCarga.setPreferredSize(new java.awt.Dimension(25, 14));
-        getContentPane().add(lblCarga, new org.netbeans.lib.awtextra.AbsoluteConstraints(2, 399, 500, -1));
+        getContentPane().add(lblCarga, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 390, 390, -1));
+
+        rSProgressMaterial1.setForeground(new java.awt.Color(255, 255, 255));
+        rSProgressMaterial1.setWidthProgress(5);
+        getContentPane().add(rSProgressMaterial1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 370, 40, 40));
+
+        jLabel19.setFont(new java.awt.Font("Roboto", 1, 11)); // NOI18N
+        jLabel19.setForeground(new java.awt.Color(17, 35, 46));
+        jLabel19.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel19.setText("Software de gestión de Productos, Compras & Ventas.");
+        getContentPane().add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 105, 280, -1));
+
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Recursos/icon.png"))); // NOI18N
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, -1));
+
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Recursos/CARGA_INICIAL.png"))); // NOI18N
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 690, 418));
 
         jProgressBar1.setBackground(new java.awt.Color(0, 102, 102));
         jProgressBar1.setForeground(new java.awt.Color(255, 0, 0));
@@ -114,10 +133,7 @@ public final class frmCargaInicial extends javax.swing.JFrame {
         jProgressBar1.setPreferredSize(new java.awt.Dimension(146, 12));
         jProgressBar1.setString("");
         jProgressBar1.setStringPainted(true);
-        getContentPane().add(jProgressBar1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 415, 690, 4));
-
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Recursos/logocarga1.png"))); // NOI18N
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 690, 418));
+        getContentPane().add(jProgressBar1, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 30, 590, 10));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -249,7 +265,10 @@ public final class frmCargaInicial extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel19;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JProgressBar jProgressBar1;
     private javax.swing.JLabel lblCarga;
+    private RSMaterialComponent.RSProgressMaterial rSProgressMaterial1;
     // End of variables declaration//GEN-END:variables
 }

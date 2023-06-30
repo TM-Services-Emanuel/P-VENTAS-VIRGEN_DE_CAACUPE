@@ -44,6 +44,7 @@ public final class CabecerasTablas {
     static String facturas[] = {"COD","DEP","ID", "CODBARRA", "DESCRIPCIÓN", "CANT", "PRECIO", "EXENTA","IVA 5%","IVA 10%","MONTO","IDIVA","COSTO","PROMO",};
     String categoria[] = {"CODIGO", "CATEGORIA"};
     String presupuestos[] = {"Cant.", "Cod.", "Descripción", "Precio", "Total"};
+    String ventasContaduria[] = {"", "", "", "", "","", "", "", "", ""};
     String conFactura[] = {"OPERACIÓN","IDEMISION", "RAZÓN SOCIAL", "FECHA","HORA", "COD CLI","MOV.CAJA","TIPO","COMPROBANTE N°", "CONDICION","PAGO", "TOTAL", "CODVENDE","ESTADO","EXENTA","CINCO","DIEZ","TIMBRADO","DESDE","HASTA"};
     String detalleFactura[] = {"CANT","DEP","IDDEP", "ID","CÓD.BARRA","DESCRIPCIÓN", "PRECIO", "TOTAL","PROMO","IVA","EXENTA", "CINTO", "DIEZ"};
     String consPresupuesto[] = {"N°", "Fecha", "Razon Social", "Cód. Clie", "Desc", "Total"};
@@ -943,6 +944,33 @@ public final class CabecerasTablas {
 
     }
 
+    public void VentasContaduria(JTable tabla) {
+        modelo = new DefaultTableModel(datos, ventasContaduria);
+        tabla.setModel(modelo);
+        colum = tabla.getColumnModel().getColumn(0);
+        colum.setPreferredWidth(80);
+        colum = tabla.getColumnModel().getColumn(1);
+        colum.setPreferredWidth(200);
+        colum = tabla.getColumnModel().getColumn(2);
+        colum.setPreferredWidth(90);
+        colum = tabla.getColumnModel().getColumn(3);
+        colum.setPreferredWidth(70);
+        colum = tabla.getColumnModel().getColumn(4);
+        colum.setPreferredWidth(50);
+        colum = tabla.getColumnModel().getColumn(5);
+        colum.setPreferredWidth(50);
+        colum = tabla.getColumnModel().getColumn(6);
+        colum.setPreferredWidth(70);
+        colum = tabla.getColumnModel().getColumn(7);
+        colum.setPreferredWidth(100);
+        colum = tabla.getColumnModel().getColumn(8);
+        colum.setPreferredWidth(100);
+        colum = tabla.getColumnModel().getColumn(9);
+        colum.setPreferredWidth(90);
+
+
+    }
+    
     public void consFacturasA(JTable tabla) {
         modelo = new DefaultTableModel(datos, conFactura);
         tabla.setModel(modelo);
