@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="detalleFacturaLegal" pageWidth="595" pageHeight="842" whenNoDataType="BlankPage" columnWidth="595" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="3bdba107-5d99-4613-b10e-8598c5504e05">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="V_C.xml"/>
+	<parameter name="ID" class="java.lang.Integer"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT * FROM v_ventalegal
+WHERE 
+	 v_ventalegal.cod = $P{ID}]]>
+	</queryString>
+	<field name="cod" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="cod"/>
+		<property name="com.jaspersoft.studio.field.label" value="cod"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="v_ventalegal"/>
+	</field>
+	<field name="idcliente" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="idcliente"/>
+		<property name="com.jaspersoft.studio.field.label" value="idcliente"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="v_ventalegal"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="ruc" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ruc"/>
+		<property name="com.jaspersoft.studio.field.label" value="ruc"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="v_ventalegal"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="razon_social" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="razon_social"/>
+		<property name="com.jaspersoft.studio.field.label" value="razon_social"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="v_ventalegal"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="direccion" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="direccion"/>
+		<property name="com.jaspersoft.studio.field.label" value="direccion"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="v_ventalegal"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="telefono" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="telefono"/>
+		<property name="com.jaspersoft.studio.field.label" value="telefono"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="v_ventalegal"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="timbra" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="timbra"/>
+		<property name="com.jaspersoft.studio.field.label" value="timbra"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="v_ventalegal"/>
+	</field>
+	<field name="nr_autorizacion" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="nr_autorizacion"/>
+		<property name="com.jaspersoft.studio.field.label" value="nr_autorizacion"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="v_ventalegal"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="fecha_autorizacion" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="fecha_autorizacion"/>
+		<property name="com.jaspersoft.studio.field.label" value="fecha_autorizacion"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="v_ventalegal"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="desde" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="desde"/>
+		<property name="com.jaspersoft.studio.field.label" value="desde"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="v_ventalegal"/>
+	</field>
+	<field name="hasta" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="hasta"/>
+		<property name="com.jaspersoft.studio.field.label" value="hasta"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="v_ventalegal"/>
+	</field>
+	<field name="fecha" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.name" value="fecha"/>
+		<property name="com.jaspersoft.studio.field.label" value="fecha"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="v_ventalegal"/>
+	</field>
+	<field name="hora" class="java.sql.Time">
+		<property name="com.jaspersoft.studio.field.name" value="hora"/>
+		<property name="com.jaspersoft.studio.field.label" value="hora"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="v_ventalegal"/>
+	</field>
+	<field name="condicion" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="condicion"/>
+		<property name="com.jaspersoft.studio.field.label" value="condicion"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="v_ventalegal"/>
+	</field>
+	<field name="numero" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="numero"/>
+		<property name="com.jaspersoft.studio.field.label" value="numero"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="v_ventalegal"/>
+	</field>
+	<field name="total" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="total"/>
+		<property name="com.jaspersoft.studio.field.label" value="total"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="v_ventalegal"/>
+	</field>
+	<field name="fac_exenta" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="fac_exenta"/>
+		<property name="com.jaspersoft.studio.field.label" value="fac_exenta"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="v_ventalegal"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="fac_iva5" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="fac_iva5"/>
+		<property name="com.jaspersoft.studio.field.label" value="fac_iva5"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="v_ventalegal"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="fac_iva10" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="fac_iva10"/>
+		<property name="com.jaspersoft.studio.field.label" value="fac_iva10"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="v_ventalegal"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="ven_cantidad" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="ven_cantidad"/>
+		<property name="com.jaspersoft.studio.field.label" value="ven_cantidad"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="v_ventalegal"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="cod_barra" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="cod_barra"/>
+		<property name="com.jaspersoft.studio.field.label" value="cod_barra"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="v_ventalegal"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="descripcion" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="descripcion"/>
+		<property name="com.jaspersoft.studio.field.label" value="descripcion"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="v_ventalegal"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="ven_precio" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="ven_precio"/>
+		<property name="com.jaspersoft.studio.field.label" value="ven_precio"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="v_ventalegal"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="e" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="e"/>
+		<property name="com.jaspersoft.studio.field.label" value="e"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="v_ventalegal"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="exenta" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="exenta"/>
+		<property name="com.jaspersoft.studio.field.label" value="exenta"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="v_ventalegal"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="c" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="c"/>
+		<property name="com.jaspersoft.studio.field.label" value="c"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="v_ventalegal"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="cinco" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="cinco"/>
+		<property name="com.jaspersoft.studio.field.label" value="cinco"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="v_ventalegal"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="d" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="d"/>
+		<property name="com.jaspersoft.studio.field.label" value="d"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="v_ventalegal"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="diez" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="diez"/>
+		<property name="com.jaspersoft.studio.field.label" value="diez"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="v_ventalegal"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="ven_total" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="ven_total"/>
+		<property name="com.jaspersoft.studio.field.label" value="ven_total"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="v_ventalegal"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="fac_indicador" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="fac_indicador"/>
+		<property name="com.jaspersoft.studio.field.label" value="fac_indicador"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="v_ventalegal"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="contado" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="contado"/>
+		<property name="com.jaspersoft.studio.field.label" value="contado"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="v_ventalegal"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="credito" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="credito"/>
+		<property name="com.jaspersoft.studio.field.label" value="credito"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="v_ventalegal"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<detail>
+		<band height="11" splitType="Stretch">
+			<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.FreeLayout"/>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<textField>
+				<reportElement x="0" y="0" width="80" height="10" uuid="f732c7b1-a12f-4907-adba-84c8cb933659">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cod_barra}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.###;(#,##0.###-)">
+				<reportElement x="80" y="0" width="30" height="10" uuid="12691fba-811c-4b8d-a452-5279166068f7">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ven_cantidad}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="111" y="0" width="256" height="10" uuid="addd7ddd-3b9c-47c4-9014-e2c3eaccd9a0">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{descripcion}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0">
+				<reportElement x="367" y="0" width="40" height="10" uuid="df7bf095-718d-41ce-9d76-8deec52f50d6">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ven_precio}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0">
+				<reportElement x="407" y="0" width="49" height="10" uuid="5a03c35a-e691-4fbd-871b-4067209f32d2">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{e}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0">
+				<reportElement x="456" y="0" width="50" height="10" uuid="00f09cf1-fcdf-40af-9072-e9899af79c75">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{c}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0">
+				<reportElement x="506" y="0" width="48" height="10" uuid="8714ad96-4780-484f-a018-91e566bb8085">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{d}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>
