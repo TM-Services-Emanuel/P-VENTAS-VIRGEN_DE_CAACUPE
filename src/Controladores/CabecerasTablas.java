@@ -44,7 +44,7 @@ public final class CabecerasTablas {
     static String facturas[] = {"COD","DEP","ID", "CODBARRA", "DESCRIPCIÓN", "CANT", "PRECIO", "EXENTA","IVA 5%","IVA 10%","MONTO","IDIVA","COSTO","PROMO",};
     String categoria[] = {"CODIGO", "CATEGORIA"};
     String presupuestos[] = {"Cant.", "Cod.", "Descripción", "Precio", "Total"};
-    String ventasContaduria[] = {"", "", "", "", "","", "", "", "", ""};
+    String ventasContaduria[] = {"NÚMERO DE IDENTIFICACIÓN DEL COMPRADOR", "NOMBRE O RAZÓN SOCIAL DEL COMPRADOR", "FECHA DE EMISIÓN DEL COMPROBANTE", "NÚMERO DE TIMBRADO", "NÚMERO DEL COMPROBANTE","MONTO GRAVADO AL 10% (IVA INCLUIDO)", "MONTO GRAVADO AL 5% (IVA INCLUIDO)", "MONTO NO GRAVADO O EXENTO", "MONTO TOTAL DEL COMPROBANTE", "CONDICIÓN DE VENTA"};
     String conFactura[] = {"OPERACIÓN","IDEMISION", "RAZÓN SOCIAL", "FECHA","HORA", "COD CLI","MOV.CAJA","TIPO","COMPROBANTE N°", "CONDICION","PAGO", "TOTAL", "CODVENDE","ESTADO","EXENTA","CINCO","DIEZ","TIMBRADO","DESDE","HASTA"};
     String detalleFactura[] = {"CANT","DEP","IDDEP", "ID","CÓD.BARRA","DESCRIPCIÓN", "PRECIO", "TOTAL","PROMO","IVA","EXENTA", "CINTO", "DIEZ"};
     String consPresupuesto[] = {"N°", "Fecha", "Razon Social", "Cód. Clie", "Desc", "Total"};

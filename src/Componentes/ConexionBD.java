@@ -17,8 +17,8 @@ public class ConexionBD {
     private final String bdmovil = "bd_v_c";
     
     private final String usuario = "root";
-    private final String password = "";
-    //private final String password = "emanuel4744832";
+    //private final String password = "";
+    private final String password = "emanuel4744832";
 
     public Connection getConexion() {
         MariaDbConnection cn;

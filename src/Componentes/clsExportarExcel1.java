@@ -325,6 +325,7 @@ public class clsExportarExcel1 {
                 style.setWrapText(true); // Especifica el ajuste de la palabra cuando no se puede mostrar el contenido de la celda
                 Font font = libro.createFont();
                 font.setFontName("Tahoma");
+                font.setBold(true);
                 font.setFontHeight((short) 160);
                 style.setFont(font);
                 //fin estilo de cabecera
@@ -355,15 +356,15 @@ public class clsExportarExcel1 {
                                 case 3 ->
                                     hoja.setColumnWidth(c, 5000);
                                 case 4 ->
-                                    hoja.setColumnWidth(c, 6000);
-                                case 5 ->
-                                    hoja.setColumnWidth(c, 4000);
-                                case 6 ->
-                                    hoja.setColumnWidth(c, 4000);
-                                case 7 ->
-                                    hoja.setColumnWidth(c, 4000);
-                                case 8 ->
                                     hoja.setColumnWidth(c, 5000);
+                                case 5 ->
+                                    hoja.setColumnWidth(c, 3000);
+                                case 6 ->
+                                    hoja.setColumnWidth(c, 3000);
+                                case 7 ->
+                                    hoja.setColumnWidth(c, 3000);
+                                case 8 ->
+                                    hoja.setColumnWidth(c, 3000);
                                 case 9 ->
                                     hoja.setColumnWidth(c, 5000);
                                 default -> {
