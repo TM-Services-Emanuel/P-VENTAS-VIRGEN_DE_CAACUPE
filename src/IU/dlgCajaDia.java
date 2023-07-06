@@ -2,6 +2,7 @@ package IU;
 
 import Componentes.ConexionBD;
 import Componentes.Fecha;
+import Componentes.Login;
 import Componentes.Mensajes;
 import Componentes.Reporte;
 import Componentes.Software;
@@ -154,6 +155,16 @@ public final class dlgCajaDia extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        DialogConfirmacion = new javax.swing.JDialog();
+        jPanel13 = new javax.swing.JPanel();
+        jLabel30 = new javax.swing.JLabel();
+        jSeparator4 = new javax.swing.JSeparator();
+        jLabel31 = new javax.swing.JLabel();
+        txtContra = new RSMaterialComponent.RSPasswordMaterialIcon();
+        btnConfirmarCierre = new RSMaterialComponent.RSButtonIconUno();
+        rSButtonIconUno2 = new RSMaterialComponent.RSButtonIconUno();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTextPane1 = new javax.swing.JTextPane();
         jPanel12 = new javax.swing.JPanel();
         jPanel8 = new javax.swing.JPanel();
         txtHasta = new javax.swing.JTextField();
@@ -242,6 +253,90 @@ public final class dlgCajaDia extends javax.swing.JDialog {
         btnGuardar2 = new newscomponents.RSButtonBigIcon_new();
         txtOpcion2 = new javax.swing.JTextField();
         txtOpcion1 = new javax.swing.JTextField();
+
+        DialogConfirmacion.setUndecorated(true);
+        DialogConfirmacion.addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowActivated(java.awt.event.WindowEvent evt) {
+                DialogConfirmacionWindowActivated(evt);
+            }
+        });
+
+        jPanel13.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel13.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 102, 102)));
+        jPanel13.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel30.setFont(new java.awt.Font("Roboto", 1, 12)); // NOI18N
+        jLabel30.setForeground(new java.awt.Color(0, 102, 102));
+        jLabel30.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel30.setText("CONFIRMACIÓN DE CIERRE");
+        jPanel13.add(jLabel30, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 13, 402, -1));
+
+        jSeparator4.setForeground(new java.awt.Color(204, 204, 204));
+        jPanel13.add(jSeparator4, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 35, 402, 10));
+
+        jLabel31.setFont(new java.awt.Font("Roboto", 1, 12)); // NOI18N
+        jLabel31.setText("CONTRASEÑA ACTUAL");
+        jPanel13.add(jLabel31, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 84, -1, 30));
+
+        txtContra.setForeground(new java.awt.Color(0, 0, 0));
+        txtContra.setColorIcon(new java.awt.Color(0, 102, 102));
+        txtContra.setColorMaterial(new java.awt.Color(0, 102, 102));
+        txtContra.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        txtContra.setPhColor(new java.awt.Color(17, 35, 46));
+        txtContra.setPlaceholder("");
+        txtContra.setSelectionColor(new java.awt.Color(17, 35, 46));
+        txtContra.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtContraActionPerformed(evt);
+            }
+        });
+        jPanel13.add(txtContra, new org.netbeans.lib.awtextra.AbsoluteConstraints(156, 85, 258, 30));
+
+        btnConfirmarCierre.setBackground(new java.awt.Color(255, 255, 255));
+        btnConfirmarCierre.setBackgroundHover(new java.awt.Color(0, 102, 102));
+        btnConfirmarCierre.setForegroundText(new java.awt.Color(0, 102, 102));
+        btnConfirmarCierre.setIcons(rojeru_san.efectos.ValoresEnum.ICONS.CHECK);
+        btnConfirmarCierre.setTypeBorder(RSMaterialComponent.RSButtonIconUno.TYPEBORDER.CIRCLE);
+        btnConfirmarCierre.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnConfirmarCierreActionPerformed(evt);
+            }
+        });
+        jPanel13.add(btnConfirmarCierre, new org.netbeans.lib.awtextra.AbsoluteConstraints(322, 125, -1, 40));
+
+        rSButtonIconUno2.setBackground(new java.awt.Color(255, 255, 255));
+        rSButtonIconUno2.setBackgroundHover(new java.awt.Color(255, 0, 0));
+        rSButtonIconUno2.setForegroundText(new java.awt.Color(255, 0, 0));
+        rSButtonIconUno2.setIcons(rojeru_san.efectos.ValoresEnum.ICONS.CANCEL);
+        rSButtonIconUno2.setTypeBorder(RSMaterialComponent.RSButtonIconUno.TYPEBORDER.CIRCLE);
+        rSButtonIconUno2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rSButtonIconUno2ActionPerformed(evt);
+            }
+        });
+        jPanel13.add(rSButtonIconUno2, new org.netbeans.lib.awtextra.AbsoluteConstraints(374, 125, -1, -1));
+
+        jScrollPane1.setBorder(null);
+
+        jTextPane1.setEditable(false);
+        jTextPane1.setBorder(null);
+        jTextPane1.setText("Por seguridad te solicitamos la confirmación por medio de tu contraseña. Esto evitara que se procese esta acción por error.");
+        jScrollPane1.setViewportView(jTextPane1);
+
+        jPanel13.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 45, 402, -1));
+
+        javax.swing.GroupLayout DialogConfirmacionLayout = new javax.swing.GroupLayout(DialogConfirmacion.getContentPane());
+        DialogConfirmacion.getContentPane().setLayout(DialogConfirmacionLayout);
+        DialogConfirmacionLayout.setHorizontalGroup(
+            DialogConfirmacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(DialogConfirmacionLayout.createSequentialGroup()
+                .addComponent(jPanel13, javax.swing.GroupLayout.PREFERRED_SIZE, 425, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        DialogConfirmacionLayout.setVerticalGroup(
+            DialogConfirmacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel13, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setFont(new java.awt.Font("Roboto", 1, 12)); // NOI18N
@@ -830,7 +925,7 @@ public final class dlgCajaDia extends javax.swing.JDialog {
                 .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(54, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
@@ -1592,38 +1687,12 @@ public final class dlgCajaDia extends javax.swing.JDialog {
 
     private void btnCerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarActionPerformed
         // TODO add your handling code here:
-        if (Integer.parseInt(txtEntregar.getText().trim().replace(",", "").replace(".", "")) < 0) {
-            Mensajes.error("El cierre final de la caja contiene saldo negativo.\nNo se puede proceder a cerrar la caja.\nConsejo: verifique si una o varias operaciones no fueron duplicados.");
-        } else {
-            int resp = JOptionPane.showConfirmDialog(this, "¿Seguro que desea Cerrar la Caja y Finalizar las Operaciones?", "CIERRE GENERAL DE LOS MOVIMIENTOS DEL DÍA", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-            if (resp == JOptionPane.YES_OPTION) {
-                try {
-                    ControlCaja.CerrarCaja();
-                    btnCerrar.setEnabled(false);
-                    //btnImprimir.setEnabled(true);
-                    txtEntregado.setEnabled(false);
-                    dcDesde.setEnabled(false);
-                    dcHasta.setEnabled(false);
-                    btnCalcular.setEnabled(false);
-                    btnGuardar.setEnabled(false);
-                    txtEntregado_boca_1.setEnabled(false);
-                    txtGastos_boca_1.setEnabled(false);
-                    btnGuardar1.setEnabled(false);
-                    txtEntregado_boca_2.setEnabled(false);
-                    txtGastos_boca_2.setEnabled(false);
-                    btnGuardar2.setEnabled(false);
-                    btnRegistrarSalidas.setEnabled(false);
-                    Caja caj = GestionarCaja.busCaja(NCaja);
-                    if (caj.getIndicador().equals("S")) {
-                        lbEstado.setText("ABIERTO");
-                    } else {
-                        lbEstado.setText("CERRADO");
-                    }
-                } catch (Exception e) {
-                    Mensajes.error(e.getMessage());
-                }
-            }
-        }
+        //txtContra.requestFocus();
+        DialogConfirmacion.setSize(428, 175);
+        DialogConfirmacion.setLocationRelativeTo(this);        
+        DialogConfirmacion.setModal(true);        
+        DialogConfirmacion.setVisible(true);
+        
     }//GEN-LAST:event_btnCerrarActionPerformed
 
     private void txtIngresoTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIngresoTActionPerformed
@@ -1807,6 +1876,68 @@ public final class dlgCajaDia extends javax.swing.JDialog {
         calcularDiferencia2();
     }//GEN-LAST:event_txtGastos_boca_2KeyReleased
 
+    private void txtContraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtContraActionPerformed
+        // TODO add your handling code here:
+        btnConfirmarCierre.doClick();
+    }//GEN-LAST:event_txtContraActionPerformed
+
+    private void rSButtonIconUno2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSButtonIconUno2ActionPerformed
+        // TODO add your handling code here:
+        DialogConfirmacion.dispose();
+    }//GEN-LAST:event_rSButtonIconUno2ActionPerformed
+
+    private void btnConfirmarCierreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmarCierreActionPerformed
+        // TODO add your handling code here:
+        if (String.valueOf(txtContra.getPassword()).isEmpty()) {
+            Mensajes.Sistema("CIERRE DE CAJA NO PROCESADO.\nIngrese la contraseña de logueo para confirmar la acción.");
+            txtContra.requestFocus();
+        }else if (String.valueOf(txtContra.getPassword()).equals(Login.getContraLogueado())) {
+            if (Integer.parseInt(txtEntregar.getText().trim().replace(",", "").replace(".", "")) < 0) {
+                Mensajes.error("El cierre final de la caja contiene saldo negativo.\nNo se puede proceder a cerrar la caja.\nConsejo: verifique si una o varias operaciones no fueron duplicados.");
+            } else {
+                DialogConfirmacion.dispose();
+                txtContra.setText("");
+                int resp = JOptionPane.showConfirmDialog(this, "¿Seguro que desea Cerrar la Caja y Finalizar las Operaciones?", "CIERRE GENERAL DE LOS MOVIMIENTOS DEL DÍA", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                if (resp == JOptionPane.YES_OPTION) {
+                    try {
+                        ControlCaja.CerrarCaja();
+                        btnCerrar.setEnabled(false);
+                        //btnImprimir.setEnabled(true);
+                        txtEntregado.setEnabled(false);
+                        dcDesde.setEnabled(false);
+                        dcHasta.setEnabled(false);
+                        btnCalcular.setEnabled(false);
+                        btnGuardar.setEnabled(false);
+                        txtEntregado_boca_1.setEnabled(false);
+                        txtGastos_boca_1.setEnabled(false);
+                        btnGuardar1.setEnabled(false);
+                        txtEntregado_boca_2.setEnabled(false);
+                        txtGastos_boca_2.setEnabled(false);
+                        btnGuardar2.setEnabled(false);
+                        btnRegistrarSalidas.setEnabled(false);
+                        Caja caj = GestionarCaja.busCaja(NCaja);
+                        if (caj.getIndicador().equals("S")) {
+                            lbEstado.setText("ABIERTO");
+                        } else {
+                            lbEstado.setText("CERRADO");
+                        }
+                    } catch (Exception e) {
+                        Mensajes.error(e.getMessage());
+                    }
+                }
+            }
+        } else {
+            Mensajes.Sistema("CIERRE DE CAJA NO PROCESADO.\nLa contraseña ingresada no corresponde al usuario logueado.\nFavor, vuelva a intentarlo.");
+            txtContra.requestFocus();
+        }
+
+    }//GEN-LAST:event_btnConfirmarCierreActionPerformed
+
+    private void DialogConfirmacionWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_DialogConfirmacionWindowActivated
+        // TODO add your handling code here:
+        txtContra.requestFocus();
+    }//GEN-LAST:event_DialogConfirmacionWindowActivated
+
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -1842,8 +1973,10 @@ public final class dlgCajaDia extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private org.edisoncor.gui.panel.PanelImage Blanco;
+    private javax.swing.JDialog DialogConfirmacion;
     private newscomponents.RSButtonGradientIcon_new btnCalcular;
     private newscomponents.RSButtonBigIcon_new btnCerrar;
+    private RSMaterialComponent.RSButtonIconUno btnConfirmarCierre;
     private newscomponents.RSButtonBigIcon_new btnGuardar;
     private newscomponents.RSButtonBigIcon_new btnGuardar1;
     private newscomponents.RSButtonBigIcon_new btnGuardar2;
@@ -1874,6 +2007,8 @@ public final class dlgCajaDia extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel30;
+    private javax.swing.JLabel jLabel31;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
@@ -1884,6 +2019,7 @@ public final class dlgCajaDia extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
+    private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
@@ -1892,10 +2028,13 @@ public final class dlgCajaDia extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
+    private javax.swing.JSeparator jSeparator4;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTextPane jTextPane1;
     private javax.swing.JLabel lbEstado;
     private javax.swing.JLabel lbFecha;
     private javax.swing.JLabel lbHora;
@@ -1903,8 +2042,10 @@ public final class dlgCajaDia extends javax.swing.JDialog {
     public static javax.swing.JLabel lbNCaja;
     private javax.swing.JLabel lbUsuI;
     private RSMaterialComponent.RSButtonIconOne rSButtonIconOne1;
+    private RSMaterialComponent.RSButtonIconUno rSButtonIconUno2;
     public static javax.swing.JTextField txtB1;
     public static javax.swing.JTextField txtB2;
+    private RSMaterialComponent.RSPasswordMaterialIcon txtContra;
     private javax.swing.JTextField txtDesde;
     public static javax.swing.JLabel txtDifAcumulada;
     public static javax.swing.JLabel txtDiferencia;

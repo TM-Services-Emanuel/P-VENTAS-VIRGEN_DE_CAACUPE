@@ -494,7 +494,7 @@ public final class dlgVentas extends javax.swing.JDialog {
                     int rpta = Mensajes.confirmar3("VENTA REGISTRADA EXITOSAMENTE!\n\n¿Desea Imprimir la Factura Legal?");
                     if (rpta == 0) {
                         imprimirTicketOriginal();
-                        imprimirTicketDuplicado();
+                        //imprimirTicketDuplicado();
                     }
                     //String Letra = d.Convertir((txtTotalL.getText()), true);
                     //llamarReporteHoja3(Integer.parseInt(txtCodF.getText().trim()), Letra);

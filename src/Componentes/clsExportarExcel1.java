@@ -385,30 +385,31 @@ public class clsExportarExcel1 {
                             Cell celda = fila.createCell(c);
                             celda.setCellStyle(style1);
                             celda.setCellValue((String.valueOf(t.getValueAt(f, c).toString())));
-                            /*switch (c) {
+                            switch (c) {
                                 case 0 ->
                                     celda.setCellValue((String.valueOf(t.getValueAt(f, c).toString())));
                                 case 1 ->
-                                    celda.setCellValue(String.valueOf(t.getValueAt(f, c)));
+                                    celda.setCellValue((String.valueOf(t.getValueAt(f, c).toString())));
                                 case 2 ->
                                     celda.setCellValue((String.valueOf(t.getValueAt(f, c).toString())));
                                 case 3 ->
-                                    celda.setCellValue(Integer.parseInt(String.valueOf(t.getValueAt(f, c).toString())));
+                                    celda.setCellValue((String.valueOf(t.getValueAt(f, c).toString())));
                                 case 4 ->
+                                    celda.setCellValue((String.valueOf(t.getValueAt(f, c).toString())));
+                                case 5 ->
                                     celda.setCellValue(Integer.parseInt(String.valueOf(t.getValueAt(f, c).toString())));
-                                case 5 -> {
-                                    if (String.valueOf(t.getValueAt(f, c).toString()).isEmpty()) {
-                                        celda.setCellValue(String.valueOf(""));
-                                    } else {
-                                        celda.setCellValue(Integer.parseInt(String.valueOf(t.getValueAt(f, c).toString())));
-                                    }
-                                }
                                 case 6 ->
+                                    celda.setCellValue(Integer.parseInt(String.valueOf(t.getValueAt(f, c).toString())));    
+                                    case 7 ->
                                     celda.setCellValue(Integer.parseInt(String.valueOf(t.getValueAt(f, c).toString())));
+                                    case 8 ->
+                                    celda.setCellValue(Integer.parseInt(String.valueOf(t.getValueAt(f, c).toString())));
+                                    case 9 ->
+                                    celda.setCellValue((String.valueOf(t.getValueAt(f, c).toString())));
 
                                 default -> {
                                 }
-                            }*/
+                            }
                         }
                     }
                     libro.write(archivo);
