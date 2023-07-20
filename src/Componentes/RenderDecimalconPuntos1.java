@@ -1,6 +1,5 @@
 package Componentes;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -20,7 +19,7 @@ public class RenderDecimalconPuntos1 extends DefaultTableCellRenderer {
         formato = new DecimalFormat("#,###.##", simbolos);
         value = formato.format(Double.parseDouble(String.valueOf(value)));
 
-        int c = Integer.parseInt((String) value);
+        Double c = Double.valueOf((String) value);
         
         if(c < 0){
             this.setForeground(new java.awt.Color(205,0,0));

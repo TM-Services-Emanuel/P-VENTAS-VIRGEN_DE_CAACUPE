@@ -9,7 +9,6 @@ public class controlPerfil {
         if (perf.equalsIgnoreCase("ALMACEN"))
         {
             frmPrincipal.btnClientes.setVisible(false);
-            //frmPrincipal.btnProveedores.setVisible(false);
             frmPrincipal.btnCompras.setVisible(false);
             frmPrincipal.btnVentas.setVisible(false);
             frmPrincipal.mnCompras.setVisible(false);
@@ -81,7 +80,6 @@ public class controlPerfil {
         } else if (perf.equalsIgnoreCase("VENTA"))
         {
             frmPrincipal.btnIMD.setVisible(false);
-            //frmPrincipal.btnProveedores.setVisible(false);
             frmPrincipal.btnCompras.setVisible(false);
             frmPrincipal.mnInformacion.setVisible(false);
             frmPrincipal.mnEmpleados.setVisible(false);
@@ -127,6 +125,12 @@ public class controlPerfil {
             frmPrincipal.rpTransferencias.setVisible(false);
             frmPrincipal.S9.setVisible(false);
             frmPrincipal.rpGanancias.setVisible(false);
+            frmPrincipal.btnProductos.setVisible(false);
+            frmPrincipal.mnMD.setVisible(false);
+            frmPrincipal.divisor1.setVisible(false);
+            frmPrincipal.mnCheques.setVisible(false);
+            frmPrincipal.mnDeuda.setVisible(false);
+            frmPrincipal.S5.setVisible(false);
             
             
         } else if (perf.equalsIgnoreCase("ADMINISTRADOR")) {

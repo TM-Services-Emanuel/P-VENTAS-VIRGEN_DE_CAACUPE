@@ -1,6 +1,7 @@
 package Controladores;
 
 import Componentes.ConexionBD;
+import Componentes.Fecha;
 import Componentes.Mensajes;
 import Datos.GestionarArticulosMovil;
 import IU.dlgArticulosMovil;
@@ -627,7 +628,7 @@ public class controlArticuloMovil {
             fila[1] = fila[1].toString();
             fila[2] = fila[2].toString();
             fila[3] = String.valueOf(Double.parseDouble(fila[2].toString())-Double.parseDouble(fila[1].toString()));
-            fila[4] = fila[4].toString();
+            fila[4] = Fecha.formatoFechaFFHH(fila[4].toString());
             tb.addRow(fila);
         }
     }

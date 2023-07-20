@@ -1125,6 +1125,9 @@
             <Property name="horizontalTextPosition" type="int" value="4"/>
             <Property name="verticalAlignment" type="int" value="1"/>
           </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="9"/>
+          </AuxValues>
         </Menu>
         <Menu class="javax.swing.JMenu" name="mnMD">
           <Properties>
@@ -1752,7 +1755,6 @@
                           <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="32767" attributes="0"/>
                       </Group>
                       <Component id="panelFondo" max="32767" attributes="0"/>
                   </Group>

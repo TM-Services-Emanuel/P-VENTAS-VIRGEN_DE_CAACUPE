@@ -13,7 +13,7 @@
   <stayAlive>false</stayAlive>
   <restartOnCrash>false</restartOnCrash>
   <manifest></manifest>
-  <icon>D:\Trabajos\Proyectos Java SE\PUNTO DE VENTA\SOFTWARE PUNTO DE VENTA\DISTRIBUIDORA VIRGEN DE CAACUPE\P-VENTAS-VIRGEN_DE_CAACUPE\.exe\PV.ico</icon>
+  <icon>D:\Trabajos\Proyectos Java SE\PUNTO DE VENTA\SOFTWARE PUNTO DE VENTA\DISTRIBUIDORA VIRGEN DE CAACUPE\P-VENTAS-VIRGEN_DE_CAACUPE\.exe\logo.ico</icon>
   <jre>
     <path>%JAVA_HOME%;%PATH%</path>
     <requiresJdk>false</requiresJdk>

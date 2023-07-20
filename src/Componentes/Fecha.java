@@ -105,6 +105,19 @@ public class Fecha {
         return fechas;
     }
     
+    public static String formatoFechaFFHH(String fecha) {
+        String fechas = null;
+        try {
+            SimpleDateFormat fe = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat myFecha = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+
+            fechas = myFecha.format(fe.parse(fecha));
+        }catch (Exception e) {
+            System.out.println("No se pudo convertir");
+        }
+        return fechas;
+    }
+    
     public static String fechaCompleta(String fecha){
         String fechas = null;
         String horas = null;

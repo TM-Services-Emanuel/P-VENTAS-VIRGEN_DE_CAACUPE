@@ -10,10 +10,10 @@ import Componentes.Software;
 import Componentes.clsExportarExcel;
 import Controladores.CabecerasTablas;
 import Controladores.controlArticuloMovil;
-import Controladores.controlFactura;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.sql.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ListSelectionModel;
@@ -32,6 +32,8 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
         jasper = new Reporte();
         ckStockActionPerformed(null);
         txtBuscar.requestFocus();
+        txtFDesdeR.setVisible(false);
+        txtFHastaR.setVisible(false);
     }
 
     final void titulo() {
@@ -51,8 +53,8 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
         dlgArticulosMovil.tbProductos.getColumnModel().getColumn(13).setCellRenderer(new RenderDecimal2());
         dlgArticulosMovil.tbProductos.getColumnModel().getColumn(14).setCellRenderer(new RenderDecimal2());
     }
-    
-    public static void RenderAuditoria(){
+
+    public static void RenderAuditoria() {
         dlgArticulosMovil.tbAuditoriaProductos.getColumnModel().getColumn(1).setCellRenderer(new RenderDecimalconPuntos());
         dlgArticulosMovil.tbAuditoriaProductos.getColumnModel().getColumn(2).setCellRenderer(new RenderDecimalconPuntos());
         dlgArticulosMovil.tbAuditoriaProductos.getColumnModel().getColumn(3).setCellRenderer(new RenderDecimalconPuntos1());
@@ -83,11 +85,12 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
         txtFHasta = new javax.swing.JTextField();
         dcFHasta = new datechooser.beans.DateChooserCombo();
         jLabel8 = new javax.swing.JLabel();
-        rSButtonGradiente1 = new rsbuttongradiente.RSButtonGradiente();
+        btnCargar = new rsbuttongradiente.RSButtonGradiente();
         jScrollPane3 = new javax.swing.JScrollPane();
         tbAuditoriaProductos = new javax.swing.JTable();
         txtFDesdeR = new javax.swing.JTextField();
         txtFHastaR = new javax.swing.JTextField();
+        btnCerrarVisor = new RSMaterialComponent.RSButtonIconUno();
         panelImage2 = new org.edisoncor.gui.panel.PanelImage();
         jPanel2 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
@@ -133,41 +136,56 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
         });
         menuE.add(mbtnAuditar);
 
+        DialogAuditar.setUndecorated(true);
+        DialogAuditar.setResizable(false);
+
         jPanel4.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel4.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 102, 102)));
+        jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel1.setFont(new java.awt.Font("Roboto", 1, 18)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(0, 102, 102));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("VISUALIZAR MOVIMIENTO DE PRODUCTO");
+        jPanel4.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 32, 641, -1));
 
         jLabel2.setText("ID PRODUCTO");
+        jPanel4.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 75, 89, -1));
 
         jLabel4.setText("COD INTERNO");
+        jPanel4.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 104, 89, -1));
 
         jLabel5.setText("COD BARRA");
+        jPanel4.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(249, 104, -1, -1));
 
         jLabel6.setText("DESCRIPCIÓN");
+        jPanel4.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 133, 89, -1));
 
         txtidPA.setEditable(false);
         txtidPA.setBackground(new java.awt.Color(255, 255, 255));
         txtidPA.setFont(new java.awt.Font("Roboto", 1, 14)); // NOI18N
         txtidPA.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        jPanel4.add(txtidPA, new org.netbeans.lib.awtextra.AbsoluteConstraints(119, 72, 93, 22));
 
         txtCodInternoPA.setEditable(false);
         txtCodInternoPA.setBackground(new java.awt.Color(255, 255, 255));
         txtCodInternoPA.setFont(new java.awt.Font("Roboto", 0, 14)); // NOI18N
         txtCodInternoPA.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        jPanel4.add(txtCodInternoPA, new org.netbeans.lib.awtextra.AbsoluteConstraints(119, 101, 93, 22));
 
         txtCodBarraPA.setEditable(false);
         txtCodBarraPA.setBackground(new java.awt.Color(255, 255, 255));
         txtCodBarraPA.setFont(new java.awt.Font("Roboto", 0, 14)); // NOI18N
         txtCodBarraPA.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        jPanel4.add(txtCodBarraPA, new org.netbeans.lib.awtextra.AbsoluteConstraints(319, 101, 151, 22));
 
         txtDescripcionPA.setEditable(false);
         txtDescripcionPA.setBackground(new java.awt.Color(255, 255, 255));
         txtDescripcionPA.setFont(new java.awt.Font("Roboto", 0, 14)); // NOI18N
+        jPanel4.add(txtDescripcionPA, new org.netbeans.lib.awtextra.AbsoluteConstraints(119, 130, 534, 22));
 
         jLabel7.setText("DESDE FECHA");
+        jPanel4.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 160, 89, 21));
 
         txtFDesde.setEditable(false);
         txtFDesde.setBackground(new java.awt.Color(255, 255, 255));
@@ -179,12 +197,14 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
                 txtFDesdeActionPerformed(evt);
             }
         });
+        jPanel4.add(txtFDesde, new org.netbeans.lib.awtextra.AbsoluteConstraints(119, 159, 92, 22));
 
         dcFDesde.addCommitListener(new datechooser.events.CommitListener() {
             public void onCommit(datechooser.events.CommitEvent evt) {
                 dcFDesdeOnCommit(evt);
             }
         });
+        jPanel4.add(dcFDesde, new org.netbeans.lib.awtextra.AbsoluteConstraints(211, 159, 27, 23));
 
         txtFHasta.setEditable(false);
         txtFHasta.setBackground(new java.awt.Color(255, 255, 255));
@@ -196,26 +216,30 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
                 txtFHastaActionPerformed(evt);
             }
         });
+        jPanel4.add(txtFHasta, new org.netbeans.lib.awtextra.AbsoluteConstraints(119, 189, 92, 22));
 
         dcFHasta.addCommitListener(new datechooser.events.CommitListener() {
             public void onCommit(datechooser.events.CommitEvent evt) {
                 dcFHastaOnCommit(evt);
             }
         });
+        jPanel4.add(dcFHasta, new org.netbeans.lib.awtextra.AbsoluteConstraints(211, 189, 27, 23));
 
         jLabel8.setText("HASTA FECHA");
+        jPanel4.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 189, 89, 21));
 
-        rSButtonGradiente1.setText("CARGAR TABLA");
-        rSButtonGradiente1.setColorPrimario(new java.awt.Color(0, 102, 102));
-        rSButtonGradiente1.setColorPrimarioHover(new java.awt.Color(0, 84, 94));
-        rSButtonGradiente1.setColorSecundario(new java.awt.Color(0, 84, 94));
-        rSButtonGradiente1.setColorSecundarioHover(new java.awt.Color(0, 102, 102));
-        rSButtonGradiente1.setFont(new java.awt.Font("Roboto", 1, 11)); // NOI18N
-        rSButtonGradiente1.addActionListener(new java.awt.event.ActionListener() {
+        btnCargar.setText("CARGAR TABLA");
+        btnCargar.setColorPrimario(new java.awt.Color(0, 102, 102));
+        btnCargar.setColorPrimarioHover(new java.awt.Color(0, 84, 94));
+        btnCargar.setColorSecundario(new java.awt.Color(0, 84, 94));
+        btnCargar.setColorSecundarioHover(new java.awt.Color(0, 102, 102));
+        btnCargar.setFont(new java.awt.Font("Roboto", 1, 11)); // NOI18N
+        btnCargar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                rSButtonGradiente1ActionPerformed(evt);
+                btnCargarActionPerformed(evt);
             }
         });
+        jPanel4.add(btnCargar, new org.netbeans.lib.awtextra.AbsoluteConstraints(245, 187, 130, 25));
 
         jScrollPane3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
 
@@ -239,109 +263,30 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
         tbAuditoriaProductos.getTableHeader().setReorderingAllowed(false);
         jScrollPane3.setViewportView(tbAuditoriaProductos);
 
+        jPanel4.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(1, 219, 663, 435));
+
         txtFDesdeR.setEditable(false);
         txtFDesdeR.setBackground(new java.awt.Color(255, 255, 204));
         txtFDesdeR.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
         txtFDesdeR.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        jPanel4.add(txtFDesdeR, new org.netbeans.lib.awtextra.AbsoluteConstraints(575, 76, 78, -1));
 
         txtFHastaR.setEditable(false);
         txtFHastaR.setBackground(new java.awt.Color(255, 255, 204));
         txtFHastaR.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
         txtFHastaR.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        jPanel4.add(txtFHastaR, new org.netbeans.lib.awtextra.AbsoluteConstraints(575, 103, 78, -1));
 
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 89, Short.MAX_VALUE)
-                            .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel4Layout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txtidPA, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(jPanel4Layout.createSequentialGroup()
-                                        .addComponent(txtCodInternoPA, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(37, 37, 37)
-                                        .addComponent(jLabel5)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(txtCodBarraPA, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 105, Short.MAX_VALUE)
-                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(txtFHastaR, javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txtFDesdeR, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(jPanel4Layout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txtDescripcionPA)
-                                    .addGroup(jPanel4Layout.createSequentialGroup()
-                                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(jPanel4Layout.createSequentialGroup()
-                                                .addComponent(txtFDesde, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(0, 0, 0)
-                                                .addComponent(dcFDesde, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                            .addGroup(jPanel4Layout.createSequentialGroup()
-                                                .addComponent(txtFHasta, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(0, 0, 0)
-                                                .addComponent(dcFHasta, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(rSButtonGradiente1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                        .addGap(0, 0, Short.MAX_VALUE)))))))
-                .addContainerGap())
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING)
-        );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(rSButtonGradiente1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(jPanel4Layout.createSequentialGroup()
-                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel2)
-                                    .addComponent(txtidPA, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel4)
-                                    .addComponent(jLabel5)
-                                    .addComponent(txtCodInternoPA, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtCodBarraPA, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(jPanel4Layout.createSequentialGroup()
-                                .addComponent(txtFDesdeR, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtFHastaR, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel6)
-                            .addComponent(txtDescripcionPA, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(txtFDesde, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(dcFDesde, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(7, 7, 7)
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(dcFHasta, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtFHasta, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(61, Short.MAX_VALUE))
-        );
+        btnCerrarVisor.setBackground(new java.awt.Color(255, 255, 255));
+        btnCerrarVisor.setBackgroundHover(new java.awt.Color(255, 0, 0));
+        btnCerrarVisor.setForegroundText(new java.awt.Color(255, 0, 0));
+        btnCerrarVisor.setIcons(rojeru_san.efectos.ValoresEnum.ICONS.CLOSE);
+        btnCerrarVisor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCerrarVisorActionPerformed(evt);
+            }
+        });
+        jPanel4.add(btnCerrarVisor, new org.netbeans.lib.awtextra.AbsoluteConstraints(644, 1, 20, 20));
 
         javax.swing.GroupLayout DialogAuditarLayout = new javax.swing.GroupLayout(DialogAuditar.getContentPane());
         DialogAuditar.getContentPane().setLayout(DialogAuditarLayout);
@@ -351,9 +296,7 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
         );
         DialogAuditarLayout.setVerticalGroup(
             DialogAuditarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(DialogAuditarLayout.createSequentialGroup()
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -757,7 +700,11 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
         txtDescripcionPA.setText(tbProductos.getValueAt(f, 5).toString());
         CabecerasTablas.AuditoriaProductos(tbAuditoriaProductos);
         CabecerasTablas.limpiarTablas(tbAuditoriaProductos);
-        DialogAuditar.setSize(665, 663);
+        txtFDesde.setText("");
+        txtFHasta.setText("");
+        txtFDesdeR.setText("");
+        txtFHastaR.setText("");
+        DialogAuditar.setSize(665, 657);
         DialogAuditar.setLocationRelativeTo(this);
         DialogAuditar.setModal(true);
         DialogAuditar.setTitle("OPCIONES");
@@ -1070,12 +1017,30 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
         // TODO add your handling code here:
     }//GEN-LAST:event_tbProductosMouseReleased
 
-    private void rSButtonGradiente1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSButtonGradiente1ActionPerformed
+    private void btnCargarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCargarActionPerformed
         // TODO add your handling code here:
-        CabecerasTablas.limpiarTablas(tbAuditoriaProductos);
-        controlArticuloMovil.listAuditoriaProductos(tbAuditoriaProductos,txtidPA.getText().trim(), txtFDesdeR.getText().trim(), txtFHastaR.getText().trim());
-        RenderAuditoria();
-    }//GEN-LAST:event_rSButtonGradiente1ActionPerformed
+        if (txtFDesde.getText().trim().isEmpty()) {
+            Mensajes.informacion("FIJE LA FECHA DESDE");
+        } else if (txtFHasta.getText().trim().isEmpty()) {
+            Mensajes.informacion("FIJE LA FECHA HASTA");
+        } else if (Date.valueOf(txtFDesdeR.getText().trim()).after(Date.valueOf(txtFHastaR.getText().trim()))) {
+            Mensajes.error("ERROR EN LOS PARAMETROS FIJADOS.\nVERIFIQUE LAS FECHAS DESDE Y HASTA.");
+        } else {
+            CabecerasTablas.limpiarTablas(tbAuditoriaProductos);
+            controlArticuloMovil.listAuditoriaProductos(tbAuditoriaProductos, txtidPA.getText().trim(), txtFDesdeR.getText().trim(), txtFHastaR.getText().trim());
+            RenderAuditoria();
+        }
+
+
+    }//GEN-LAST:event_btnCargarActionPerformed
+
+    private void btnCerrarVisorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarVisorActionPerformed
+        // TODO add your handling code here:
+        int rpta = Mensajes.confirmar("¿Seguro que desea cerrar el visor de movimientos?");
+        if (rpta == 0) {
+            DialogAuditar.dispose();
+        }
+    }//GEN-LAST:event_btnCerrarVisorActionPerformed
 
     public static void main(String args[]) {
 
@@ -1115,6 +1080,8 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDialog DialogAuditar;
     private javax.swing.JButton btnActualizar;
+    private rsbuttongradiente.RSButtonGradiente btnCargar;
+    private RSMaterialComponent.RSButtonIconUno btnCerrarVisor;
     private javax.swing.JButton btnEliminar;
     private javax.swing.JButton btnModificar;
     private javax.swing.JButton btnNuevo;
@@ -1156,7 +1123,6 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
     private javax.swing.JPopupMenu menuE;
     private org.edisoncor.gui.panel.PanelImage panelImage1;
     private org.edisoncor.gui.panel.PanelImage panelImage2;
-    private rsbuttongradiente.RSButtonGradiente rSButtonGradiente1;
     private static javax.swing.JTable tbAuditoriaProductos;
     public static javax.swing.JTable tbProductos;
     public static javax.swing.JTextField txtBuscar;
