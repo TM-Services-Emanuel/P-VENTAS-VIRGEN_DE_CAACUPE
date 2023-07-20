@@ -55,6 +55,23 @@ public class Login {
     
     private static String ContraLogueado="";
     
+    /**
+     * @return the PerfilLogueado
+     */
+    public static String getPerfil() {
+        return Perfil;
+    }
+    
+    /**
+     * @param aPerfil the UsuarioLogueado to set
+     */
+
+    public static void setPerfil(String aPerfil) {
+        Perfil = aPerfil;
+    }
+    
+    private static String Perfil="";
+    
     
     
 }

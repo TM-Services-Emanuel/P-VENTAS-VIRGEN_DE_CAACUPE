@@ -40,6 +40,7 @@ public final class CabecerasTablas {
     String salidas[] = {"CODART", "DESCRIPCIÓN", "CODMOTIVO", "MOTIVO SALIDA", "CANT", "COSTO", "MONTO"};
     String conSalidas[] = {"OP. N°","PROVEEDOR", "FECHA", "HORA", "COS.TOTAL","OBSERVACION", "INDICADOR"};
     String detalleSalida[] = {"CODART","MOTIVO SALIDA", "CANT", "OP. N°", "DESCRIPCIÓN", "COSTO","MONTO"};
+    static String auditoriaProductos[] = {"TIPO","STOCK ANTERIOR", "STOCK ACTUAL","CANTIDAD", "FECHA Y HORA"};
     static String compras[] = {"COD", "CODINT", "DESCRIPCIÓN", "CANT","CANTf", "PRECIO ","PRECIOF","IVA", "EXENTA","EXENTAf","IVA 5%","IVA5f","IVA 10%","IVA10f","MONTO","MONTOf","GA"};
     static String facturas[] = {"COD","DEP","ID", "CODBARRA", "DESCRIPCIÓN", "CANT", "PRECIO", "EXENTA","IVA 5%","IVA 10%","MONTO","IDIVA","COSTO","PROMO",};
     String categoria[] = {"CODIGO", "CATEGORIA"};
@@ -1614,6 +1615,31 @@ public final class CabecerasTablas {
         colum.setPreferredWidth(80);
         colum = tabla.getColumnModel().getColumn(6);
         colum.setPreferredWidth(80);
+
+    }
+    
+    public static void AuditoriaProductos(JTable tabla) {
+        modelo = new DefaultTableModel(datos, auditoriaProductos){
+            boolean[] canEdit = new boolean[]{
+                false, false, false, false, false
+            };
+
+            @Override
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit[columnIndex];
+            }
+        };
+        tabla.setModel(modelo);
+        colum = tabla.getColumnModel().getColumn(0);
+        colum.setPreferredWidth(150);
+        colum = tabla.getColumnModel().getColumn(1);
+        colum.setPreferredWidth(90);
+        colum = tabla.getColumnModel().getColumn(2);
+        colum.setPreferredWidth(90);
+        colum = tabla.getColumnModel().getColumn(3);
+        colum.setPreferredWidth(90);
+        colum = tabla.getColumnModel().getColumn(4);
+        colum.setPreferredWidth(150);
 
     }
 

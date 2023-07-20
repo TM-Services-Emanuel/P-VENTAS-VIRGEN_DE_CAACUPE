@@ -1,13 +1,16 @@
 package IU;
 
+import Componentes.Fecha;
 import Componentes.Mensajes;
 import Componentes.RenderDecimal2;
 import Componentes.RenderDecimalconPuntos;
+import Componentes.RenderDecimalconPuntos1;
 import Componentes.Reporte;
 import Componentes.Software;
 import Componentes.clsExportarExcel;
 import Controladores.CabecerasTablas;
 import Controladores.controlArticuloMovil;
+import Controladores.controlFactura;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
@@ -30,34 +33,61 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
         ckStockActionPerformed(null);
         txtBuscar.requestFocus();
     }
-    
-    final void titulo(){
-        if(Software.getSoftware().equals("null")){
+
+    final void titulo() {
+        if (Software.getSoftware().equals("null")) {
             this.setTitle("Gestor de Productos");
-        }else{
-            this.setTitle(Software.getSoftware()+" - Gestor de Productos");
+        } else {
+            this.setTitle(Software.getSoftware() + " - Gestor de Productos");
         }
     }
 
     public static void Renders() {
         dlgArticulosMovil.tbProductos.getColumnModel().getColumn(7).setCellRenderer(new RenderDecimal2());
-        
+
         dlgArticulosMovil.tbProductos.getColumnModel().getColumn(8).setCellRenderer(new RenderDecimal2());
         dlgArticulosMovil.tbProductos.getColumnModel().getColumn(9).setCellRenderer(new RenderDecimal2());
         dlgArticulosMovil.tbProductos.getColumnModel().getColumn(10).setCellRenderer(new RenderDecimalconPuntos());
         dlgArticulosMovil.tbProductos.getColumnModel().getColumn(13).setCellRenderer(new RenderDecimal2());
         dlgArticulosMovil.tbProductos.getColumnModel().getColumn(14).setCellRenderer(new RenderDecimal2());
     }
+    
+    public static void RenderAuditoria(){
+        dlgArticulosMovil.tbAuditoriaProductos.getColumnModel().getColumn(1).setCellRenderer(new RenderDecimalconPuntos());
+        dlgArticulosMovil.tbAuditoriaProductos.getColumnModel().getColumn(2).setCellRenderer(new RenderDecimalconPuntos());
+        dlgArticulosMovil.tbAuditoriaProductos.getColumnModel().getColumn(3).setCellRenderer(new RenderDecimalconPuntos1());
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPopupMenu1 = new javax.swing.JPopupMenu();
-        mbtnMmodificar = new javax.swing.JMenuItem();
-        mbtnEliminar = new javax.swing.JMenuItem();
+        menuE = new javax.swing.JPopupMenu();
+        mbtnAuditar = new javax.swing.JMenuItem();
         grupoBotones = new javax.swing.ButtonGroup();
         buttonGroup1 = new javax.swing.ButtonGroup();
+        DialogAuditar = new javax.swing.JDialog();
+        jPanel4 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        txtidPA = new javax.swing.JTextField();
+        txtCodInternoPA = new javax.swing.JTextField();
+        txtCodBarraPA = new javax.swing.JTextField();
+        txtDescripcionPA = new javax.swing.JTextField();
+        jLabel7 = new javax.swing.JLabel();
+        txtFDesde = new javax.swing.JTextField();
+        dcFDesde = new datechooser.beans.DateChooserCombo();
+        txtFHasta = new javax.swing.JTextField();
+        dcFHasta = new datechooser.beans.DateChooserCombo();
+        jLabel8 = new javax.swing.JLabel();
+        rSButtonGradiente1 = new rsbuttongradiente.RSButtonGradiente();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        tbAuditoriaProductos = new javax.swing.JTable();
+        txtFDesdeR = new javax.swing.JTextField();
+        txtFHastaR = new javax.swing.JTextField();
         panelImage2 = new org.edisoncor.gui.panel.PanelImage();
         jPanel2 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
@@ -94,23 +124,237 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
         jMenu2 = new javax.swing.JMenu();
         itemNuevoE1 = new javax.swing.JMenuItem();
 
-        mbtnMmodificar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/modificarproducto - copia.png"))); // NOI18N
-        mbtnMmodificar.setText("     Modificar");
-        mbtnMmodificar.addActionListener(new java.awt.event.ActionListener() {
+        mbtnAuditar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/baseline_move_down_black_24.png"))); // NOI18N
+        mbtnAuditar.setText("Visualizar movimientos de este producto");
+        mbtnAuditar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                mbtnMmodificarActionPerformed(evt);
+                mbtnAuditarActionPerformed(evt);
             }
         });
-        jPopupMenu1.add(mbtnMmodificar);
+        menuE.add(mbtnAuditar);
 
-        mbtnEliminar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/deleteproducto - copia.png"))); // NOI18N
-        mbtnEliminar.setText("     Eliminar");
-        mbtnEliminar.addActionListener(new java.awt.event.ActionListener() {
+        jPanel4.setBackground(new java.awt.Color(255, 255, 255));
+
+        jLabel1.setFont(new java.awt.Font("Roboto", 1, 18)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(0, 102, 102));
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("VISUALIZAR MOVIMIENTO DE PRODUCTO");
+
+        jLabel2.setText("ID PRODUCTO");
+
+        jLabel4.setText("COD INTERNO");
+
+        jLabel5.setText("COD BARRA");
+
+        jLabel6.setText("DESCRIPCIÓN");
+
+        txtidPA.setEditable(false);
+        txtidPA.setBackground(new java.awt.Color(255, 255, 255));
+        txtidPA.setFont(new java.awt.Font("Roboto", 1, 14)); // NOI18N
+        txtidPA.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+
+        txtCodInternoPA.setEditable(false);
+        txtCodInternoPA.setBackground(new java.awt.Color(255, 255, 255));
+        txtCodInternoPA.setFont(new java.awt.Font("Roboto", 0, 14)); // NOI18N
+        txtCodInternoPA.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+
+        txtCodBarraPA.setEditable(false);
+        txtCodBarraPA.setBackground(new java.awt.Color(255, 255, 255));
+        txtCodBarraPA.setFont(new java.awt.Font("Roboto", 0, 14)); // NOI18N
+        txtCodBarraPA.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+
+        txtDescripcionPA.setEditable(false);
+        txtDescripcionPA.setBackground(new java.awt.Color(255, 255, 255));
+        txtDescripcionPA.setFont(new java.awt.Font("Roboto", 0, 14)); // NOI18N
+
+        jLabel7.setText("DESDE FECHA");
+
+        txtFDesde.setEditable(false);
+        txtFDesde.setBackground(new java.awt.Color(255, 255, 255));
+        txtFDesde.setFont(new java.awt.Font("Roboto", 1, 13)); // NOI18N
+        txtFDesde.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtFDesde.setEnabled(false);
+        txtFDesde.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                mbtnEliminarActionPerformed(evt);
+                txtFDesdeActionPerformed(evt);
             }
         });
-        jPopupMenu1.add(mbtnEliminar);
+
+        dcFDesde.addCommitListener(new datechooser.events.CommitListener() {
+            public void onCommit(datechooser.events.CommitEvent evt) {
+                dcFDesdeOnCommit(evt);
+            }
+        });
+
+        txtFHasta.setEditable(false);
+        txtFHasta.setBackground(new java.awt.Color(255, 255, 255));
+        txtFHasta.setFont(new java.awt.Font("Roboto", 1, 13)); // NOI18N
+        txtFHasta.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtFHasta.setEnabled(false);
+        txtFHasta.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtFHastaActionPerformed(evt);
+            }
+        });
+
+        dcFHasta.addCommitListener(new datechooser.events.CommitListener() {
+            public void onCommit(datechooser.events.CommitEvent evt) {
+                dcFHastaOnCommit(evt);
+            }
+        });
+
+        jLabel8.setText("HASTA FECHA");
+
+        rSButtonGradiente1.setText("CARGAR TABLA");
+        rSButtonGradiente1.setColorPrimario(new java.awt.Color(0, 102, 102));
+        rSButtonGradiente1.setColorPrimarioHover(new java.awt.Color(0, 84, 94));
+        rSButtonGradiente1.setColorSecundario(new java.awt.Color(0, 84, 94));
+        rSButtonGradiente1.setColorSecundarioHover(new java.awt.Color(0, 102, 102));
+        rSButtonGradiente1.setFont(new java.awt.Font("Roboto", 1, 11)); // NOI18N
+        rSButtonGradiente1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rSButtonGradiente1ActionPerformed(evt);
+            }
+        });
+
+        jScrollPane3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
+
+        tbAuditoriaProductos.setFont(new java.awt.Font("Roboto", 0, 11)); // NOI18N
+        tbAuditoriaProductos.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        tbAuditoriaProductos.setGridColor(new java.awt.Color(204, 204, 204));
+        tbAuditoriaProductos.setRowHeight(20);
+        tbAuditoriaProductos.setShowGrid(true);
+        tbAuditoriaProductos.setShowVerticalLines(false);
+        tbAuditoriaProductos.getTableHeader().setResizingAllowed(false);
+        tbAuditoriaProductos.getTableHeader().setReorderingAllowed(false);
+        jScrollPane3.setViewportView(tbAuditoriaProductos);
+
+        txtFDesdeR.setEditable(false);
+        txtFDesdeR.setBackground(new java.awt.Color(255, 255, 204));
+        txtFDesdeR.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
+        txtFDesdeR.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+
+        txtFHastaR.setEditable(false);
+        txtFHastaR.setBackground(new java.awt.Color(255, 255, 204));
+        txtFHastaR.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
+        txtFHastaR.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 89, Short.MAX_VALUE)
+                            .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txtidPA, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(jPanel4Layout.createSequentialGroup()
+                                        .addComponent(txtCodInternoPA, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(37, 37, 37)
+                                        .addComponent(jLabel5)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(txtCodBarraPA, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 105, Short.MAX_VALUE)
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(txtFHastaR, javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txtFDesdeR, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txtDescripcionPA)
+                                    .addGroup(jPanel4Layout.createSequentialGroup()
+                                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                                .addComponent(txtFDesde, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(0, 0, 0)
+                                                .addComponent(dcFDesde, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                                .addComponent(txtFHasta, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(0, 0, 0)
+                                                .addComponent(dcFHasta, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(rSButtonGradiente1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addGap(0, 0, Short.MAX_VALUE)))))))
+                .addContainerGap())
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING)
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(rSButtonGradiente1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel2)
+                                    .addComponent(txtidPA, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel4)
+                                    .addComponent(jLabel5)
+                                    .addComponent(txtCodInternoPA, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtCodBarraPA, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addComponent(txtFDesdeR, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtFHastaR, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel6)
+                            .addComponent(txtDescripcionPA, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(txtFDesde, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(dcFDesde, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(7, 7, 7)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(dcFHasta, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtFHasta, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(61, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout DialogAuditarLayout = new javax.swing.GroupLayout(DialogAuditar.getContentPane());
+        DialogAuditar.getContentPane().setLayout(DialogAuditarLayout);
+        DialogAuditarLayout.setHorizontalGroup(
+            DialogAuditarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        DialogAuditarLayout.setVerticalGroup(
+            DialogAuditarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(DialogAuditarLayout.createSequentialGroup()
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
@@ -141,7 +385,6 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
         jLabel3.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
 
         txtBuscar.setFont(new java.awt.Font("Roboto", 0, 12)); // NOI18N
-        txtBuscar.setToolTipText("");
         txtBuscar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtBuscarActionPerformed(evt);
@@ -196,7 +439,6 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        tbProductos.setToolTipText("");
         tbProductos.setGridColor(new java.awt.Color(204, 204, 204));
         tbProductos.setRowHeight(20);
         tbProductos.setSelectionBackground(new java.awt.Color(0, 102, 102));
@@ -210,6 +452,9 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
             }
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 tbProductosMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                tbProductosMouseReleased(evt);
             }
         });
         tbProductos.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -230,7 +475,6 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
         btnNuevo.setForeground(new java.awt.Color(0, 102, 102));
         btnNuevo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/productosAgregar.png"))); // NOI18N
         btnNuevo.setText("NUEVO");
-        btnNuevo.setToolTipText("Registrar Nuevo Artículo");
         btnNuevo.setFocusPainted(false);
         btnNuevo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnNuevo.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -245,7 +489,6 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
         btnModificar.setForeground(new java.awt.Color(0, 102, 102));
         btnModificar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/productosModificar.png"))); // NOI18N
         btnModificar.setText("MODIFICAR");
-        btnModificar.setToolTipText("Modificar Artículo");
         btnModificar.setFocusPainted(false);
         btnModificar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnModificar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -260,7 +503,6 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
         btnEliminar.setForeground(new java.awt.Color(0, 102, 102));
         btnEliminar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/productosEliminar.png"))); // NOI18N
         btnEliminar.setText("ELIMINAR");
-        btnEliminar.setToolTipText("Eliminar Artículo");
         btnEliminar.setFocusPainted(false);
         btnEliminar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnEliminar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -289,7 +531,6 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
         btnSalir.setForeground(new java.awt.Color(0, 102, 102));
         btnSalir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/back40.png"))); // NOI18N
         btnSalir.setText("SALIR");
-        btnSalir.setToolTipText("Salir");
         btnSalir.setFocusPainted(false);
         btnSalir.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnSalir.setPreferredSize(new java.awt.Dimension(53, 47));
@@ -490,6 +731,10 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
             ListSelectionModel modelos = tbProductos.getSelectionModel();
             modelos.setSelectionInterval(number, number);
         }
+
+        if (evt.getButton() == 3) {
+            menuE.show(tbProductos, evt.getX(), evt.getY());
+        }
     }//GEN-LAST:event_tbProductosMousePressed
 
     private void btnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoActionPerformed
@@ -503,25 +748,21 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
         gestArticulos.setVisible(true);
 
     }
-    private void mbtnMmodificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mbtnMmodificarActionPerformed
+    private void mbtnAuditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mbtnAuditarActionPerformed
         // TODO add your handling code here:
-        dlgGestArticulosMovil a = new dlgGestArticulosMovil(null, true);
-        a.setLocationRelativeTo(null);
-        controlArticuloMovil.aModifcar();
-        dlgGestArticulosMovil.btnNuevo.setEnabled(false);
-        dlgGestArticulosMovil.itemNuevo.setEnabled(false);
-        dlgGestArticulosMovil.btnModificar.setEnabled(true);
-        dlgGestArticulosMovil.itemModificar.setEnabled(true);
-        dlgGestArticulosMovil.btnGuardar.setEnabled(false);
-        dlgGestArticulosMovil.itemGuardar.setEnabled(false);
-        dlgGestArticulosMovil.btnCancelar.setEnabled(true);
-        dlgGestArticulosMovil.itemCancelar.setEnabled(true);
-        dlgGestArticulosMovil.txtCodInterno.requestFocus();
-        a.modcboClasificacion();
-        a.modcboUM();
-        a.modcboImpuesto();
-        a.setVisible(true);
-    }//GEN-LAST:event_mbtnMmodificarActionPerformed
+        int f = tbProductos.getSelectedRow();
+        txtidPA.setText(tbProductos.getValueAt(f, 0).toString());
+        txtCodInternoPA.setText(tbProductos.getValueAt(f, 3).toString());
+        txtCodBarraPA.setText(tbProductos.getValueAt(f, 4).toString());
+        txtDescripcionPA.setText(tbProductos.getValueAt(f, 5).toString());
+        CabecerasTablas.AuditoriaProductos(tbAuditoriaProductos);
+        CabecerasTablas.limpiarTablas(tbAuditoriaProductos);
+        DialogAuditar.setSize(665, 663);
+        DialogAuditar.setLocationRelativeTo(this);
+        DialogAuditar.setModal(true);
+        DialogAuditar.setTitle("OPCIONES");
+        DialogAuditar.setVisible(true);
+    }//GEN-LAST:event_mbtnAuditarActionPerformed
 
     private void btnModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarActionPerformed
         // TODO add your handling code here:
@@ -585,37 +826,19 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
             Mensajes.error("Seleccione una fila de la tabla");
         }
     }
-    private void mbtnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mbtnEliminarActionPerformed
-        // TODO add your handling code here:
-        try {
-            int x = tbProductos.getSelectedRow();
-            String desc = tbProductos.getValueAt(x, 4).toString();
-            int rpta = Mensajes.confirmar("Desea realmente eliminar " + desc + " de la lista");
-            if (rpta == 0) {
-                controlArticuloMovil.delArticulo();
-                CabecerasTablas.limpiarTablasArticuloM(tbProductos);
-                controlArticuloMovil.listArticulo(tbProductos, "idproducto");
-                txtBuscar.setText("");
-                txtBuscar.requestFocus();
-            }
-        } catch (Exception e) {
-            Mensajes.informacion("Seleccione una fila de la tabla");
-        }
-    }//GEN-LAST:event_mbtnEliminarActionPerformed
-
     private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
         // TODO add your handling code here:
         int rpta = Mensajes.confirmar("¿Seguro que desea salir del formulario?");
         if (rpta == 0) {
             this.dispose();
-        }else{
+        } else {
             txtBuscar.requestFocus();
         }
     }//GEN-LAST:event_btnSalirActionPerformed
 
     private void txtBuscarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBuscarKeyReleased
         // TODO add your handling code here:
-        if(txtBuscar.getText().trim().length()==0){
+        if (txtBuscar.getText().trim().length() == 0) {
             if (ckStock.isSelected()) {
                 CabecerasTablas.ArticulosMovil(tbProductos);
                 CabecerasTablas.limpiarTablasArticuloM(tbProductos);
@@ -627,18 +850,18 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
                 controlArticuloMovil.listArticulo(tbProductos, "idproducto");
                 Renders();
             }
-        }else{
+        } else {
             try {
-            String cod = txtBuscar.getText();
-            //CabecerasTablas.ArticulosMovil(tbProductos);
-            CabecerasTablas.limpiarTablasArticuloM(tbProductos);
-            controlArticuloMovil.filtrarGral(tbProductos, cod);
-            Renders();
-        } catch (Exception e) {
-            System.out.println("Mensaje de Error: " + e.getMessage());
+                String cod = txtBuscar.getText();
+                //CabecerasTablas.ArticulosMovil(tbProductos);
+                CabecerasTablas.limpiarTablasArticuloM(tbProductos);
+                controlArticuloMovil.filtrarGral(tbProductos, cod);
+                Renders();
+            } catch (Exception e) {
+                System.out.println("Mensaje de Error: " + e.getMessage());
+            }
         }
-        }
-        
+
     }//GEN-LAST:event_txtBuscarKeyReleased
 
     private void tbProductosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbProductosMouseClicked
@@ -667,6 +890,7 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
 
             }
         }
+
     }//GEN-LAST:event_tbProductosMouseClicked
 
     private void txtBuscarKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBuscarKeyTyped
@@ -778,26 +1002,26 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
 
     private void itemNuevoE1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemNuevoE1ActionPerformed
         // TODO add your handling code here:
-       /* try {
+        /* try {
             dlgReporteStockCritico rsc = new dlgReporteStockCritico(null, false);
             rsc.setLocationRelativeTo(null);
             rsc.setVisible(true);
         } catch (Exception e) {
             Mensajes.informacion("No hay conexión con el servidor");
         }*/
-       
-       Mensajes.Sistema("La función: Reporte de Stock crítico se encuentra bloqueada en estos momentos.\nPara más información comuniquese con el proveedor del sistema.");
+
+        Mensajes.Sistema("La función: Reporte de Stock crítico se encuentra bloqueada en estos momentos.\nPara más información comuniquese con el proveedor del sistema.");
         //
     }//GEN-LAST:event_itemNuevoE1ActionPerformed
 
     private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
         // TODO add your handling code here:
-        if(ckStock.isSelected()){
+        if (ckStock.isSelected()) {
             CabecerasTablas.ArticulosMovil(tbProductos);
             CabecerasTablas.limpiarTablasArticuloM(tbProductos);
             controlArticuloMovil.listArticuloconStock(tbProductos, "idproducto");
             Renders();
-        }else{
+        } else {
             CabecerasTablas.ArticulosMovil(tbProductos);
             CabecerasTablas.limpiarTablasArticuloM(tbProductos);
             controlArticuloMovil.listArticulo(tbProductos, "idproducto");
@@ -809,18 +1033,49 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
 
     private void ckStockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ckStockActionPerformed
         // TODO add your handling code here:
-        if(ckStock.isSelected()){
+        if (ckStock.isSelected()) {
             CabecerasTablas.ArticulosMovil(tbProductos);
             CabecerasTablas.limpiarTablasArticuloM(tbProductos);
             controlArticuloMovil.listArticuloconStock(tbProductos, "idproducto");
             Renders();
-        }else{
+        } else {
             CabecerasTablas.ArticulosMovil(tbProductos);
             CabecerasTablas.limpiarTablasArticuloM(tbProductos);
             controlArticuloMovil.listArticulo(tbProductos, "idproducto");
             Renders();
         }
     }//GEN-LAST:event_ckStockActionPerformed
+
+    private void txtFDesdeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFDesdeActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtFDesdeActionPerformed
+
+    private void dcFDesdeOnCommit(datechooser.events.CommitEvent evt) {//GEN-FIRST:event_dcFDesdeOnCommit
+        // TODO add your handling code here:
+        txtFDesde.setText(Fecha.fechaCFormulario(dcFDesde.getText()));
+        txtFDesdeR.setText(Fecha.formatoFecha(dcFDesde.getText()));
+    }//GEN-LAST:event_dcFDesdeOnCommit
+
+    private void txtFHastaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFHastaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtFHastaActionPerformed
+
+    private void dcFHastaOnCommit(datechooser.events.CommitEvent evt) {//GEN-FIRST:event_dcFHastaOnCommit
+        // TODO add your handling code here:
+        txtFHasta.setText(Fecha.fechaCFormulario(dcFHasta.getText()));
+        txtFHastaR.setText(Fecha.formatoFecha(dcFHasta.getText()));
+    }//GEN-LAST:event_dcFHastaOnCommit
+
+    private void tbProductosMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbProductosMouseReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tbProductosMouseReleased
+
+    private void rSButtonGradiente1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSButtonGradiente1ActionPerformed
+        // TODO add your handling code here:
+        CabecerasTablas.limpiarTablas(tbAuditoriaProductos);
+        controlArticuloMovil.listAuditoriaProductos(tbAuditoriaProductos,txtidPA.getText().trim(), txtFDesdeR.getText().trim(), txtFHastaR.getText().trim());
+        RenderAuditoria();
+    }//GEN-LAST:event_rSButtonGradiente1ActionPerformed
 
     public static void main(String args[]) {
 
@@ -842,14 +1097,13 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
         }
         //</editor-fold>
         //</editor-fold>
-        
-        //</editor-fold>
-        //</editor-fold>
 
+        //</editor-fold>
+        //</editor-fold>
         java.awt.EventQueue.invokeLater(() -> {
             dlgArticulosMovil dialog = new dlgArticulosMovil(new javax.swing.JFrame(), true);
             dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                
+
                 @Override
                 public void windowClosing(java.awt.event.WindowEvent e) {
                     System.exit(0);
@@ -859,6 +1113,7 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JDialog DialogAuditar;
     private javax.swing.JButton btnActualizar;
     private javax.swing.JButton btnEliminar;
     private javax.swing.JButton btnModificar;
@@ -866,6 +1121,8 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
     private javax.swing.JButton btnSalir;
     private javax.swing.ButtonGroup buttonGroup1;
     public static javax.swing.JCheckBox ckStock;
+    public static datechooser.beans.DateChooserCombo dcFDesde;
+    public static datechooser.beans.DateChooserCombo dcFHasta;
     private javax.swing.ButtonGroup grupoBotones;
     private javax.swing.JMenuItem itemEliminarE;
     private javax.swing.JMenuItem itemExportar;
@@ -875,23 +1132,41 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
     private javax.swing.JMenuItem itemOrdenC;
     private javax.swing.JMenuItem itemOrdenN;
     private javax.swing.JMenuItem itemSalir;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPopupMenu jPopupMenu1;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JPopupMenu.Separator jSeparator4;
-    private javax.swing.JMenuItem mbtnEliminar;
-    private javax.swing.JMenuItem mbtnMmodificar;
+    private javax.swing.JMenuItem mbtnAuditar;
+    private javax.swing.JPopupMenu menuE;
     private org.edisoncor.gui.panel.PanelImage panelImage1;
     private org.edisoncor.gui.panel.PanelImage panelImage2;
+    private rsbuttongradiente.RSButtonGradiente rSButtonGradiente1;
+    private static javax.swing.JTable tbAuditoriaProductos;
     public static javax.swing.JTable tbProductos;
     public static javax.swing.JTextField txtBuscar;
+    private javax.swing.JTextField txtCodBarraPA;
+    private javax.swing.JTextField txtCodInternoPA;
+    private javax.swing.JTextField txtDescripcionPA;
+    public static javax.swing.JTextField txtFDesde;
+    public static javax.swing.JTextField txtFDesdeR;
+    public static javax.swing.JTextField txtFHasta;
+    public static javax.swing.JTextField txtFHastaR;
+    private javax.swing.JTextField txtidPA;
     // End of variables declaration//GEN-END:variables
 }

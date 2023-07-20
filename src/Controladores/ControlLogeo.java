@@ -35,6 +35,7 @@ public class ControlLogeo {
             Login.setUsuarioLogueado(u.getUsuario());
             Login.setIDUsuarioLogueado(String.valueOf(u.getCodUsuario()));
             Login.setContraLogueado(u.getPassword());
+            Login.setPerfil(u.getPefil());
             frmPrincipal.lbPerfil.setText(u.getPefil());
             //} else {
             //    frmAcceso.lblMensaje.setText("Dirección IP no autorizada para la conexión, verifique la Configuración.");
@@ -49,6 +50,7 @@ public class ControlLogeo {
             Login.setUsuarioLogueado(u.getUsuario());            
             Login.setIDUsuarioLogueado(String.valueOf(u.getCodUsuario()));
             Login.setContraLogueado(u.getPassword());
+            Login.setPerfil(u.getPefil());
             frmPrincipal.lbPerfil.setText(u.getPefil());
             //} else {
             //    frmAcceso.lblMensaje.setText("Dirección IP no autorizada para la conexión, verifique la Configuración.");
@@ -63,6 +65,7 @@ public class ControlLogeo {
             Login.setUsuarioLogueado(u.getUsuario());            
             Login.setIDUsuarioLogueado(String.valueOf(u.getCodUsuario()));
             Login.setContraLogueado(u.getPassword());
+            Login.setPerfil(u.getPefil());
             frmPrincipal.lbPerfil.setText(u.getPefil());
             //} else {
             //    frmAcceso.lblMensaje.setText("Dirección IP no autorizada para la conexión, verifique la Configuración.");
@@ -77,6 +80,7 @@ public class ControlLogeo {
             Login.setUsuarioLogueado(u.getUsuario());            
             Login.setIDUsuarioLogueado(String.valueOf(u.getCodUsuario()));
             Login.setContraLogueado(u.getPassword());
+            Login.setPerfil(u.getPefil());
             frmPrincipal.lbPerfil.setText(u.getPefil());
             //} else {
             //    frmAcceso.lblMensaje.setText("Dirección IP no autorizada para la conexión, verifique la Configuración.");
@@ -91,6 +95,7 @@ public class ControlLogeo {
             Login.setUsuarioLogueado(u.getUsuario());            
             Login.setIDUsuarioLogueado(String.valueOf(u.getCodUsuario()));
             Login.setContraLogueado(u.getPassword());
+            Login.setPerfil(u.getPefil());
             frmPrincipal.lbPerfil.setText(u.getPefil());
             //} else {
             //    frmAcceso.lblMensaje.setText("Dirección IP no autorizada para la conexión, verifique la Configuración.");

@@ -615,4 +615,20 @@ public class controlArticuloMovil {
             tb.addRow(fila);
         }
     }
+    
+     public static void listAuditoriaProductos(JTable tabla,String idproducto, String fecha1, String fecha2)//Lista las facturas realizadas
+    {
+        List lista;
+        lista = GestionarArticulosMovil.listAuditoriaProductos(idproducto, fecha1, fecha2);
+        for (int i = 1; i < lista.size(); i++) {
+            DefaultTableModel tb = (DefaultTableModel) tabla.getModel();
+            Object[] fila = (Object[]) lista.get(i);
+            fila[0] = fila[0].toString();
+            fila[1] = fila[1].toString();
+            fila[2] = fila[2].toString();
+            fila[3] = String.valueOf(Double.parseDouble(fila[2].toString())-Double.parseDouble(fila[1].toString()));
+            fila[4] = fila[4].toString();
+            tb.addRow(fila);
+        }
+    }
 }

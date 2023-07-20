@@ -2,6 +2,7 @@ package IU;
 
 import Componentes.ConexionBD;
 import Componentes.Fecha;
+import Componentes.Login;
 import Componentes.Reporte;
 import Componentes.Mensajes;
 import Componentes.Numero_a_Letra;
@@ -59,7 +60,25 @@ public class dlgConsultarFacturas extends javax.swing.JDialog {
         txtV.setVisible(false);
         CargarDatos();
         CalcularValores();
+        Visor();
 
+    }
+    
+    private void Visor(){
+        switch (Login.getPerfil()) {
+            case "ADMINISTRADOR" -> {
+                lbTotal.setVisible(true);
+                lbAnulados.setVisible(true);
+            }
+            case "DESARROLLADOR" -> {
+                lbTotal.setVisible(true);
+                lbAnulados.setVisible(true);
+            }
+            default -> {
+                lbTotal.setVisible(false);
+                lbAnulados.setVisible(false);
+            }
+        }
     }
     
     private void CargarDatos(){
@@ -945,11 +964,11 @@ public class dlgConsultarFacturas extends javax.swing.JDialog {
         }
     });
     jPanel3.add(dcDesde, new org.netbeans.lib.awtextra.AbsoluteConstraints(897, 32, 167, 25));
-    jPanel3.add(txtDesde, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 10, 120, -1));
-    jPanel3.add(txt10, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 10, 90, -1));
-    jPanel3.add(txtE, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 10, 90, -1));
-    jPanel3.add(txt5, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 10, 90, -1));
-    jPanel3.add(txtV, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 30, 82, 21));
+    jPanel3.add(txtDesde, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 10, 120, -1));
+    jPanel3.add(txt10, new org.netbeans.lib.awtextra.AbsoluteConstraints(790, 10, 90, -1));
+    jPanel3.add(txtE, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 10, 90, -1));
+    jPanel3.add(txt5, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 10, 90, -1));
+    jPanel3.add(txtV, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 30, 82, 21));
 
     cbVendedores.setColorMaterial(new java.awt.Color(0, 102, 102));
     cbVendedores.setFont(new java.awt.Font("Roboto", 0, 12)); // NOI18N
@@ -998,7 +1017,7 @@ public class dlgConsultarFacturas extends javax.swing.JDialog {
                     .addComponent(lbAnulados, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lbTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)))
             .addGap(3, 3, 3)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 267, Short.MAX_VALUE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
     );

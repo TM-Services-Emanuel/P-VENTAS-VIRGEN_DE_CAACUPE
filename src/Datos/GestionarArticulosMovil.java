@@ -311,5 +311,13 @@ public class GestionarArticulosMovil {
                 .toString();
         return Operacion.getTabla(sql);
     }*/
+    
+    public static List listAuditoriaProductos(String idproducto, String desde, String hasta) {
+        StringBuilder sql = new StringBuilder("SELECT tipo, stock_v, stock_n, idproducto, fecha_hora FROM productoslog");
+        sql.append(" WHERE idproducto=").append(idproducto);
+        sql.append(" AND fecha_hora");
+        sql.append(" BETWEEN '").append(desde).append(" 00:00:00' AND '").append(hasta).append(" 23:59:59'");
+        return OperacionMovil.getTabla(sql.toString());
+    }
 
 }

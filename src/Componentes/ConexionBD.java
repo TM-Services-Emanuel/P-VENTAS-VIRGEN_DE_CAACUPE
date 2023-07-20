@@ -8,7 +8,7 @@ import java.sql.SQLException;
 public class ConexionBD {
     
     private final String servidor = "127.0.0.1:3306";
-    //private final String servidor = "192.168.1.1:3306";
+    //  private final String servidor = "192.168.1.1:3306";
     
    /* private final String bd = "p-ventasbd_latino_d";
     private final String bdmovil = "bd_latino_d";*/
@@ -17,8 +17,8 @@ public class ConexionBD {
     private final String bdmovil = "bd_v_c";
     
     private final String usuario = "root";
-    private final String password = "";
-    //private final String password = "emanuel4744832";
+    //private final String password = "";
+    private final String password = "emanuel4744832";
 
     public Connection getConexion() {
         MariaDbConnection cn;
