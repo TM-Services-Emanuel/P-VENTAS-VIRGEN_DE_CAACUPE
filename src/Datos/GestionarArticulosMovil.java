@@ -3,12 +3,9 @@ package Datos;
 import Componentes.OperacionMovil;
 import Componentes.generarCodigos;
 import Modelo.ArticuloMovil;
-import java.io.FileInputStream;
 import java.util.List;
 
 public class GestionarArticulosMovil {
-
-    static FileInputStream fis;
 
     public static String getCodigo() {
         String cod = generarCodigos.getCodigoMovil("select MAX(idproducto) from productos");
@@ -38,7 +35,8 @@ public class GestionarArticulosMovil {
         sql.append(art.getProm()).append("',");
         sql.append(art.getCant_prom()).append(",");
         sql.append(art.getPrecio_prom()).append(",'");
-        sql.append(art.getPorc_prom()).append("')");
+        sql.append(art.getPorc_prom()).append("','");
+        sql.append(art.getUser()).append("')");
         msg = OperacionMovil.exeOperacion(sql.toString());
         return msg;
     }
@@ -66,7 +64,8 @@ public class GestionarArticulosMovil {
         sql.append(art.getProm()).append("', cant_prom=");
         sql.append(art.getCant_prom()).append(", precio_prom=");
         sql.append(art.getPrecio_prom()).append(", porc_prom='");
-        sql.append(art.getPorc_prom()).append("'");
+        sql.append(art.getPorc_prom()).append("', users='");
+        sql.append(art.getUser()).append("'");
         sql.append(" WHERE idproducto=").append(art.getIdproducto()).append("");
         msg = OperacionMovil.exeOperacion(sql.toString());
         return msg;
@@ -74,7 +73,7 @@ public class GestionarArticulosMovil {
     public static String actStock(ArticuloMovil art) {
         String msg;
         StringBuilder sql = new StringBuilder("UPDATE productos SET stock=");
-        sql.append(art.getStock());
+        sql.append(art.getStock()).append(", users='").append(art.getUser()).append("'");
         sql.append(" WHERE idproducto=");
         sql.append(art.getIdproducto());
         sql.append("");
@@ -85,8 +84,8 @@ public class GestionarArticulosMovil {
     public static String actStockMENOS(ArticuloMovil art) {
         String msg;
         StringBuilder sql = new StringBuilder("UPDATE productos SET stock=(stock-");
-        sql.append(art.getStock());
-        sql.append(") WHERE idproducto=");
+        sql.append(art.getStock()).append("), users='").append(art.getUser()).append("'");
+        sql.append(" WHERE idproducto=");
         sql.append(art.getIdproducto());
         msg = OperacionMovil.exeOperacion(sql.toString());
         return msg;
@@ -94,8 +93,8 @@ public class GestionarArticulosMovil {
     public static String actStockMAS(ArticuloMovil art) {
         String msg;
         StringBuilder sql = new StringBuilder("UPDATE productos SET stock=(stock+");
-        sql.append(art.getStock());
-        sql.append(") WHERE idproducto=");
+        sql.append(art.getStock()).append("), users='").append(art.getUser()).append("'");
+        sql.append(" WHERE idproducto=");
         sql.append(art.getIdproducto());
         msg = OperacionMovil.exeOperacion(sql.toString());
         return msg;
@@ -118,9 +117,10 @@ public class GestionarArticulosMovil {
         return msg;
     }*/
 
-    public static String delArticulo(String cod) {
+    public static String delArticulo(String cod, String User) {
         String msg;
         StringBuilder sql = new StringBuilder("UPDATE productos SET estado = 'N'");
+        sql.append(", users='").append(User).append("'");
         sql.append(" WHERE idproducto= ");
         sql.append(cod);
         sql.append("");
@@ -313,7 +313,7 @@ public class GestionarArticulosMovil {
     }*/
     
     public static List listAuditoriaProductos(String idproducto, String desde, String hasta) {
-        StringBuilder sql = new StringBuilder("SELECT tipo, stock_v, stock_n, idproducto, fecha_hora FROM productoslog");
+        StringBuilder sql = new StringBuilder("SELECT tipo, stock_v, stock_n, idproducto, fecha_hora, users FROM productoslog");
         sql.append(" WHERE idproducto=").append(idproducto);
         sql.append(" AND fecha_hora");
         sql.append(" BETWEEN '").append(desde).append(" 00:00:00' AND '").append(hasta).append(" 23:59:59'");

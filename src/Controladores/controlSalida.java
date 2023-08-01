@@ -179,7 +179,7 @@ public class controlSalida {
             int fila = dlgSalidaMercaderia.tbDetalle.getSelectedRow();
             String cod = dlgSalidaMercaderia.tbDetalle.getValueAt(fila, 0).toString();
             art = GestionarArticulosMovil.busArticulo(cod);
-            int pre = Integer.valueOf(dlgSalidaMercaderia.tbDetalle.getValueAt(fila, 5).toString());
+            int pre = Integer.parseInt(dlgSalidaMercaderia.tbDetalle.getValueAt(fila, 5).toString());
             float can = Mensajes.ingresarNumeros();
             int monto = Redondeo.redondearI((int) (pre * can));
             double st = (art.getStock() - can);
@@ -246,7 +246,8 @@ public class controlSalida {
         for (int i = 0; i < f; i++) {
             int coda = Integer.parseInt(dlgSalidaMercaderia.tbDetalle.getValueAt(i, 0).toString());
             double st = Double.parseDouble(dlgSalidaMercaderia.tbDetalle.getValueAt(i, 4).toString());
-            ArticuloMovil a = new ArticuloMovil(coda, st);
+            String User = Login.getUsuarioLogueado();
+            ArticuloMovil a = new ArticuloMovil(coda, st, User);
             msg = GestionarArticulosMovil.actStockMENOS(a);
         }
         if (msg == null) {
@@ -263,7 +264,8 @@ public class controlSalida {
         for (int i = 0; i < f; i++) {
             int coda = Integer.parseInt(dlgConSalidas.tbDetalleSalida.getValueAt(i, 0).toString());
             double st = Double.parseDouble(dlgConSalidas.tbDetalleSalida.getValueAt(i, 2).toString());
-            ArticuloMovil a = new ArticuloMovil(coda, st);
+            String User = Login.getUsuarioLogueado();
+            ArticuloMovil a = new ArticuloMovil(coda, st, User);
             msg = GestionarArticulosMovil.actStockMAS(a);
         }
         if (msg == null) {
@@ -280,12 +282,12 @@ public class controlSalida {
 
     public static String addSalida() {
         String msg;
-        int codS = Integer.valueOf(dlgSalidaMercaderia.txtCod.getText());
-        int codP = Integer.valueOf(dlgSalidaMercaderia.txtProveedor.getText());
+        int codS = Integer.parseInt(dlgSalidaMercaderia.txtCod.getText());
+        int codP = Integer.parseInt(dlgSalidaMercaderia.txtProveedor.getText());
         String fecha = dlgSalidaMercaderia.txtFechaR.getText();
-        int total = Integer.valueOf(dlgSalidaMercaderia.txtTotalL.getText());
+        int total = Integer.parseInt(dlgSalidaMercaderia.txtTotalL.getText());
         String Obs = dlgSalidaMercaderia.txtObs.getText().toUpperCase();
-        String usuario = UsuarioL = Login.getUsuarioLogueado();
+        String usuario = Login.getUsuarioLogueado();
         Salidas salida = new Salidas(codS, codP, fecha, total, Obs, usuario);
         array.vaciar();
         msg = GestionarSalida.addSalida(salida);
@@ -303,7 +305,7 @@ public class controlSalida {
         String msg;
         int x = dlgConSalidas.tbSalida.getSelectedRow();
         String cod = dlgConSalidas.tbSalida.getValueAt(x, 0).toString();
-        String usuario = UsuarioL = Login.getUsuarioLogueado();
+        String usuario = Login.getUsuarioLogueado();
         msg = GestionarSalida.actSalida(cod, usuario);
         if (msg == null) {
             Mensajes.informacion("Salida Eliminada");
@@ -318,12 +320,12 @@ public class controlSalida {
         String msg = null;
         int f = dlgSalidaMercaderia.tbDetalle.getRowCount();
         for (int i = 0; i < f; i++) {
-            int codA = Integer.valueOf(dlgSalidaMercaderia.tbDetalle.getValueAt(i, 0).toString());
-            int codS = Integer.valueOf(dlgSalidaMercaderia.txtCod.getText());
-            int codM = Integer.valueOf(dlgSalidaMercaderia.tbDetalle.getValueAt(i, 2).toString());
+            int codA = Integer.parseInt(dlgSalidaMercaderia.tbDetalle.getValueAt(i, 0).toString());
+            int codS = Integer.parseInt(dlgSalidaMercaderia.txtCod.getText());
+            int codM = Integer.parseInt(dlgSalidaMercaderia.tbDetalle.getValueAt(i, 2).toString());
             double cant = Double.parseDouble(dlgSalidaMercaderia.tbDetalle.getValueAt(i, 4).toString());
-            int prec = Integer.valueOf(dlgSalidaMercaderia.tbDetalle.getValueAt(i, 5).toString());
-            int impo = Integer.valueOf(dlgSalidaMercaderia.tbDetalle.getValueAt(i, 6).toString());
+            int prec = Integer.parseInt(dlgSalidaMercaderia.tbDetalle.getValueAt(i, 5).toString());
+            int impo = Integer.parseInt(dlgSalidaMercaderia.tbDetalle.getValueAt(i, 6).toString());
 
             ds = new DetalleSalida(codA, codS, codM, cant, prec, impo);
 

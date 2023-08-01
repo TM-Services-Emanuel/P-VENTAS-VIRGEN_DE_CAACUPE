@@ -91,7 +91,8 @@ public class controlTransferencias {
         for (int i = 0; i < f; i++) {
             int coda = Integer.parseInt(dlgTransferencias.tbDetalleTransf.getValueAt(i, 1).toString());
             double st = Double.parseDouble(dlgTransferencias.tbDetalleTransf.getValueAt(i, 4).toString());
-            ArticuloMovil a = new ArticuloMovil(coda, st);
+            String User = Login.getUsuarioLogueado();
+            ArticuloMovil a = new ArticuloMovil(coda, st, User);
             msg = GestionarArticulosMovil.actStockMAS(a);
         }
         if (msg == null) {
@@ -121,7 +122,8 @@ public class controlTransferencias {
         for (int i = 0; i < f; i++) {
             int coda = Integer.parseInt(dlgTransferencias.tbDetalleTransf.getValueAt(i, 1).toString());
             double st = Double.parseDouble(dlgTransferencias.tbDetalleTransf.getValueAt(i, 4).toString());
-            ArticuloMovil a = new ArticuloMovil(coda, st);
+            String User = Login.getUsuarioLogueado();
+            ArticuloMovil a = new ArticuloMovil(coda, st, User);
             msg = GestionarArticulosMovil.actStockMENOS(a);
         }
         if (msg == null) {

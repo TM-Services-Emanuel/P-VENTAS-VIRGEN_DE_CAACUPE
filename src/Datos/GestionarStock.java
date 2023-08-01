@@ -7,10 +7,8 @@ import Modelo.DetalleStock;
 import Modelo.Stock;
 
 public class GestionarStock {
-
-    static String UsuarioL = "";
     public static String addDetalleStock(DetalleStock ds) {
-        String usuario = UsuarioL = Login.getUsuarioLogueado();
+        String usuario = Login.getUsuarioLogueado();
         String msg;
         StringBuilder sql = new StringBuilder("INSERT INTO detalle_actualizarstock (motivo_mot_codigo, articulo_art_codigo, act_fechahora, act_cant_a, act_cant_n, act_obs, usu)"
                 + " VALUES (");
@@ -37,8 +35,8 @@ public class GestionarStock {
     public static String actStock(Stock s) {
         String msg;
         StringBuilder sql = new StringBuilder("UPDATE productos SET stock = ");
-        sql.append(s.getStock());
-        sql.append(" WHERE idproducto= ");
+        sql.append(s.getStock()).append(", users='").append(s.getUser());
+        sql.append("' WHERE idproducto= ");
         sql.append(s.getCod());
         sql.append("");
 //        String sql = "UPDATE stock SET sto_cantidad = " + s.getStock() + " WHERE sto_articulo = " + s.getCod() + "";
@@ -71,7 +69,7 @@ public class GestionarStock {
         Object[] fila = OperacionMovil.getFila(sql.toString());
         if (fila != null) {
             st = new Stock();
-            st.setCod(Integer.valueOf(fila[0].toString()));
+            st.setCod(Integer.parseInt(fila[0].toString()));
             st.setStock(Double.parseDouble(fila[1].toString()));
         } else {
             System.out.println("No encontrado");

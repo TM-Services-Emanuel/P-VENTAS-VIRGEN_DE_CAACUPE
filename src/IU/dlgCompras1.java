@@ -38,7 +38,6 @@ public final class dlgCompras1 extends javax.swing.JDialog {
     public static Articulo ar;
     public static int Pcosto;
     public Reporte jasper;
-    static String UsuarioL = "";
 
     public dlgCompras1(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -1473,7 +1472,7 @@ public final class dlgCompras1 extends javax.swing.JDialog {
                 if (resp == JOptionPane.YES_OPTION) {
                     if (rbLocal.isSelected()) {
                         try {
-                            String usuario = UsuarioL = Login.getUsuarioLogueado();
+                            String usuario = Login.getUsuarioLogueado();
                             prepararBD();
                             con.setAutoCommit(false);
                             String sql = "insert into compra values(" + txtCod.getText() + "," + txtCaja.getText() + "," + txtCodProv.getText() + ", 'L','" + lbCond.getText() + "','" + txtFactura.getText() + "','"
@@ -1483,7 +1482,7 @@ public final class dlgCompras1 extends javax.swing.JDialog {
                             for (int j = 0; j < fila; j++) {
                                 String filas[] = {tbDetalle.getValueAt(j, 0).toString(), tbDetalle.getValueAt(j, 4).toString(), tbDetalle.getValueAt(j, 6).toString(), tbDetalle.getValueAt(j, 15).toString(), tbDetalle.getValueAt(j, 16).toString(), tbDetalle.getValueAt(j, 7).toString()};
                                 sql = "insert into detalle_compra values(" + txtCod.getText() + "," + filas[0] + "," + filas[1] + "," + filas[2] + "," + filas[3] + "," + filas[5] + ")";
-                                String sql2 = "UPDATE productos SET precio_costo=" + filas[2] + ", ganancia=" + filas[4] + ", stock=stock+" + filas[1] + " WHERE  idproducto=" + filas[0];
+                                String sql2 = "UPDATE productos SET precio_costo=" + filas[2] + ", ganancia=" + filas[4] + ", stock=stock+" + filas[1]+", users='"+usuario + "' WHERE  idproducto=" + filas[0];
                                 stTransaccion.executeUpdate(sql);
                                 stTransaccionMovil.executeUpdate(sql2);
                             }
@@ -1508,7 +1507,7 @@ public final class dlgCompras1 extends javax.swing.JDialog {
 
                     } else {
                         try {
-                            String usuario = UsuarioL = Login.getUsuarioLogueado();
+                            String usuario = Login.getUsuarioLogueado();
                             prepararBD();
                             con.setAutoCommit(false);
                             String sql = "insert into compra values(" + txtCod.getText() + "," + txtCaja.getText() + "," + txtCodProv.getText() + ", 'R','" + lbCond.getText() + "','" + txtFactura.getText() + "','"
@@ -1518,7 +1517,7 @@ public final class dlgCompras1 extends javax.swing.JDialog {
                             for (int j = 0; j < fila; j++) {
                                 String filas[] = {tbDetalle.getValueAt(j, 0).toString(), tbDetalle.getValueAt(j, 4).toString(), tbDetalle.getValueAt(j, 6).toString(), tbDetalle.getValueAt(j, 15).toString(), tbDetalle.getValueAt(j, 16).toString(), tbDetalle.getValueAt(j, 7).toString()};
                                 sql = "insert into detalle_compra values(" + txtCod.getText() + "," + filas[0] + "," + filas[1] + "," + filas[2] + "," + filas[3] + "," + filas[5] + ")";
-                                String sql2 = "UPDATE productos SET precio_costo=" + filas[2] + ", ganancia=" + filas[4] + " WHERE  idproducto=" + filas[0];
+                                String sql2 = "UPDATE productos SET precio_costo=" + filas[2] + ", ganancia=" + filas[4] +", users='"+ usuario +"' WHERE  idproducto=" + filas[0];
                                 stTransaccion.executeUpdate(sql);
                                 stTransaccionMovil.executeUpdate(sql2);
                             }

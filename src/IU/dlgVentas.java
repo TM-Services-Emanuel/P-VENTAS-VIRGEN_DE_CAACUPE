@@ -47,7 +47,6 @@ public final class dlgVentas extends javax.swing.JDialog {
     public static int PrecioVenta;
     public static double costoiva;
     public static double descuento;
-    public static String UsuarioL = "";
     public Reporte jasper;
     static String emp;
     static String dir;
@@ -446,7 +445,7 @@ public final class dlgVentas extends javax.swing.JDialog {
             } else {
                 est = "PENDIENTE";
             }
-            UsuarioL = Login.getUsuarioLogueado();
+            
             int resp = JOptionPane.showConfirmDialog(dlgFinFacturaL, "¿Seguro que deseas registrar esta Venta al sistema?", "CONFIRMACIÓN DE VENTA", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
             if (resp == JOptionPane.YES_OPTION) {
                 try {
@@ -454,9 +453,9 @@ public final class dlgVentas extends javax.swing.JDialog {
                     con.setAutoCommit(false);
                     conMovil.setAutoCommit(false);
                     String sql = "insert into factura values(" + txtCodF.getText().trim() + "," + txtCodVendedorF.getText().trim() + "," + txtCodCliente.getText().trim() + "," + txtCaja.getText().trim() + "," + txtidEmision.getText().trim() + ", 'F','" + NFactura + "','" + lbCond.getText() + "','"
-                            + txtFecha.getText() + "','" + txtHora.getText() + "'," + txtTotalCosto.getText() + "," + txtTotalL.getText() + "," + txtExentaL.getText() + "," + txt5L.getText() + "," + txt10L.getText() + ",'S','" + UsuarioL + "','" + est + "'," + txtIdBoca.getText() + ")";
-                    String sql4 = "UPDATE puntoemision set facturaactual=" + Integer.parseInt(txtFacturaN1.getText().trim()) + " WHERE idemision=" + txtidEmision.getText().trim();
-                    String sql5 = "UPDATE ref set nventa=" + Integer.parseInt(txtFacturaN1.getText().trim()) + " WHERE idemision=" + txtidEmision.getText().trim();
+                            + txtFecha.getText() + "','" + txtHora.getText() + "'," + txtTotalCosto.getText() + "," + txtTotalL.getText() + "," + txtExentaL.getText() + "," + txt5L.getText() + "," + txt10L.getText() + ",'S','" + Login.getUsuarioLogueado() + "','" + est + "'," + txtIdBoca.getText() + ")";
+                    String sql4 = "UPDATE puntoemision set facturaactual=" + Integer.valueOf(txtFacturaN1.getText().trim()) + " WHERE idemision=" + txtidEmision.getText().trim();
+                    String sql5 = "UPDATE ref set nventa=" + Integer.valueOf(txtFacturaN1.getText().trim()) + " WHERE idemision=" + txtidEmision.getText().trim();
                     stTransaccion.executeUpdate(sql);
                     stTransaccionMovil.executeUpdate(sql4);
                     stTransaccionMovil.executeUpdate(sql5);
@@ -478,9 +477,9 @@ public final class dlgVentas extends javax.swing.JDialog {
                         sql = "insert into detalle_factura values(" + txtCodF.getText() + ", " + filas[0] + ", '" + filas[1] + "', " + filas[2] + ", " + filas[3] + ", " + filas[4] + ", " + filas[5] + ", " + filas[6] + ", " + filas[7] + ", " + filas[8] + ", " + filas[9] + ",'" + filas[10] + "')";
                         String sql2 = null;
                         if (filas[1].equals("S")) {
-                            sql2 = "UPDATE productos SET stock=(stock-" + filas[4] + ") WHERE  idproducto=" + filas[2];
+                            sql2 = "UPDATE productos SET stock=(stock-" + filas[4] +"), users='"+Login.getUsuarioLogueado()+"' WHERE  idproducto=" + filas[2];
                         } else if (filas[1].equals("N")) {
-                            sql2 = "UPDATE productos SET stock=(stock-" + filas[4] + ") WHERE  idproducto=" + filas[0];
+                            sql2 = "UPDATE productos SET stock=(stock-" + filas[4] + "), users='"+Login.getUsuarioLogueado()+"' WHERE  idproducto=" + filas[0];
                         }
                         stTransaccion.executeUpdate(sql);
                         stTransaccionMovil.executeUpdate(sql2);
@@ -591,20 +590,20 @@ public final class dlgVentas extends javax.swing.JDialog {
             int facturaactual1;
             int idBoca;
             prepararBD();
-            ResultSet res = stMovil.executeQuery("SELECT * FROM v_puntoemision4 WHERE idemision=" + txtidEmision.getText().trim());
-            res.last();
-            do {
-                Establecimiento1 = res.getString("establecimiento");
-                Emision1 = res.getString("puntoemision");
-                facturaactual1 = res.getInt("facturaactual");
-                ImpresoraPred = res.getString("impresora").trim();
-                System.out.println(ImpresoraPred);
-                int numero = facturaactual1 + 1;
-                txtEPE.setText(Establecimiento1 + "-" + Emision1);
-                txtTicketN.setText(String.valueOf(numero));
-
-            } while (res.next());
-            res.close();
+            try (ResultSet res = stMovil.executeQuery("SELECT * FROM v_puntoemision4 WHERE idemision=" + txtidEmision.getText().trim())) {
+                res.last();
+                do {
+                    Establecimiento1 = res.getString("establecimiento");
+                    Emision1 = res.getString("puntoemision");
+                    facturaactual1 = res.getInt("facturaactual");
+                    ImpresoraPred = res.getString("impresora").trim();
+                    System.out.println(ImpresoraPred);
+                    int numero = facturaactual1 + 1;
+                    txtEPE.setText(Establecimiento1 + "-" + Emision1);
+                    txtTicketN.setText(String.valueOf(numero));
+                    
+                } while (res.next());
+            }
             st.close();
             stMovil.close();
             stTransaccion.close();
@@ -619,7 +618,6 @@ public final class dlgVentas extends javax.swing.JDialog {
             } else {
                 est = "PENDIENTE";
             }
-            UsuarioL = Login.getUsuarioLogueado();
             int resp = JOptionPane.showConfirmDialog(dlgFinTicket, "¿Seguro que deseas registrar esta Venta al sistema?", "CONFIRMACIÓN DE VENTA", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
             if (resp == JOptionPane.YES_OPTION) {
                 try {
@@ -627,9 +625,9 @@ public final class dlgVentas extends javax.swing.JDialog {
                     con.setAutoCommit(false);
                     conMovil.setAutoCommit(false);
                     String sql = "insert into factura values(" + txtCodT.getText().trim() + "," + txtCodVendedorT.getText().trim() + "," + txtCodCliente.getText().trim() + "," + txtCaja.getText().trim() + "," + txtidEmision.getText().trim() + ", 'T','" + NFactura + "','" + lbCond.getText() + "','"
-                            + txtFecha.getText() + "','" + txtHora.getText() + "'," + txtTotalCosto.getText() + "," + txtTotalL.getText() + "," + txtExentaL.getText() + "," + txt5L.getText() + "," + txt10L.getText() + ",'S','" + UsuarioL + "','" + est + "'," + txtIdBoca.getText() + ")";
-                    String sql4 = "UPDATE puntoemision set facturaactual=" + Integer.parseInt(txtTicketN.getText().trim()) + " WHERE idemision=" + txtidEmision.getText().trim();
-                    String sql5 = "UPDATE ref set nventa=" + Integer.parseInt(txtTicketN.getText().trim()) + " WHERE idemision=" + txtidEmision.getText().trim();
+                            + txtFecha.getText() + "','" + txtHora.getText() + "'," + txtTotalCosto.getText() + "," + txtTotalL.getText() + "," + txtExentaL.getText() + "," + txt5L.getText() + "," + txt10L.getText() + ",'S','" + Login.getUsuarioLogueado() + "','" + est + "'," + txtIdBoca.getText() + ")";
+                    String sql4 = "UPDATE puntoemision set facturaactual=" + Integer.valueOf(txtTicketN.getText().trim()) + " WHERE idemision=" + txtidEmision.getText().trim();
+                    String sql5 = "UPDATE ref set nventa=" + Integer.valueOf(txtTicketN.getText().trim()) + " WHERE idemision=" + txtidEmision.getText().trim();
                     stTransaccion.executeUpdate(sql);
                     stTransaccionMovil.executeUpdate(sql4);
                     stTransaccionMovil.executeUpdate(sql5);
@@ -651,9 +649,9 @@ public final class dlgVentas extends javax.swing.JDialog {
                         sql = "insert into detalle_factura values(" + txtCodT.getText() + ", " + filas[0] + ", '" + filas[1] + "', " + filas[2] + ", " + filas[3] + ", " + filas[4] + ", " + filas[5] + ", " + filas[6] + ", " + filas[7] + ", " + filas[8] + ", " + filas[9] + ",'" + filas[10] + "')";
                         String sql2 = null;
                         if (filas[1].equals("S")) {
-                            sql2 = "UPDATE productos SET stock=(stock-" + filas[4] + ") WHERE  idproducto=" + filas[2];
+                            sql2 = "UPDATE productos SET stock=(stock-" + filas[4] + "), users='"+Login.getUsuarioLogueado()+"' WHERE  idproducto=" + filas[2];
                         } else if (filas[1].equals("N")) {
-                            sql2 = "UPDATE productos SET stock=(stock-" + filas[4] + ") WHERE  idproducto=" + filas[0];
+                            sql2 = "UPDATE productos SET stock=(stock-" + filas[4] + "), users='"+Login.getUsuarioLogueado()+"' WHERE  idproducto=" + filas[0];
                         }
                         stTransaccion.executeUpdate(sql);
                         stTransaccionMovil.executeUpdate(sql2);

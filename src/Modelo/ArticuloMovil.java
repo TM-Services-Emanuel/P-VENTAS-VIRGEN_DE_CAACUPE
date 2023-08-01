@@ -23,8 +23,9 @@ public class ArticuloMovil {
     private double cant_prom;
     private int precio_prom;
     private String porc_prom;
+    private String user;
 
-    public ArticuloMovil(int idproducto, String dependencia, int iddependencia, String codinterno, String codBarra, String descripcion, int precio_costo, int ganancia, int precio_venta, double stock, int um, int division, int iva, String ventam, double cantm, int preciominorista, int gananciaminorista, String prom, double cant_prom, int precio_prom, String porc_prom) {
+    public ArticuloMovil(int idproducto, String dependencia, int iddependencia, String codinterno, String codBarra, String descripcion, int precio_costo, int ganancia, int precio_venta, double stock, int um, int division, int iva, String ventam, double cantm, int preciominorista, int gananciaminorista, String prom, double cant_prom, int precio_prom, String porc_prom, String user) {
         this.idproducto = idproducto;
         this.dependencia = dependencia;
         this.iddependencia = iddependencia;
@@ -46,12 +47,14 @@ public class ArticuloMovil {
         this.cant_prom = cant_prom;
         this.precio_prom = precio_prom;
         this.porc_prom = porc_prom;
+        this.user = user;
     }
 
     //Constructor para actualizar stock
-    public ArticuloMovil(int idproducto, double stock) {
+    public ArticuloMovil(int idproducto, double stock, String user) {
         this.idproducto = idproducto;
         this.stock = stock;
+        this.user = user;
     }
     //Constructor Vacio
     public ArticuloMovil() {
@@ -225,6 +228,15 @@ public class ArticuloMovil {
     public void setPorc_prom(String porc_prom) {
         this.porc_prom = porc_prom;
     }
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+    
     
     
       

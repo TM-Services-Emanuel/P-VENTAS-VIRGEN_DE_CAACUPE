@@ -14,7 +14,7 @@ public class GestionarCompra {
         return cod;
     }
     
-    public static String addCompra(Compra c) {
+    /*public static String addCompra(Compra c) {
         String msg;
         StringBuilder sql = new StringBuilder("INSERT INTO compra VALUES (");
         sql.append(c.getCodCompra()).append(",");
@@ -30,10 +30,10 @@ public class GestionarCompra {
         msg = Operacion.exeOperacion(sql.toString());
 
         return msg;
-    }
+    }*/
 
 
-    public static String actCompra(Compra c) {
+    /*public static String actCompra(Compra c) {
         String msg;
         StringBuilder sql = new StringBuilder("UPDATE compras SET com_codigo=");
         sql.append(c.getCodCompra()).append(",com_proveedor=");
@@ -51,7 +51,7 @@ public class GestionarCompra {
 //                + c.getTotal() + ",com_indicador='N' WHERE com_codigo=" 
 //                + c.getCodCompra() + "");
         return msg;
-    }
+    }*/
 
     public static String addDetalleCompra(DetalleCompra dc) {
         String msg;

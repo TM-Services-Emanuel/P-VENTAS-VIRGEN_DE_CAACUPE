@@ -2,6 +2,7 @@ package Controladores;
 
 import Componentes.ConexionBD;
 import Componentes.Fecha;
+import Componentes.Login;
 import Componentes.Mensajes;
 import Datos.GestionarArticulosMovil;
 import IU.dlgArticulosMovil;
@@ -176,9 +177,9 @@ public class controlArticuloMovil {
         } catch (Exception pr) {
         }
 
-        int Pcosto = Integer.valueOf(dlgGestArticulosMovil.txtPrecioCostoL.getText().trim());
-        int Ganancia = Integer.valueOf(dlgGestArticulosMovil.txtGanancia.getText().trim().replace(".", "").replace(",", ""));
-        int Pventa = Integer.valueOf(dlgGestArticulosMovil.txtPrecioVentaL.getText().trim());
+        int Pcosto = Integer.parseInt(dlgGestArticulosMovil.txtPrecioCostoL.getText().trim());
+        int Ganancia = Integer.parseInt(dlgGestArticulosMovil.txtGanancia.getText().trim().replace(".", "").replace(",", ""));
+        int Pventa = Integer.parseInt(dlgGestArticulosMovil.txtPrecioVentaL.getText().trim());
         double stock = Double.parseDouble(dlgGestArticulosMovil.txtStock.getText().trim());
         String ventam;
         if (dlgGestArticulosMovil.ckHabilitar.isSelected()) {
@@ -199,7 +200,8 @@ public class controlArticuloMovil {
         double Cant_Prom = Double.parseDouble(dlgGestArticulosMovil.txtCantPromocion.getText());
         int Precio_Prom = Integer.parseInt(dlgGestArticulosMovil.txtPrecioPromocion.getText().replace(",", "").replace(".", ""));
         String Porc_Prom = dlgGestArticulosMovil.txtPorcPromocion.getText();
-        art = new ArticuloMovil(codA, dependencia, iddependencia, codInt, codBar, descripcion, Pcosto, Ganancia, Pventa, stock, codUM, codClasificacion, codImpuesto, ventam, cantM, PventaM, GananciaM, Prom, Cant_Prom, Precio_Prom, Porc_Prom);
+        String User = Login.getUsuarioLogueado();
+        art = new ArticuloMovil(codA, dependencia, iddependencia, codInt, codBar, descripcion, Pcosto, Ganancia, Pventa, stock, codUM, codClasificacion, codImpuesto, ventam, cantM, PventaM, GananciaM, Prom, Cant_Prom, Precio_Prom, Porc_Prom, User);
         return art;
     }
 
@@ -279,9 +281,9 @@ public class controlArticuloMovil {
         } catch (Exception pr) {
         }
 
-        int Pcosto = Integer.valueOf(dlgGestArticulosMovil11.txtPrecioCostoL.getText().trim());
-        int Ganancia = Integer.valueOf(dlgGestArticulosMovil11.txtGanancia.getText().trim().replace(".", "").replace(",", ""));
-        int Pventa = Integer.valueOf(dlgGestArticulosMovil11.txtPrecioVentaL.getText().trim());
+        int Pcosto = Integer.parseInt(dlgGestArticulosMovil11.txtPrecioCostoL.getText().trim());
+        int Ganancia = Integer.parseInt(dlgGestArticulosMovil11.txtGanancia.getText().trim().replace(".", "").replace(",", ""));
+        int Pventa = Integer.parseInt(dlgGestArticulosMovil11.txtPrecioVentaL.getText().trim());
         double stock = Double.parseDouble(dlgGestArticulosMovil11.txtStock.getText().trim());
         String ventam;
         if (dlgGestArticulosMovil11.ckHabilitar.isSelected()) {
@@ -302,7 +304,8 @@ public class controlArticuloMovil {
         double Cant_Prom = Double.parseDouble(dlgGestArticulosMovil11.txtCantPromocion.getText());
         int Precio_Prom = Integer.parseInt(dlgGestArticulosMovil11.txtPrecioPromocion.getText().replace(",", "").replace(".", ""));
         String Porc_Prom = dlgGestArticulosMovil11.txtPorcPromocion.getText();
-        art = new ArticuloMovil(codA, dependencia, iddependencia, codInt, codBar, descripcion, Pcosto, Ganancia, Pventa, stock, codUM, codClasificacion, codImpuesto, ventam, cantM, PventaM, GananciaM, Prom, Cant_Prom, Precio_Prom, Porc_Prom);
+        String User = Login.getUsuarioLogueado();
+        art = new ArticuloMovil(codA, dependencia, iddependencia, codInt, codBar, descripcion, Pcosto, Ganancia, Pventa, stock, codUM, codClasificacion, codImpuesto, ventam, cantM, PventaM, GananciaM, Prom, Cant_Prom, Precio_Prom, Porc_Prom, User);
         return art;
     }
 
@@ -352,7 +355,8 @@ public class controlArticuloMovil {
         int x = dlgArticulosMovil.tbProductos.getSelectedRow();
         String msg;
         String cod = dlgArticulosMovil.tbProductos.getValueAt(x, 0).toString();
-        msg = GestionarArticulosMovil.delArticulo(cod);
+        String User = Login.getUsuarioLogueado();
+        msg = GestionarArticulosMovil.delArticulo(cod, User);
         if (msg == null) {
             Mensajes.informacion("Artículo Eliminado");
         } else {
@@ -629,6 +633,7 @@ public class controlArticuloMovil {
             fila[2] = fila[2].toString();
             fila[3] = String.valueOf(Double.parseDouble(fila[2].toString())-Double.parseDouble(fila[1].toString()));
             fila[4] = Fecha.formatoFechaFFHH(fila[4].toString());
+            fila[5] = fila[5].toString();
             tb.addRow(fila);
         }
     }

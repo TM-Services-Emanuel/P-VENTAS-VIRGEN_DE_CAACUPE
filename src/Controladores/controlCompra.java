@@ -33,7 +33,6 @@ public class controlCompra {
     public static double costoiva;
     public static int ganancia;
     public static int descuento;
-    static String UsuarioL = "";
 
     public static void selectProveedor() {
         int x = dlgBuscarProveedor.tbDetalle.getSelectedRow();
@@ -456,7 +455,7 @@ public class controlCompra {
         String msg;
         int x = dlgConsultarCompras.tbCompra.getSelectedRow();
         String cod = dlgConsultarCompras.tbCompra.getValueAt(x, 0).toString();
-        String usuario = UsuarioL = Login.getUsuarioLogueado();
+        String usuario = Login.getUsuarioLogueado();
         msg = GestionarCompra.delCompra(cod,usuario);
         if (msg == null) {
             Mensajes.informacion("Compra Anulada");
@@ -471,7 +470,7 @@ public class controlCompra {
         String msg;
         int x = dlgConsultarCompras.tbCompra.getSelectedRow();
         String cod = dlgConsultarCompras.tbCompra.getValueAt(x, 0).toString();
-        String usuario = UsuarioL = Login.getUsuarioLogueado();
+        String usuario = Login.getUsuarioLogueado();
         msg = GestionarCompra.delCompra(cod,usuario);
         if (msg == null) {
             Mensajes.informacion("Compra Anulada");
@@ -486,7 +485,8 @@ public class controlCompra {
         for (int i = 0; i < f; i++) {
             int coda = Integer.parseInt(dlgConsultarCompras.tbDetalleCompra.getValueAt(i, 1).toString());
             double st = Double.parseDouble(dlgConsultarCompras.tbDetalleCompra.getValueAt(i, 4).toString());
-            ArticuloMovil a = new ArticuloMovil(coda, st);
+            String User= Login.getUsuarioLogueado();
+            ArticuloMovil a = new ArticuloMovil(coda, st, User);
             msg = GestionarArticulosMovil.actStockMENOS(a);
         }
         if (msg == null) {

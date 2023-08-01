@@ -1,5 +1,6 @@
 package Controladores;
 
+import Componentes.Login;
 import Componentes.Mensajes;
 import Datos.GestionarStock;
 import IU.dlgAjusteStock;
@@ -24,8 +25,8 @@ public class controlGestStock {
     public static String addDetalleStock()
     {
         String msg;
-        int codArt = Integer.valueOf(dlgCantStock.lblCodA.getText());
-        int codMot = Integer.valueOf(dlgCantStock.txtCodMov.getText());
+        int codArt = Integer.parseInt(dlgCantStock.lblCodA.getText());
+        int codMot = Integer.parseInt(dlgCantStock.txtCodMov.getText());
         float st_a = Float.parseFloat(dlgCantStock.lblStA.getText());
         float st_n = Float.parseFloat(dlgCantStock.txtStock.getText());
         String obs;
@@ -50,9 +51,10 @@ public class controlGestStock {
     {
         String msg;
         
-        int cod = Integer.valueOf(dlgCantStock.lblCodA.getText());
+        int cod = Integer.parseInt(dlgCantStock.lblCodA.getText());
         float st = Float.parseFloat(dlgCantStock.txtStock.getText());
-        Stock s = new Stock(cod, st);
+        String User = Login.getUsuarioLogueado();
+        Stock s = new Stock(cod, st, User);
         msg = GestionarStock.actStock(s);
         if(msg==null)
         {

@@ -40,7 +40,7 @@ public final class CabecerasTablas {
     String salidas[] = {"CODART", "DESCRIPCIÓN", "CODMOTIVO", "MOTIVO SALIDA", "CANT", "COSTO", "MONTO"};
     String conSalidas[] = {"OP. N°","PROVEEDOR", "FECHA", "HORA", "COS.TOTAL","OBSERVACION", "INDICADOR"};
     String detalleSalida[] = {"CODART","MOTIVO SALIDA", "CANT", "OP. N°", "DESCRIPCIÓN", "COSTO","MONTO"};
-    static String auditoriaProductos[] = {"TIPO","STOCK ANTERIOR", "STOCK ACTUAL","CANT. DIFERENCIA", "FECHA Y HORA"};
+    static String auditoriaProductos[] = {"TIPO","STOCK ANTERIOR", "STOCK ACTUAL","CANT. DIFERENCIA", "FECHA Y HORA", "REALIZADO POR"};
     static String compras[] = {"COD", "CODINT", "DESCRIPCIÓN", "CANT","CANTf", "PRECIO ","PRECIOF","IVA", "EXENTA","EXENTAf","IVA 5%","IVA5f","IVA 10%","IVA10f","MONTO","MONTOf","GA"};
     static String facturas[] = {"COD","DEP","ID", "CODBARRA", "DESCRIPCIÓN", "CANT", "PRECIO", "EXENTA","IVA 5%","IVA 10%","MONTO","IDIVA","COSTO","PROMO",};
     String categoria[] = {"CODIGO", "CATEGORIA"};
@@ -1621,7 +1621,7 @@ public final class CabecerasTablas {
     public static void AuditoriaProductos(JTable tabla) {
         modelo = new DefaultTableModel(datos, auditoriaProductos){
             boolean[] canEdit = new boolean[]{
-                false, false, false, false, false
+                false, false, false, false, false, false
             };
 
             @Override
@@ -1639,6 +1639,8 @@ public final class CabecerasTablas {
         colum = tabla.getColumnModel().getColumn(3);
         colum.setPreferredWidth(100);
         colum = tabla.getColumnModel().getColumn(4);
+        colum.setPreferredWidth(100);
+        colum = tabla.getColumnModel().getColumn(5);
         colum.setPreferredWidth(100);
 
     }

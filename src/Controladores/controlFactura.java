@@ -47,7 +47,6 @@ public class controlFactura {
     static DetalleTransferencia dtran;
     static ArregloFactura array = new ArregloFactura();
     static ArregloTransferencia arrayT = new ArregloTransferencia();
-    static String UsuarioL = "";
     public static MariaDbConnection con;
     public static MariaDbStatement st;
     public static ResultSet rss;
@@ -1366,7 +1365,7 @@ public class controlFactura {
         String msg;
         int x = dlgConsultarFacturas.tblFactura.getSelectedRow();
         String cod = dlgConsultarFacturas.tblFactura.getValueAt(x, 0).toString();
-        String usuario = UsuarioL = Login.getUsuarioLogueado();
+        String usuario = Login.getUsuarioLogueado();
         msg = GestionarFactura.actFactura(cod, usuario);
         if (msg == null) {
             Mensajes.informacion("Venta Anulada");
@@ -1412,19 +1411,19 @@ public class controlFactura {
     public static String actStockEliminarFactura() {
         String msg = null;
         int f = dlgConsultarFacturas.tblDetalle.getRowCount();
-        String usuario = UsuarioL = Login.getUsuarioLogueado();
+        String usuario = Login.getUsuarioLogueado();
         for (int i = 0; i < f; i++) {
             String dependencia = dlgConsultarFacturas.tblDetalle.getValueAt(i, 1).toString();
             if (dependencia.equals("S")) {
                 int coda = Integer.parseInt(dlgConsultarFacturas.tblDetalle.getValueAt(i, 2).toString());
                 double stK = Double.parseDouble(dlgConsultarFacturas.tblDetalle.getValueAt(i, 0).toString());
-                ArticuloMovil a = new ArticuloMovil(coda, stK);
+                ArticuloMovil a = new ArticuloMovil(coda, stK, usuario);
                 msg = GestionarArticulosMovil.actStockMAS(a);
 
             } else if (dependencia.equals("N")) {
                 int coda = Integer.parseInt(dlgConsultarFacturas.tblDetalle.getValueAt(i, 3).toString());
                 double stK = Double.parseDouble(dlgConsultarFacturas.tblDetalle.getValueAt(i, 0).toString());
-                ArticuloMovil a = new ArticuloMovil(coda, stK);
+                ArticuloMovil a = new ArticuloMovil(coda, stK, usuario);
                 msg = GestionarArticulosMovil.actStockMAS(a);
             }
 

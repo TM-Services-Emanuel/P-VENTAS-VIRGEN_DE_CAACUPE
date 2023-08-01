@@ -4,11 +4,13 @@ public class Stock {
     
     private int cod;
     private double stock;
+    private String user;
 
     //Constructor
-    public Stock(int cod, double stock) {
+    public Stock(int cod, double stock, String user) {
         this.cod = cod;
         this.stock = stock;
+        this.user = user;
     }
 
     //Constructor Vacio
@@ -30,6 +32,14 @@ public class Stock {
 
     public void setStock(double stock) {
         this.stock = stock;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
     }
     
     
