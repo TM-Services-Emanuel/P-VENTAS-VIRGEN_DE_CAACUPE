@@ -1,16 +1,14 @@
 package IU;
 
-import Componentes.ConexionBD;
+import Componentes.DataSourceService;
+import Componentes.DataSourceService1;
 import Componentes.Mensajes;
 import Componentes.cargarComboBox;
 import java.awt.BorderLayout;
 import java.awt.Toolkit;
-import org.mariadb.jdbc.MariaDbConnection;
-import org.mariadb.jdbc.MariaDbStatement;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
-import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
@@ -19,60 +17,25 @@ import net.sf.jasperreports.swing.JRViewer;
 
 public class dlgReporteValorizadoRepartos extends javax.swing.JDialog {
 
-    public static ResultSet rs;
-    public static MariaDbStatement sentencia;
-    public static MariaDbConnection con;
-    public static MariaDbStatement sentenciaM;
-    public static MariaDbConnection conM;
-    static String Fdesde;
-    static String Fhasta;
+    static DataSourceService1 dss1 = new DataSourceService1();
+    static DataSourceService dss = new DataSourceService();
 
     public dlgReporteValorizadoRepartos(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/Iconos/logo1.png")));
         invisible();
-        prepararBD();
         cargarComboBox.cargarResponsable(cboResponsable, "SELECT * FROM v_vendedores WHERE idfuncion=2 AND ven_indicador='S'");
     }
 
-    
-    private void invisible(){
+    private void invisible() {
         txtIdResponsable.setVisible(false);
         txtidReparto.setVisible(false);
     }
 
-    public static void prepararBD() {
-        {
-            try {
-                con = (MariaDbConnection) new ConexionBD().getConexion();
-                if (con == null) {
-                    System.out.println("No hay Conexion con la Base de Datos");
-                } else {
-                    sentencia = (MariaDbStatement) con.createStatement();
-                }
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
-            try {
-                conM = (MariaDbConnection) new ConexionBD().getConexionMovil();
-                if (con == null) {
-                    System.out.println("No hay Conexion con la Base de Datos Móvil");
-                } else {
-                    sentenciaM = (MariaDbStatement) conM.createStatement();
-                }
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
-        }
-    }
-    
-    private void LevantarReporte(String Dir, int idResponsable){
+    private void LevantarReporte(String Dir, int idResponsable) {
         VisorReportes vr = new VisorReportes(null, true);
-        try {
-            //prepararBD();
-            //archivo jasper
-            //URL  jasperUrl = this.getClass().getResource("\\Reports\\repartos\\movimiento_reparto_E.jasper");
+        try (Connection cn = dss1.getDataSource().getConnection()) {
             String jasperUrl = System.getProperty("user.dir").concat(Dir);
             JasperReport report = (JasperReport) JRLoader.loadObjectFromFile(jasperUrl);
             //para los parametro
@@ -81,7 +44,7 @@ public class dlgReporteValorizadoRepartos extends javax.swing.JDialog {
             //Nuestro parametro se llama "pLastName"
             parametros.put("id", idResponsable);
             //agregamos los parametros y la conexion a la base de datos
-            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametros, conM);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametros, cn);
             //se crea el visor con el reporte
             JRViewer jRViewer = new JRViewer(jasperPrint);
             //se elimina elementos del contenedor JPanel
@@ -93,7 +56,8 @@ public class dlgReporteValorizadoRepartos extends javax.swing.JDialog {
             jRViewer.setVisible(true);
             VisorReportes.jpContainer.repaint();
             VisorReportes.jpContainer.revalidate();
-        } catch (JRException ex) {
+            cn.close();
+        } catch (Exception ex) {
             System.err.println(ex.getMessage());
         }
         //vr.setSize(250, 50);
@@ -348,44 +312,39 @@ public class dlgReporteValorizadoRepartos extends javax.swing.JDialog {
 
     private void btnGenerarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerarActionPerformed
         // TODO add your handling code here:
-            try {
+        try {
             if (cboResponsable.getSelectedIndex() == 0) {
                 Mensajes.informacion("Seleccione un Responsable");
             } else {
                 LevantarReporte("\\Reports\\repartos\\StockValorizadoCompletoRepartos.jasper", Integer.parseInt(txtidReparto.getText().trim()));
             }
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             System.out.println(e.getMessage());
-        } 
+        }
     }//GEN-LAST:event_btnGenerarActionPerformed
 
     private void cboResponsableActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboResponsableActionPerformed
         // TODO add your handling code here:
-            if (cboResponsable.getSelectedIndex() == 0) {
-                lbInfoMovil.setText("");
-            } else {
-                prepararBD();
-                try {
-                    String resp;
-                    resp = cargarComboBox.getCodidgo(cboResponsable);
-                    try {
-                        rs = sentencia.executeQuery("SELECT ven_codigo,idmovil, movil, ven_comision FROM v_vendedores WHERE ven_codigo=" + resp);
-                        rs.last();
-                        txtIdResponsable.setText(String.valueOf(rs.getInt("ven_codigo")));
-                        lbInfoMovil.setText(" Referencia: " + rs.getString("movil"));
-                        rs.close();
-                    } catch (SQLException ex) {
-                        Mensajes.error("Error al querer obtener ID del móvil: " + ex.getMessage());
-                    }
-                } catch (Exception pr) {
-                }
-                try{
-                    rs = sentenciaM.executeQuery("select MAX(id_reparto) FROM reparto WHERE activo='S' AND cerrado='S' AND idresponsable="+txtIdResponsable.getText().trim());
-                        rs.last();
-                        txtidReparto.setText(String.valueOf(rs.getInt(1)));
-                        rs.close();
-                }catch(SQLException e){System.out.println(e.getMessage());}
+        if (cboResponsable.getSelectedIndex() == 0) {
+            lbInfoMovil.setText("");
+        } else {
+            String resp = cargarComboBox.getCodidgo(cboResponsable);
+            String sql = "SELECT ven_codigo,idmovil, movil, ven_comision FROM v_vendedores WHERE ven_codigo=" + resp;
+            try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
+                rs.last();
+                txtIdResponsable.setText(String.valueOf(rs.getInt("ven_codigo")));
+                lbInfoMovil.setText(" Referencia: " + rs.getString("movil"));
+                rs.close();
+            } catch (Exception pr) {
+                Mensajes.error("Error al querer obtener ID del móvil: " + pr.getMessage());
             }
+            try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery("select MAX(id_reparto) FROM reparto WHERE activo='S' AND cerrado='S' AND idresponsable=" + txtIdResponsable.getText().trim())) {
+                rs.last();
+                txtidReparto.setText(String.valueOf(rs.getInt(1)));
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+        }
     }//GEN-LAST:event_cboResponsableActionPerformed
 
     private void cboResponsableKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cboResponsableKeyPressed

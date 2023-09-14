@@ -1,6 +1,7 @@
 package IU;
 
-import Componentes.ConexionBD;
+import Componentes.DataSourceService;
+import Componentes.DataSourceService1;
 import Componentes.Fecha;
 import Componentes.Login;
 import Componentes.Mensajes;
@@ -18,39 +19,26 @@ import Componentes.traerIP;
 import Controladores.CabecerasTablas;
 import Controladores.controlFactura;
 import Datos.GestionarArticulosMovil;
-import Datos.GestionarCliente;
 import Datos.GestionarFactura;
 import Datos.GestionarVendedor;
 import java.awt.event.KeyEvent;
 import Modelo.ArticuloMovil;
-import Modelo.ClienteMovil;
 import Modelo.Vendedor;
-import java.awt.Dimension;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import org.mariadb.jdbc.MariaDbConnection;
-import org.mariadb.jdbc.MariaDbStatement;
 
 public final class dlgVentas extends javax.swing.JDialog {
 
-    private static MariaDbConnection con;
-    private static MariaDbStatement stTransaccion;
-    private static MariaDbStatement st;
-    private static MariaDbConnection conMovil;
-    private static MariaDbStatement stTransaccionMovil;
-    private static MariaDbStatement stMovil;
     public static int PrecioVenta;
     public static double costoiva;
     public static double descuento;
     public Reporte jasper;
-    static String emp;
-    static String dir;
-    static String cel;
 
     private static String Timbrado;
     private static String Desde;
@@ -58,11 +46,12 @@ public final class dlgVentas extends javax.swing.JDialog {
 
     static public Numero_a_Letra d;
 
-    private Dimension dim;
-
     private static String ImpresoraPred;
 
-    public dlgVentas(java.awt.Frame parent, boolean modal) {
+    static DataSourceService1 dss1 = new DataSourceService1();
+    static DataSourceService dss = new DataSourceService();
+
+    public dlgVentas(java.awt.Frame parent, boolean modal) throws SQLException {
         super(parent, modal);
 
         initComponents();
@@ -158,38 +147,12 @@ public final class dlgVentas extends javax.swing.JDialog {
         txtIdBoca.setVisible(false);
     }
 
-    public static void llamarReporteHoja3(int cod, String Letra) {
+    public static void llamarReporteHoja3(int cod, String Letra) throws SQLException {
         Reporte gr;
         gr = new Reporte();
         //int codF = Integer.parseInt(txtCodFactura.getText());
         gr.FacturaLegal("\\Reports\\ventas\\Hoja3.jasper", "ID", cod, "LETRA", Letra);
         gr.cerrar();
-    }
-
-    private static void prepararBD() {
-        try {
-            con = (MariaDbConnection) new ConexionBD().getConexion();
-            if (con == null) {
-                Mensajes.error("No hay Conexion con la Base de Datos");
-            } else {
-                st = (MariaDbStatement) con.createStatement();
-                stTransaccion = (MariaDbStatement) con.createStatement();
-            }
-        } catch (SQLException e) {
-            Mensajes.error("ERR_CON: " + e.getMessage());
-        }
-        try {
-            conMovil = (MariaDbConnection) new ConexionBD().getConexionMovil();
-            if (conMovil == null) {
-                Mensajes.error("No hay Conexion con la Base de Datos Móvil");
-            } else {
-                stMovil = (MariaDbStatement) conMovil.createStatement();
-                stTransaccionMovil = (MariaDbStatement) conMovil.createStatement();
-
-            }
-        } catch (SQLException e) {
-            Mensajes.error("ERR_CON_M: " + e.getMessage());
-        }
     }
 
     public static void cant() {
@@ -272,18 +235,16 @@ public final class dlgVentas extends javax.swing.JDialog {
 
     // ticketera mtu matricial
     private static void obtenerTIMBRA() {
-        String ip = traerIP.getIP();
-        try {
-            prepararBD();
-            ResultSet rsi = stMovil.executeQuery("SELECT * FROM v_puntoemision3 WHERE ip='" + ip.trim() + "' AND tipo='L' AND estado='Activo'");
-            rsi.last();
+        String sql = "SELECT * FROM v_puntoemision3 WHERE ip='" + traerIP.getIP() + "' AND tipo='L' AND estado='Activo'";
+        try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
+            rs.last();
             do {
-                Timbrado = rsi.getString("timbra");
-                Desde = rsi.getString("fechadesde");
-                Hasta = rsi.getString("fechahasta");
-            } while (rsi.next());
+                Timbrado = rs.getString("timbra");
+                Desde = rs.getString("fechadesde");
+                Hasta = rs.getString("fechahasta");
+            } while (rs.next());
             SimpleDateFormat fe = new SimpleDateFormat("dd/MM/yyyy");
-            rsi.close();
+            rs.close();
             try {
                 Date FechaA = fe.parse(Fecha.fechaFormulario());
                 Date FechaT = fe.parse(Hasta);
@@ -295,18 +256,14 @@ public final class dlgVentas extends javax.swing.JDialog {
             } catch (ParseException es) {
             }
             st.close();
-            stMovil.close();
-            stTransaccion.close();
-            stTransaccionMovil.close();
-            con.close();
-            conMovil.close();
+            cn.close();
         } catch (SQLException ex) {
             Mensajes.error("FACTURA LEGAL NO HABILITADO:\nNo se encuentra un timbrado ni punto de emisión para registras facturas legales.");
             btnFacturaLegal.setEnabled(false);
             itemFactura_Legal.setEnabled(false);
             btnNuevo.setEnabled(false);
             itemNuevo.setEnabled(false);
-            
+
         }
     }
 
@@ -318,18 +275,16 @@ public final class dlgVentas extends javax.swing.JDialog {
         int facturaactual1;
         int facturafin1;
         int idBoca;
-        try {
-            String ip = traerIP.getIP();
-            prepararBD();
-            ResultSet ress = stMovil.executeQuery("SELECT * FROM v_puntoemision4 WHERE ip='" + ip + "' AND tipo='L' AND tipo2='F' AND estado='Activo'");
-            ress.first();
+        String sql = "SELECT * FROM v_puntoemision4 WHERE ip='" + traerIP.getIP() + "' AND tipo='L' AND tipo2='F' AND estado='Activo'";
+        try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
+            rs.first();
             do {
-                idEmision1 = ress.getInt("idemision");
-                Establecimiento1 = ress.getString("establecimiento");
-                Emision1 = ress.getString("puntoemision");
-                facturaactual1 = ress.getInt("facturaactual");
-                facturafin1 = ress.getInt("facturafin");
-                idBoca = ress.getInt("idboca");
+                idEmision1 = rs.getInt("idemision");
+                Establecimiento1 = rs.getString("establecimiento");
+                Emision1 = rs.getString("puntoemision");
+                facturaactual1 = rs.getInt("facturaactual");
+                facturafin1 = rs.getInt("facturafin");
+                idBoca = rs.getInt("idboca");
                 if (facturaactual1 < facturafin1) {
                     String cod = GestionarFactura.getCodigo();
                     txtCodF.setText(cod);
@@ -367,14 +322,10 @@ public final class dlgVentas extends javax.swing.JDialog {
                 } else {
                     Mensajes.Alerta("OBSERVACIÓN:\nNo es posible emitir una nueva factura legal.\nSe ha alcanzado la cantidad máxima de facturación para el punto de expedición o emisión actual.\n");
                 }
-            } while (ress.next());
-            ress.close();
+            } while (rs.next());
+            rs.close();
             st.close();
-            stMovil.close();
-            stTransaccion.close();
-            stTransaccionMovil.close();
-            con.close();
-            conMovil.close();
+            cn.close();
         } catch (SQLException ex) {
             Mensajes.Alerta("FACTURA LEGAL NO HABILITADO:\nNo se encuentra un timbrado ni punto de emisión para registras facturas legales.");
             btnFacturaLegal.setEnabled(false);
@@ -385,21 +336,19 @@ public final class dlgVentas extends javax.swing.JDialog {
     }
 
     public static void comprobarNFactura() {
-        //prepararBD();
-        try {
+        String sqlcnf = "SELECT * FROM v_puntoemision4 WHERE idemision=" + txtidEmision.getText().trim();
+        try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sqlcnf); Connection con = dss.getDataSource().getConnection(); Connection conm = dss1.getDataSource().getConnection(); Statement stt = con.createStatement(); Statement sttm = conm.createStatement()) {
             String Establecimiento1;
             String Emision1;
             int facturaactual1;
             int facturafin1;
-            prepararBD();
-            ResultSet res = stMovil.executeQuery("SELECT * FROM v_puntoemision4 WHERE idemision=" + txtidEmision.getText().trim());
-            res.first();
+            rs.first();
             do {
-                Establecimiento1 = res.getString("establecimiento");
-                Emision1 = res.getString("puntoemision");
-                facturaactual1 = res.getInt("facturaactual");
-                facturafin1 = res.getInt("facturafin");
-                ImpresoraPred = res.getString("impresora").trim();
+                Establecimiento1 = rs.getString("establecimiento");
+                Emision1 = rs.getString("puntoemision");
+                facturaactual1 = rs.getInt("facturaactual");
+                facturafin1 = rs.getInt("facturafin");
+                ImpresoraPred = rs.getString("impresora").trim();
 
                 if (facturaactual1 < facturafin1) {
 
@@ -425,15 +374,11 @@ public final class dlgVentas extends javax.swing.JDialog {
                         }
                     }
                 }
-            } while (res.next());
+            } while (rs.next());
 
-            res.close();
+            rs.close();
             st.close();
-            stMovil.close();
-            stTransaccion.close();
-            stTransaccionMovil.close();
-            con.close();
-            conMovil.close();
+            cn.close();
             String cod = GestionarFactura.getCodigo();
             txtCodF.setText(cod);
 
@@ -445,20 +390,19 @@ public final class dlgVentas extends javax.swing.JDialog {
             } else {
                 est = "PENDIENTE";
             }
-            
+
             int resp = JOptionPane.showConfirmDialog(dlgFinFacturaL, "¿Seguro que deseas registrar esta Venta al sistema?", "CONFIRMACIÓN DE VENTA", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
             if (resp == JOptionPane.YES_OPTION) {
                 try {
-                    prepararBD();
                     con.setAutoCommit(false);
-                    conMovil.setAutoCommit(false);
+                    conm.setAutoCommit(false);
                     String sql = "insert into factura values(" + txtCodF.getText().trim() + "," + txtCodVendedorF.getText().trim() + "," + txtCodCliente.getText().trim() + "," + txtCaja.getText().trim() + "," + txtidEmision.getText().trim() + ", 'F','" + NFactura + "','" + lbCond.getText() + "','"
                             + txtFecha.getText() + "','" + txtHora.getText() + "'," + txtTotalCosto.getText() + "," + txtTotalL.getText() + "," + txtExentaL.getText() + "," + txt5L.getText() + "," + txt10L.getText() + ",'S','" + Login.getUsuarioLogueado() + "','" + est + "'," + txtIdBoca.getText() + ")";
                     String sql4 = "UPDATE puntoemision set facturaactual=" + Integer.valueOf(txtFacturaN1.getText().trim()) + " WHERE idemision=" + txtidEmision.getText().trim();
                     String sql5 = "UPDATE ref set nventa=" + Integer.valueOf(txtFacturaN1.getText().trim()) + " WHERE idemision=" + txtidEmision.getText().trim();
-                    stTransaccion.executeUpdate(sql);
-                    stTransaccionMovil.executeUpdate(sql4);
-                    stTransaccionMovil.executeUpdate(sql5);
+                    stt.executeUpdate(sql);
+                    sttm.executeUpdate(sql4);
+                    sttm.executeUpdate(sql5);
                     int fila = tbDetalle.getRowCount();
                     for (int j = 0; j < fila; j++) {
                         String filas[] = {
@@ -477,19 +421,17 @@ public final class dlgVentas extends javax.swing.JDialog {
                         sql = "insert into detalle_factura values(" + txtCodF.getText() + ", " + filas[0] + ", '" + filas[1] + "', " + filas[2] + ", " + filas[3] + ", " + filas[4] + ", " + filas[5] + ", " + filas[6] + ", " + filas[7] + ", " + filas[8] + ", " + filas[9] + ",'" + filas[10] + "')";
                         String sql2 = null;
                         if (filas[1].equals("S")) {
-                            sql2 = "UPDATE productos SET stock=(stock-" + filas[4] +"), users='"+Login.getUsuarioLogueado()+"' WHERE  idproducto=" + filas[2];
+                            sql2 = "UPDATE productos SET stock=(stock-" + filas[4] + "), users='" + Login.getUsuarioLogueado() + "' WHERE  idproducto=" + filas[2];
                         } else if (filas[1].equals("N")) {
-                            sql2 = "UPDATE productos SET stock=(stock-" + filas[4] + "), users='"+Login.getUsuarioLogueado()+"' WHERE  idproducto=" + filas[0];
+                            sql2 = "UPDATE productos SET stock=(stock-" + filas[4] + "), users='" + Login.getUsuarioLogueado() + "' WHERE  idproducto=" + filas[0];
                         }
-                        stTransaccion.executeUpdate(sql);
-                        stTransaccionMovil.executeUpdate(sql2);
+                        stt.executeUpdate(sql);
+                        sttm.executeUpdate(sql2);
                     }
                     con.commit();
-                    conMovil.commit();
-                    st.close();
-                    stMovil.close();
-                    stTransaccion.close();
-                    stTransaccionMovil.close();
+                    conm.commit();
+                    stt.close();
+                    sttm.close();
                     int rpta = Mensajes.confirmar3("VENTA REGISTRADA EXITOSAMENTE!\n\n¿Desea Imprimir la Factura Legal?");
                     if (rpta == 0) {
                         imprimirTicketOriginal();
@@ -507,18 +449,16 @@ public final class dlgVentas extends javax.swing.JDialog {
                     txtVueltoF.setText("0");
                     cant();
                     con.close();
-                    conMovil.close();
+                    conm.close();
                 } catch (SQLException e) {
                     con.rollback();
-                    conMovil.rollback();
+                    conm.rollback();
                     Mensajes.error("TRANSACCIÓN FALLIDA: La venta no fue registrada en el sistema.\nError:ADD_V: " + e.getMessage().toUpperCase());
                     controlFactura.canCelar();
-                    st.close();
-                    stMovil.close();
-                    stTransaccion.close();
-                    stTransaccionMovil.close();
+                    stt.close();
+                    sttm.close();
                     con.close();
-                    conMovil.close();
+                    conm.close();
                     dlgFinFacturaL.dispose();
                 }
             }
@@ -538,31 +478,25 @@ public final class dlgVentas extends javax.swing.JDialog {
         String Emision1;
         int facturaactual1;
         int idBoca;
-        try {
-            prepararBD();
-            String ip = traerIP.getIP();
-            ResultSet rrs = stMovil.executeQuery("SELECT * FROM v_puntoemision4 WHERE ip='" + ip + "' AND tipo='L' AND tipo2='T' AND estado='Activo'");
-            if (rrs != null) {
-                rrs.first();
+        String sql = "SELECT * FROM v_puntoemision4 WHERE ip='" + traerIP.getIP() + "' AND tipo='L' AND tipo2='T' AND estado='Activo'";
+        try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
+            if (rs != null) {
+                rs.first();
                 do {
-                    idEmision1 = rrs.getInt("idemision");
-                    Establecimiento1 = rrs.getString("establecimiento");
-                    Emision1 = rrs.getString("puntoemision");
-                    facturaactual1 = rrs.getInt("facturaactual");
-                    idBoca = rrs.getInt("idboca");
+                    idEmision1 = rs.getInt("idemision");
+                    Establecimiento1 = rs.getString("establecimiento");
+                    Emision1 = rs.getString("puntoemision");
+                    facturaactual1 = rs.getInt("facturaactual");
+                    idBoca = rs.getInt("idboca");
                     txtidEmision.setText(String.valueOf(idEmision1));
                     txtIdBoca.setText(String.valueOf(idBoca));
                     txtEPE.setText(Establecimiento1 + "-" + Emision1);
                     int numero = (facturaactual1 + 1);
                     txtTicketN.setText(String.valueOf(numero));
-                } while (rrs.next());
-                rrs.close();
+                } while (rs.next());
+                rs.close();
                 st.close();
-                stMovil.close();
-                stTransaccion.close();
-                stTransaccionMovil.close();
-                con.close();
-                conMovil.close();
+                cn.close();
             }
 
             OpcionesEmision.dispose();
@@ -582,34 +516,26 @@ public final class dlgVentas extends javax.swing.JDialog {
     public static void ComprobarNTicket() {
         String cod = GestionarFactura.getCodigo();
         txtCodT.setText(cod);
-
-        try {
-            //prepararBD();
+        String sqlcnt = "SELECT * FROM v_puntoemision4 WHERE idemision=" + txtidEmision.getText().trim();
+        try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sqlcnt); Connection con = dss.getDataSource().getConnection(); Connection conm = dss1.getDataSource().getConnection(); Statement stt = con.createStatement(); Statement sttm = conm.createStatement()) {
             String Establecimiento1;
             String Emision1;
             int facturaactual1;
-            int idBoca;
-            prepararBD();
-            try (ResultSet res = stMovil.executeQuery("SELECT * FROM v_puntoemision4 WHERE idemision=" + txtidEmision.getText().trim())) {
-                res.last();
-                do {
-                    Establecimiento1 = res.getString("establecimiento");
-                    Emision1 = res.getString("puntoemision");
-                    facturaactual1 = res.getInt("facturaactual");
-                    ImpresoraPred = res.getString("impresora").trim();
-                    System.out.println(ImpresoraPred);
-                    int numero = facturaactual1 + 1;
-                    txtEPE.setText(Establecimiento1 + "-" + Emision1);
-                    txtTicketN.setText(String.valueOf(numero));
-                    
-                } while (res.next());
-            }
+            rs.last();
+            do {
+                Establecimiento1 = rs.getString("establecimiento");
+                Emision1 = rs.getString("puntoemision");
+                facturaactual1 = rs.getInt("facturaactual");
+                ImpresoraPred = rs.getString("impresora").trim();
+                System.out.println(ImpresoraPred);
+                int numero = facturaactual1 + 1;
+                txtEPE.setText(Establecimiento1 + "-" + Emision1);
+                txtTicketN.setText(String.valueOf(numero));
+
+            } while (rs.next());
             st.close();
-            stMovil.close();
-            stTransaccion.close();
-            stTransaccionMovil.close();
-            con.close();
-            conMovil.close();
+            st.close();
+            cn.close();
             String NFactura = txtEPE.getText().trim() + "-" + txtTicketN.getText().trim();
             String cond = lbCond.getText();
             String est;
@@ -621,16 +547,15 @@ public final class dlgVentas extends javax.swing.JDialog {
             int resp = JOptionPane.showConfirmDialog(dlgFinTicket, "¿Seguro que deseas registrar esta Venta al sistema?", "CONFIRMACIÓN DE VENTA", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
             if (resp == JOptionPane.YES_OPTION) {
                 try {
-                    prepararBD();
                     con.setAutoCommit(false);
-                    conMovil.setAutoCommit(false);
+                    conm.setAutoCommit(false);
                     String sql = "insert into factura values(" + txtCodT.getText().trim() + "," + txtCodVendedorT.getText().trim() + "," + txtCodCliente.getText().trim() + "," + txtCaja.getText().trim() + "," + txtidEmision.getText().trim() + ", 'T','" + NFactura + "','" + lbCond.getText() + "','"
                             + txtFecha.getText() + "','" + txtHora.getText() + "'," + txtTotalCosto.getText() + "," + txtTotalL.getText() + "," + txtExentaL.getText() + "," + txt5L.getText() + "," + txt10L.getText() + ",'S','" + Login.getUsuarioLogueado() + "','" + est + "'," + txtIdBoca.getText() + ")";
                     String sql4 = "UPDATE puntoemision set facturaactual=" + Integer.valueOf(txtTicketN.getText().trim()) + " WHERE idemision=" + txtidEmision.getText().trim();
                     String sql5 = "UPDATE ref set nventa=" + Integer.valueOf(txtTicketN.getText().trim()) + " WHERE idemision=" + txtidEmision.getText().trim();
-                    stTransaccion.executeUpdate(sql);
-                    stTransaccionMovil.executeUpdate(sql4);
-                    stTransaccionMovil.executeUpdate(sql5);
+                    stt.executeUpdate(sql);
+                    sttm.executeUpdate(sql4);
+                    sttm.executeUpdate(sql5);
                     int fila = tbDetalle.getRowCount();
                     for (int j = 0; j < fila; j++) {
                         String filas[] = {
@@ -649,19 +574,17 @@ public final class dlgVentas extends javax.swing.JDialog {
                         sql = "insert into detalle_factura values(" + txtCodT.getText() + ", " + filas[0] + ", '" + filas[1] + "', " + filas[2] + ", " + filas[3] + ", " + filas[4] + ", " + filas[5] + ", " + filas[6] + ", " + filas[7] + ", " + filas[8] + ", " + filas[9] + ",'" + filas[10] + "')";
                         String sql2 = null;
                         if (filas[1].equals("S")) {
-                            sql2 = "UPDATE productos SET stock=(stock-" + filas[4] + "), users='"+Login.getUsuarioLogueado()+"' WHERE  idproducto=" + filas[2];
+                            sql2 = "UPDATE productos SET stock=(stock-" + filas[4] + "), users='" + Login.getUsuarioLogueado() + "' WHERE  idproducto=" + filas[2];
                         } else if (filas[1].equals("N")) {
-                            sql2 = "UPDATE productos SET stock=(stock-" + filas[4] + "), users='"+Login.getUsuarioLogueado()+"' WHERE  idproducto=" + filas[0];
+                            sql2 = "UPDATE productos SET stock=(stock-" + filas[4] + "), users='" + Login.getUsuarioLogueado() + "' WHERE  idproducto=" + filas[0];
                         }
-                        stTransaccion.executeUpdate(sql);
-                        stTransaccionMovil.executeUpdate(sql2);
+                        stt.executeUpdate(sql);
+                        sttm.executeUpdate(sql2);
                     }
                     con.commit();
-                    conMovil.commit();
-                    st.close();
-                    stMovil.close();
-                    stTransaccion.close();
-                    stTransaccionMovil.close();
+                    conm.commit();
+                    stt.close();
+                    sttm.close();
                     //Mensajes.informacion("VENTA REGISTRADA EXITOSAMENTE!");
                     int rpta = Mensajes.confirmar2("VENTA REGISTRADA EXITOSAMENTE!\n\n" + "¿Desea Imprimir el Ticket de Venta?");
                     if (rpta == 0) {
@@ -676,14 +599,14 @@ public final class dlgVentas extends javax.swing.JDialog {
                     txtVueltoT.setText("0");
                     cant();
                     con.close();
-                    conMovil.close();
+                    conm.close();
                 } catch (SQLException e) {
                     con.rollback();
-                    conMovil.rollback();
+                    conm.rollback();
                     Mensajes.error("TRANSACCIÓN FALLIDA: La venta no fue registrada en el sistema.\nError:ADD_V: " + e.getMessage().toUpperCase());
                     controlFactura.canCelar();
                     con.close();
-                    conMovil.close();
+                    conm.close();
                     dlgFinTicket.dispose();
                 }
             }
@@ -709,9 +632,8 @@ public final class dlgVentas extends javax.swing.JDialog {
         int filas = tbDetalle.getRowCount();
         DecimalFormat formateador = new DecimalFormat("#,###");
         String tot = formateador.format(Integer.parseInt(txtTotalL.getText().replace(".", "").replace(",", "")));
-        try {
-            prepararBD();
-            ResultSet res = stMovil.executeQuery("SELECT * FROM empresa WHERE estado='S'");
+        String sql = "SELECT * FROM empresa WHERE estado='S'";
+        try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet res = st.executeQuery(sql)) {
             res.last();
             empresa = res.getString("razon_social");
             ruc = res.getString("ruc");
@@ -719,11 +641,7 @@ public final class dlgVentas extends javax.swing.JDialog {
             direccion = res.getString("direccion");
             res.close();
             st.close();
-            stMovil.close();
-            stTransaccion.close();
-            stTransaccionMovil.close();
-            con.close();
-            conMovil.close();
+            cn.close();
         } catch (SQLException ex) {
             Mensajes.error("Error obteniendo datos de la empresa para la impresion de factura.");
         }
@@ -811,14 +729,12 @@ public final class dlgVentas extends javax.swing.JDialog {
 
         //final byte[] openCD = {27, 112, 0, 60, 120};
         //printerService.printBytes2(ImpresoraPred, openCD);
-
         //System.out.println(printerService.getPrinters());
         int filas = tbDetalle.getRowCount();
         DecimalFormat formateador = new DecimalFormat("#,###");
         String tot = formateador.format(Integer.parseInt(txtTotalL.getText().replace(".", "").replace(",", "")));
-        try {
-            prepararBD();
-            ResultSet res = stMovil.executeQuery("SELECT * FROM empresa WHERE estado='S'");
+        String sql = "SELECT * FROM empresa WHERE estado='S'";
+        try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet res = st.executeQuery(sql)) {
             res.last();
             empresa = res.getString("razon_social");
             ruc = res.getString("ruc");
@@ -826,11 +742,7 @@ public final class dlgVentas extends javax.swing.JDialog {
             direccion = res.getString("direccion");
             res.close();
             st.close();
-            stMovil.close();
-            stTransaccion.close();
-            stTransaccionMovil.close();
-            con.close();
-            conMovil.close();
+            cn.close();
         } catch (SQLException ex) {
             Mensajes.error("Error obteniendo datos de la empresa para la impresion de factura.");
         }
@@ -945,9 +857,8 @@ public final class dlgVentas extends javax.swing.JDialog {
         int filas = tbDetalle.getRowCount();
         DecimalFormat formateador = new DecimalFormat("#,###");
         String tot = formateador.format(Integer.parseInt(txtTotalL.getText().replace(".", "").replace(",", "")));
-        try {
-            prepararBD();
-            ResultSet res = stMovil.executeQuery("SELECT * FROM empresa WHERE estado='S'");
+        String sql = "SELECT * FROM empresa WHERE estado='S'";
+        try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet res = st.executeQuery(sql)) {
             res.last();
             empresa = res.getString("razon_social");
             ruc = res.getString("ruc");
@@ -955,11 +866,7 @@ public final class dlgVentas extends javax.swing.JDialog {
             direccion = res.getString("direccion");
             res.close();
             st.close();
-            stMovil.close();
-            stTransaccion.close();
-            stTransaccionMovil.close();
-            con.close();
-            conMovil.close();
+            cn.close();
         } catch (SQLException ex) {
             Mensajes.error("Error obteniendo datos de la empresa para la impresion de factura.");
         }
@@ -1478,7 +1385,7 @@ public final class dlgVentas extends javax.swing.JDialog {
                     .addComponent(txtEstablecimiento1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtEmision1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtFacturaN1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(86, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout Blanco1Layout = new javax.swing.GroupLayout(Blanco1);
@@ -1498,7 +1405,7 @@ public final class dlgVentas extends javax.swing.JDialog {
             .addGroup(Blanco1Layout.createSequentialGroup()
                 .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(7, 7, 7)
-                .addComponent(jTabbedPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 152, Short.MAX_VALUE)
+                .addComponent(jTabbedPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 73, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -1682,7 +1589,7 @@ public final class dlgVentas extends javax.swing.JDialog {
             .addGroup(jPanel17Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel18, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(13, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel17Layout.setVerticalGroup(
             jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -3349,7 +3256,7 @@ public final class dlgVentas extends javax.swing.JDialog {
             System.out.println(e.getMessage());
         }
         //prepararBD();
-        ClienteMovil Cl = GestionarCliente.busCliente("1");
+        //ClienteMovil Cl = GestionarCliente.busCliente("1");
         controlFactura.selectClienteInicio("1");
         rContado.setSelected(true);
         pintarCondicion();
@@ -3492,15 +3399,19 @@ public final class dlgVentas extends javax.swing.JDialog {
         //</editor-fold>
         //</editor-fold>
         java.awt.EventQueue.invokeLater(() -> {
-            dlgVentas dialog = new dlgVentas(new javax.swing.JFrame(), true);
-            dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-
-                @Override
-                public void windowClosing(java.awt.event.WindowEvent e) {
-                    System.exit(0);
-                }
-            });
-            dialog.setVisible(true);
+            try {
+                dlgVentas dialog = new dlgVentas(new javax.swing.JFrame(), true);
+                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                    
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        System.exit(0);
+                    }
+                });
+                dialog.setVisible(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(dlgVentas.class.getName()).log(Level.SEVERE, null, ex);
+            }
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables

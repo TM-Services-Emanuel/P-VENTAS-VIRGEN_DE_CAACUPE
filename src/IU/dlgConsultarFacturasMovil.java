@@ -1,6 +1,5 @@
 package IU;
 
-import Componentes.ConexionBD;
 import Componentes.Mensajes;
 import Componentes.RenderDecimal2;
 import Componentes.RenderDecimal1;
@@ -33,7 +32,7 @@ public class dlgConsultarFacturasMovil extends javax.swing.JDialog {
 
     }
     
-    public static void prepararBD() {
+    /*public static void prepararBD() {
         {
             try {
                 con = (MariaDbConnection) new ConexionBD().getConexionMovil();
@@ -46,7 +45,7 @@ public class dlgConsultarFacturasMovil extends javax.swing.JDialog {
                 System.out.println(e.getMessage());
             }
         }
-    }
+    }*/
 
     final void titulo() {
         if (Software.getSoftware().equals("null")) {
@@ -585,7 +584,7 @@ public class dlgConsultarFacturasMovil extends javax.swing.JDialog {
         } catch (Exception e) {
             txtIdT.setText("");
         }
-            prepararBD();
+            //prepararBD();
             String timb;
             timb = cboTimbrado.getSelectedItem().toString();
             try {

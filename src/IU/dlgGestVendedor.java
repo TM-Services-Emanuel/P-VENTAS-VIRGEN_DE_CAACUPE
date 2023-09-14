@@ -1,6 +1,6 @@
 package IU;
 
-import Componentes.ConexionBD;
+import Componentes.DataSourceService;
 import Componentes.Login;
 import Componentes.Mensajes;
 import Componentes.cargarComboBox;
@@ -11,91 +11,73 @@ import Datos.GestionarVendedor;
 import java.awt.HeadlessException;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.text.DecimalFormat;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
-import org.mariadb.jdbc.MariaDbConnection;
-import org.mariadb.jdbc.MariaDbStatement;
 
 public final class dlgGestVendedor extends javax.swing.JDialog {
-    static String UsuarioL="";
 
-    public static ResultSet rs;
-    public static MariaDbStatement sentencia;
-    public static MariaDbConnection con;
-    
+    static DataSourceService dss = new DataSourceService();
+
     public dlgGestVendedor(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         cargarIcono();
         invisible();
-        lbm.setText("");  
+        lbm.setText("");
         txtNombre.requestFocus();
     }
-    private void invisible(){
+
+    private void invisible() {
         txtCodMovil.setVisible(false);
         txtCodFuncion.setVisible(false);
     }
+
     private void CargarCombos() {
         cargarComboBox.cargar(cboMovil, "SELECT * FROM movil_reparto WHERE estado='S'");
         cargarComboBox.cargar(cboFuncion, "SELECT * FROM funcion WHERE indicador='S'");
     }
-    public static void prepararBD() {
-        try {
-            con = (MariaDbConnection) new ConexionBD().getConexion();
-            if (con == null) {
-                System.out.println("No hay Conexion con la Base de Datos");
-            } else {
-                sentencia = (MariaDbStatement) con.createStatement();
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
 
     public void modcboFuncion() {
         DefaultComboBoxModel fun = new DefaultComboBoxModel();
-        String idFuncion = txtCodFuncion.getText().trim();
-        try {
-            prepararBD();
-            rs = sentencia.executeQuery("SELECT * FROM funcion WHERE indicador='S'");
+        String sql = "SELECT * FROM funcion WHERE indicador='S'";
+        String sql2 = "SELECT * FROM funcion WHERE idfuncion=" + txtCodFuncion.getText().trim();
+        try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql); ResultSet rss = st.executeQuery(sql2)) {
             fun.addElement("SELEC. UNA OPCIÓN");
             while (rs.next()) {
                 fun.addElement(rs.getString("descripcion"));
             }
-            rs.close();
-            ResultSet rss = sentencia.executeQuery("SELECT * FROM funcion WHERE idfuncion=" + idFuncion);
             rss.first();
             Object descripcion = (Object) rss.getString("descripcion");
-            rss.close();
             dlgGestVendedor.cboFuncion.setModel(fun);
             dlgGestVendedor.cboFuncion.setSelectedItem(descripcion);
-            con.close();
+            rs.close();
+            rss.close();
+            st.close();
+            cn.close();
         } catch (SQLException ew) {
             //Mensajes.error("TIENES UN ERROR AL CARGAR LOS LABORATORIOS: "+ew.getMessage().toUpperCase());
         }
     }
-    
+
     public void modcboMovil() {
         DefaultComboBoxModel mov = new DefaultComboBoxModel();
-        String idMovil = txtCodMovil.getText().trim();
-        try {
-            prepararBD();
-            rs = sentencia.executeQuery("SELECT * FROM movil_reparto WHERE estado='S'");
+        String sql = "SELECT * FROM movil_reparto WHERE estado='S'";
+        String sql2 = "SELECT * FROM movil_reparto WHERE idmovil=" + txtCodMovil.getText().trim();
+        try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql); ResultSet rss = st.executeQuery(sql2)){
             mov.addElement("SELEC. UNA OPCIÓN");
             while (rs.next()) {
                 mov.addElement(rs.getString("descripcion"));
             }
-            rs.close();
-            ResultSet rss = sentencia.executeQuery("SELECT * FROM movil_reparto WHERE idmovil=" + idMovil);
             rss.first();
             Object descripcion = (Object) rss.getString("descripcion");
-            rss.close();
             dlgGestVendedor.cboMovil.setModel(mov);
             dlgGestVendedor.cboMovil.setSelectedItem(descripcion);
-            con.close();
+            rs.close();
+            rss.close();
+            st.close();
+            cn.close();
         } catch (SQLException ew) {
             //Mensajes.error("TIENES UN ERROR AL CARGAR LOS LABORATORIOS: "+ew.getMessage().toUpperCase());
         }
@@ -310,13 +292,13 @@ public final class dlgGestVendedor extends javax.swing.JDialog {
         Oscuro1.setLayout(Oscuro1Layout);
         Oscuro1Layout.setHorizontalGroup(
             Oscuro1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, 478, Short.MAX_VALUE)
+            .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, 480, Short.MAX_VALUE)
         );
         Oscuro1Layout.setVerticalGroup(
             Oscuro1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(Oscuro1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, 22, Short.MAX_VALUE)
+                .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, 18, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -334,7 +316,7 @@ public final class dlgGestVendedor extends javax.swing.JDialog {
                     .addComponent(cboMovil, 0, 290, Short.MAX_VALUE)
                     .addComponent(cboFuncion, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(18, 18, 18))
-            .addComponent(Oscuro1, javax.swing.GroupLayout.DEFAULT_SIZE, 478, Short.MAX_VALUE)
+            .addComponent(Oscuro1, javax.swing.GroupLayout.DEFAULT_SIZE, 480, Short.MAX_VALUE)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -630,7 +612,7 @@ public final class dlgGestVendedor extends javax.swing.JDialog {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -640,7 +622,7 @@ public final class dlgGestVendedor extends javax.swing.JDialog {
         Blanco.setLayout(BlancoLayout);
         BlancoLayout.setHorizontalGroup(
             BlancoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(Oscuro, javax.swing.GroupLayout.DEFAULT_SIZE, 616, Short.MAX_VALUE)
+            .addComponent(Oscuro, javax.swing.GroupLayout.DEFAULT_SIZE, 626, Short.MAX_VALUE)
             .addGroup(BlancoLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -651,7 +633,7 @@ public final class dlgGestVendedor extends javax.swing.JDialog {
             .addGroup(BlancoLayout.createSequentialGroup()
                 .addComponent(Oscuro, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 337, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 361, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -729,11 +711,11 @@ public final class dlgGestVendedor extends javax.swing.JDialog {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(Blanco, javax.swing.GroupLayout.PREFERRED_SIZE, 607, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(Blanco, javax.swing.GroupLayout.PREFERRED_SIZE, 624, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(Blanco, javax.swing.GroupLayout.PREFERRED_SIZE, 426, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(Blanco, javax.swing.GroupLayout.PREFERRED_SIZE, 462, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
@@ -746,14 +728,14 @@ public final class dlgGestVendedor extends javax.swing.JDialog {
             actualizartablaEmpleados();
             this.dispose();
         }
-        
+
     }//GEN-LAST:event_btnSalirActionPerformed
 
     private void txtComisionKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtComisionKeyPressed
         // TODO add your handling code here:
         validarCampos.soloDecimales(txtComision);
         validarCampos.cantCaracteres(txtComision, 3);
-        
+
     }//GEN-LAST:event_txtComisionKeyPressed
 
     private void txtSueldoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSueldoKeyPressed
@@ -766,7 +748,7 @@ public final class dlgGestVendedor extends javax.swing.JDialog {
         // TODO add your handling code here:
         validarCampos.soloNumeros(txtCelular);
         validarCampos.cantCaracteres(txtCelular, 12);
-        
+
     }//GEN-LAST:event_txtCelularKeyPressed
 
     private void txtTelefonoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtTelefonoKeyPressed
@@ -786,7 +768,7 @@ public final class dlgGestVendedor extends javax.swing.JDialog {
         // TODO add your handling code here:
         validarCampos.soloLetras(txtNombre);
         validarCampos.cantCaracteres(txtNombre, 40);
-        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             txtDireccion.requestFocus();
         }
     }//GEN-LAST:event_txtNombreKeyPressed
@@ -812,36 +794,35 @@ public final class dlgGestVendedor extends javax.swing.JDialog {
         txtSueldo.setEnabled(true);
         txtComision.setEnabled(true);
         txtNombre.requestFocus();
-        System.out.println(UsuarioL=Login.getUsuarioLogueado());
     }//GEN-LAST:event_btnNuevActionPerformed
 
     private void btnModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarActionPerformed
         // TODO add your handling code here:
         lbm.setText("");
         if (validarCampos.estaVacio(txtNombre)) {
-            if(cboMovil.getSelectedIndex()==0){
+            if (cboMovil.getSelectedIndex() == 0) {
                 Mensajes.informacion("Debe seleccionar un móvil");
                 cboMovil.requestFocus();
                 cboMovil.setPopupVisible(true);
-            }else if(cboFuncion.getSelectedIndex()==0){
+            } else if (cboFuncion.getSelectedIndex() == 0) {
                 Mensajes.informacion("Debe seleccionar una funcion");
                 cboFuncion.requestFocus();
                 cboFuncion.setPopupVisible(true);
-            }else{
-                try{
-                int resp = JOptionPane.showConfirmDialog(this,"¿Seguro que desea modificar el registro?", "Modificar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                if (resp == JOptionPane.YES_OPTION){
-                    controlVendedor.actVendedor();
-                    actualizartablaEmpleados();
-                    this.dispose();
+            } else {
+                try {
+                    int resp = JOptionPane.showConfirmDialog(this, "¿Seguro que desea modificar el registro?", "Modificar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                    if (resp == JOptionPane.YES_OPTION) {
+                        controlVendedor.actVendedor();
+                        actualizartablaEmpleados();
+                        this.dispose();
+                    }
+                } catch (Exception ee) {
+                    System.out.println(ee.getMessage());
                 }
-            }catch(Exception ee){
-            System.out.println(ee.getMessage());
             }
-            }        
         } else {
             lbm.setText("Campo Obligatorio");
-            if(txtNombre.getText().trim().equals("")){
+            if (txtNombre.getText().trim().equals("")) {
                 txtNombre.requestFocus();
             }
         }
@@ -849,32 +830,33 @@ public final class dlgGestVendedor extends javax.swing.JDialog {
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
         // TODO add your handling code here:
-            lbm.setText("");
+        lbm.setText("");
         if (validarCampos.estaVacio(txtNombre)) {
-            if(cboMovil.getSelectedIndex()==0){
+            if (cboMovil.getSelectedIndex() == 0) {
                 Mensajes.informacion("Debe seleccionar un móvil");
                 cboMovil.requestFocus();
                 cboMovil.setPopupVisible(true);
-            }else if(cboFuncion.getSelectedIndex()==0){
+            } else if (cboFuncion.getSelectedIndex() == 0) {
                 Mensajes.informacion("Debe seleccionar una funcion");
                 cboFuncion.requestFocus();
                 cboFuncion.setPopupVisible(true);
-            }else{
-                try{
-                int resp = JOptionPane.showConfirmDialog(this,"¿Seguro que desea insertar el registro?", "Insertar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                if (resp == JOptionPane.YES_OPTION){
-                    String cod = GestionarVendedor.getCodigo();
-                    lblCodV.setText(cod);
-                    controlVendedor.addVendedor();
-                    actualizartablaEmpleados();
-                    btnCancelarActionPerformed(null);
+            } else {
+                try {
+                    int resp = JOptionPane.showConfirmDialog(this, "¿Seguro que desea insertar el registro?", "Insertar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                    if (resp == JOptionPane.YES_OPTION) {
+                        String cod = GestionarVendedor.getCodigo();
+                        lblCodV.setText(cod);
+                        controlVendedor.addVendedor();
+                        actualizartablaEmpleados();
+                        btnCancelarActionPerformed(null);
+                    }
+
+                } catch (HeadlessException ee) {
                 }
-                
-            }catch(HeadlessException ee){}
-            }  
+            }
         } else {
             lbm.setText("Campo Obligatorio");
-            if(txtNombre.getText().trim().equals("")){
+            if (txtNombre.getText().trim().equals("")) {
                 txtNombre.requestFocus();
             }
         }
@@ -930,15 +912,14 @@ public final class dlgGestVendedor extends javax.swing.JDialog {
 
     private void txtNombreKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtNombreKeyTyped
         // TODO add your handling code here:
-        char c=evt.getKeyChar();
-        if(Character.isLowerCase(c)){
-            String cad=(""+c).toUpperCase();
-            c=cad.charAt(0);
+        char c = evt.getKeyChar();
+        if (Character.isLowerCase(c)) {
+            String cad = ("" + c).toUpperCase();
+            c = cad.charAt(0);
             evt.setKeyChar(c);
         }
-        int limite=199;
-        if (txtNombre.getText().length()== limite)
-        {
+        int limite = 199;
+        if (txtNombre.getText().length() == limite) {
             evt.consume();
         }
     }//GEN-LAST:event_txtNombreKeyTyped
@@ -953,43 +934,44 @@ public final class dlgGestVendedor extends javax.swing.JDialog {
 
     private void txaSKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txaSKeyTyped
         // TODO add your handling code here:
-        char c=evt.getKeyChar();
-        if(Character.isLowerCase(c)){
-            String cad=(""+c).toUpperCase();
-            c=cad.charAt(0);
+        char c = evt.getKeyChar();
+        if (Character.isLowerCase(c)) {
+            String cad = ("" + c).toUpperCase();
+            c = cad.charAt(0);
             evt.setKeyChar(c);
         }
-        int limite=199;
-        if (txaS.getText().length()== limite)
-        {
+        int limite = 199;
+        if (txaS.getText().length() == limite) {
             evt.consume();
         }
     }//GEN-LAST:event_txaSKeyTyped
 
     private void txtSueldoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSueldoKeyReleased
         // TODO add your handling code here:
-        try{
-            if(Integer.parseInt(txtSueldo.getText()) < 0){
-            txtSueldo.setText("0");
+        try {
+            if (Integer.parseInt(txtSueldo.getText()) < 0) {
+                txtSueldo.setText("0");
+            }
+        } catch (NumberFormatException e) {
         }
-        }catch(NumberFormatException e){}
         DecimalFormat df = new DecimalFormat("#,###");
- 
+
         if (txtSueldo.getText().trim().length() >= 1) {
- 
-            txtSueldo.setText( df.format(Integer.valueOf(txtSueldo.getText().trim().replace(".", "").replace(",", ""))) );
+
+            txtSueldo.setText(df.format(Integer.valueOf(txtSueldo.getText().trim().replace(".", "").replace(",", ""))));
         }
-        
+
     }//GEN-LAST:event_txtSueldoKeyReleased
 
     private void txtComisionKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtComisionKeyReleased
         // TODO add your handling code here:
-        try{
-            if(Integer.parseInt(txtComision.getText()) < 0){
-            txtComision.setText("0");
+        try {
+            if (Integer.parseInt(txtComision.getText()) < 0) {
+                txtComision.setText("0");
+            }
+        } catch (NumberFormatException e) {
         }
-        }catch(NumberFormatException e){}
-        
+
     }//GEN-LAST:event_txtComisionKeyReleased
 
     private void txtSueldoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSueldoActionPerformed
@@ -1022,7 +1004,7 @@ public final class dlgGestVendedor extends javax.swing.JDialog {
         if (evt.getKeyCode() != KeyEvent.VK_BACK_SPACE) {
             if (txtTelefono.getText().length() == 2) {
                 txtTelefono.setText(txtTelefono.getText().concat("/"));
-            }else if (txtTelefono.getText().length() == 5) {
+            } else if (txtTelefono.getText().length() == 5) {
                 txtTelefono.setText(txtTelefono.getText().concat("/"));
             }
         }
@@ -1030,14 +1012,14 @@ public final class dlgGestVendedor extends javax.swing.JDialog {
 
     private void txtTelefonoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTelefonoActionPerformed
         // TODO add your handling code here:
-            txtCelular.requestFocus();
+        txtCelular.requestFocus();
     }//GEN-LAST:event_txtTelefonoActionPerformed
 
     private void txtDireccionKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtDireccionKeyReleased
         // TODO add your handling code here:
         DecimalFormat df = new DecimalFormat("#,###");
         if (txtDireccion.getText().trim().length() >= 1) {
-            txtDireccion.setText( df.format(Integer.valueOf(txtDireccion.getText().trim().replace(".", "").replace(",", ""))) );
+            txtDireccion.setText(df.format(Integer.valueOf(txtDireccion.getText().trim().replace(".", "").replace(",", ""))));
         }
     }//GEN-LAST:event_txtDireccionKeyReleased
 
@@ -1056,7 +1038,7 @@ public final class dlgGestVendedor extends javax.swing.JDialog {
 
     private void cboFuncionKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cboFuncionKeyPressed
         // TODO add your handling code here:
-        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             if (!btnGuardar.isEnabled()) {
                 btnModificar.doClick();
             } else {
@@ -1081,14 +1063,15 @@ public final class dlgGestVendedor extends javax.swing.JDialog {
         txtSueldo.setText("0");
         txaS.setText("");
     }
-    
-     void actualizartablaEmpleados(){
-         CabecerasTablas cabe = new CabecerasTablas();
-         cabe.vendedor(dlgVendedor.tablaEmpleados);
-         CabecerasTablas.limpiarTablas(dlgVendedor.tablaEmpleados);
-         controlVendedor.listVendedor(dlgVendedor.tablaEmpleados, "v_vendedores.ven_codigo");
-     }
-     void cargarIcono() {
+
+    void actualizartablaEmpleados() {
+        CabecerasTablas cabe = new CabecerasTablas();
+        cabe.vendedor(dlgVendedor.tablaEmpleados);
+        CabecerasTablas.limpiarTablas(dlgVendedor.tablaEmpleados);
+        controlVendedor.listVendedor(dlgVendedor.tablaEmpleados, "v_vendedores.ven_codigo");
+    }
+
+    void cargarIcono() {
         try {
             java.awt.Image icon = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/Iconos/logo1.png"));
             setIconImage(icon);
@@ -1122,16 +1105,15 @@ public final class dlgGestVendedor extends javax.swing.JDialog {
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
-        
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
 
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         java.awt.EventQueue.invokeLater(() -> {
             dlgGestVendedor dialog = new dlgGestVendedor(new javax.swing.JFrame(), true);
             dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                
+
                 @Override
                 public void windowClosing(java.awt.event.WindowEvent e) {
                     System.exit(0);

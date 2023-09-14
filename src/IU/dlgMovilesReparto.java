@@ -1,29 +1,22 @@
 package IU;
 
-import Componentes.ConexionBD;
 import Componentes.Mensajes;
 import Componentes.Software;
 import Controladores.CabecerasTablas;
 import Componentes.validarCampos;
 import Controladores.controlMoviles;
 import Datos.GestionarMoviles;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.awt.HeadlessException;
 import javax.swing.JOptionPane;
-import org.mariadb.jdbc.MariaDbConnection;
-import org.mariadb.jdbc.MariaDbStatement;
 
 public final class dlgMovilesReparto extends javax.swing.JDialog {
 
     CabecerasTablas cabe = new CabecerasTablas();
-    public MariaDbStatement sentencia;
-    public MariaDbConnection  con;
-    private ResultSet rs;
+
     public dlgMovilesReparto(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         titulo();
-        prepararBD();
         cabe.moviles(tbEmpresa);
         controlMoviles.lisMoviles(tbEmpresa);
     }
@@ -665,7 +658,7 @@ public final class dlgMovilesReparto extends javax.swing.JDialog {
                 controlMoviles.lisMoviles(tbEmpresa);
                 btnCancelarActionPerformed(null);
             }
-        } catch (Exception ee) {
+        } catch (HeadlessException ee) {
         }
         
     }//GEN-LAST:event_btnEliminarActionPerformed
@@ -697,7 +690,7 @@ public final class dlgMovilesReparto extends javax.swing.JDialog {
                     CabecerasTablas.limpiarTablas(tbEmpresa);
                     controlMoviles.lisMoviles(tbEmpresa);
                 }
-            }catch(Exception ee){}
+            }catch(HeadlessException ee){}
             
         }else {
             Mensajes.informacion("Debe llenar obligatoriamente los campos resaltados");
@@ -726,7 +719,7 @@ public final class dlgMovilesReparto extends javax.swing.JDialog {
                     CabecerasTablas.limpiarTablas(tbEmpresa);
                     controlMoviles.lisMoviles(tbEmpresa);
                 }
-            }catch(Exception ee){}
+            }catch(HeadlessException ee){}
         }else {
             Mensajes.informacion("Debe llenar obligatoriamente los campos resaltados");
             if(txtNombre.getText().equals("")){
@@ -1020,19 +1013,6 @@ public final class dlgMovilesReparto extends javax.swing.JDialog {
         txtColor.setText("");
         txtCapacidad.setText("");
     }
-
-    public void prepararBD(){
-        try {
-            con = (MariaDbConnection) new ConexionBD().getConexion();
-            if (con == null) {
-                System.out.println("No hay Conexion con la Base de Datos");
-            } else {
-                sentencia = (MariaDbStatement) con.createStatement();
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-}
  
     /**
      * @param args the command line arguments

@@ -10,6 +10,7 @@ import Controladores.controlArticulo;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ListSelectionModel;
@@ -21,7 +22,7 @@ public class dlgArticulos extends javax.swing.JDialog {
     clsExportarExcel Export;
     public Reporte jasper;
 
-    public dlgArticulos(java.awt.Frame parent, boolean modal) {
+    public dlgArticulos(java.awt.Frame parent, boolean modal) throws SQLException {
         super(parent, modal);
         initComponents();
         titulo();
@@ -731,30 +732,28 @@ public class dlgArticulos extends javax.swing.JDialog {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(dlgArticulos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(dlgArticulos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(dlgArticulos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(dlgArticulos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
+        
+        //</editor-fold>
 
-        java.awt.EventQueue.invokeLater(new Runnable() {
-
-            public void run() {
-                dlgArticulos dialog = new dlgArticulos(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
+        java.awt.EventQueue.invokeLater(() -> {
+            dlgArticulos dialog = null;
+            try {
+                dialog = new dlgArticulos(new javax.swing.JFrame(), true);
+            } catch (SQLException ex) {
+                Logger.getLogger(dlgArticulos.class.getName()).log(Level.SEVERE, null, ex);
             }
+            dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                
+                @Override
+                public void windowClosing(java.awt.event.WindowEvent e) {
+                    System.exit(0);
+                }
+            });
+            dialog.setVisible(true);
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables

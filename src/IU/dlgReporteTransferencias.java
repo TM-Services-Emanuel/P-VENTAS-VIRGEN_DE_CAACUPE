@@ -1,17 +1,15 @@
 package IU;
 
-import Componentes.ConexionBD;
+import Componentes.DataSourceService;
+import Componentes.DataSourceService1;
 import Componentes.Fecha;
 import Componentes.Mensajes;
 import Componentes.cargarComboBox;
 import java.awt.BorderLayout;
 import java.awt.Toolkit;
-import org.mariadb.jdbc.MariaDbConnection;
-import org.mariadb.jdbc.MariaDbStatement;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
-import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
@@ -20,13 +18,8 @@ import net.sf.jasperreports.swing.JRViewer;
 
 public class dlgReporteTransferencias extends javax.swing.JDialog {
 
-    public static ResultSet rs;
-    public static MariaDbStatement sentencia;
-    public static MariaDbConnection con;
-    public static MariaDbStatement sentenciaM;
-    public static MariaDbConnection conM;
-    static String Fdesde;
-    static String Fhasta;
+    static DataSourceService1 dss1 = new DataSourceService1();
+    static DataSourceService dss = new DataSourceService();
 
     public dlgReporteTransferencias(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -34,7 +27,6 @@ public class dlgReporteTransferencias extends javax.swing.JDialog {
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/Iconos/logo1.png")));
         CargarFecha();
         invisible();
-        prepararBD();
         cbCompletoActionPerformed(null);
         cargarComboBox.cargarResponsable(cboOrigen, "SELECT * FROM v_vendedores WHERE idfuncion=2 AND ven_indicador='S'");
     }
@@ -43,45 +35,17 @@ public class dlgReporteTransferencias extends javax.swing.JDialog {
         lbFechaActual.setText(Fecha.fechaFormulario());
         lbFechaActualR.setText(Fecha.fechaCorrecta());
     }
-    
-    private void invisible(){
+
+    private void invisible() {
         txtFDesdeR.setVisible(false);
         txtFHastaR.setVisible(false);
         lbFechaActualR.setVisible(false);
         txtIdResponsable.setVisible(false);
     }
 
-    public static void prepararBD() {
-        {
-            try {
-                con = (MariaDbConnection) new ConexionBD().getConexion();
-                if (con == null) {
-                    System.out.println("No hay Conexion con la Base de Datos");
-                } else {
-                    sentencia = (MariaDbStatement) con.createStatement();
-                }
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
-            try {
-                conM = (MariaDbConnection) new ConexionBD().getConexionMovil();
-                if (con == null) {
-                    System.out.println("No hay Conexion con la Base de Datos Móvil");
-                } else {
-                    sentenciaM = (MariaDbStatement) conM.createStatement();
-                }
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
-        }
-    }
-    
-    private void LevantarReporte(String Dir, Date desde, Date hasta, int id){
+    private void LevantarReporte(String Dir, Date desde, Date hasta, int id) {
         VisorReportes vr = new VisorReportes(null, true);
-        try {
-            //prepararBD();
-            //archivo jasper
-            //URL  jasperUrl = this.getClass().getResource("\\Reports\\repartos\\movimiento_reparto_E.jasper");
+        try (Connection cn = dss1.getDataSource().getConnection()) {
             String jasperUrl = System.getProperty("user.dir").concat(Dir);
             JasperReport report = (JasperReport) JRLoader.loadObjectFromFile(jasperUrl);
             //para los parametro
@@ -92,7 +56,7 @@ public class dlgReporteTransferencias extends javax.swing.JDialog {
             parametros.put("hasta", hasta);
             parametros.put("id", id);
             //agregamos los parametros y la conexion a la base de datos
-            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametros, conM);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametros, cn);
             //se crea el visor con el reporte
             JRViewer jRViewer = new JRViewer(jasperPrint);
             //se elimina elementos del contenedor JPanel
@@ -104,19 +68,17 @@ public class dlgReporteTransferencias extends javax.swing.JDialog {
             jRViewer.setVisible(true);
             VisorReportes.jpContainer.repaint();
             VisorReportes.jpContainer.revalidate();
-        } catch (JRException ex) {
+            cn.close();
+        } catch (Exception ex) {
             System.err.println(ex.getMessage());
         }
         vr.setLocationRelativeTo(this);
         vr.setVisible(true);
     }
-    
-    private void LevantarReporteCompleto(String Dir, Date desde, Date hasta){
+
+    private void LevantarReporteCompleto(String Dir, Date desde, Date hasta) {
         VisorReportes vr = new VisorReportes(null, true);
-        try {
-            //prepararBD();
-            //archivo jasper
-            //URL  jasperUrl = this.getClass().getResource("\\Reports\\repartos\\movimiento_reparto_E.jasper");
+        try (Connection cn = dss1.getDataSource().getConnection()) {
             String jasperUrl = System.getProperty("user.dir").concat(Dir);
             JasperReport report = (JasperReport) JRLoader.loadObjectFromFile(jasperUrl);
             //para los parametro
@@ -126,7 +88,7 @@ public class dlgReporteTransferencias extends javax.swing.JDialog {
             parametros.put("desde", desde);
             parametros.put("hasta", hasta);
             //agregamos los parametros y la conexion a la base de datos
-            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametros, conM);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametros, cn);
             //se crea el visor con el reporte
             JRViewer jRViewer = new JRViewer(jasperPrint);
             //se elimina elementos del contenedor JPanel
@@ -138,7 +100,8 @@ public class dlgReporteTransferencias extends javax.swing.JDialog {
             jRViewer.setVisible(true);
             VisorReportes.jpContainer.repaint();
             VisorReportes.jpContainer.revalidate();
-        } catch (JRException ex) {
+            cn.close();
+        } catch (Exception ex) {
             System.err.println(ex.getMessage());
         }
         vr.setLocationRelativeTo(this);
@@ -508,7 +471,7 @@ public class dlgReporteTransferencias extends javax.swing.JDialog {
         Blanco.setLayout(BlancoLayout);
         BlancoLayout.setHorizontalGroup(
             BlancoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(Oscuro, javax.swing.GroupLayout.DEFAULT_SIZE, 452, Short.MAX_VALUE)
+            .addComponent(Oscuro, javax.swing.GroupLayout.DEFAULT_SIZE, 456, Short.MAX_VALUE)
             .addGroup(BlancoLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(BlancoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
@@ -569,7 +532,7 @@ public class dlgReporteTransferencias extends javax.swing.JDialog {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(Blanco, javax.swing.GroupLayout.PREFERRED_SIZE, 372, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(Blanco, javax.swing.GroupLayout.PREFERRED_SIZE, 389, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
@@ -617,18 +580,18 @@ public class dlgReporteTransferencias extends javax.swing.JDialog {
             try {
                 if (ckLO.isSelected()) {
                     if (rbGFA.isSelected()) {
-                            LevantarReporte("\\Reports\\transferencias\\TransferenciasUno.jasper", Date.valueOf(lbFechaActualR.getText().trim()), Date.valueOf(lbFechaActualR.getText().trim()), Integer.parseInt(txtIdResponsable.getText().trim()));
-                        } else if (rbGFF.isSelected()) {
-                            if (txtFDesde.getText().trim().isEmpty()) {
-                                Mensajes.informacion("Fije la fecha desde");
-                            } else if (txtFHasta.getText().trim().isEmpty()) {
-                                Mensajes.informacion("Fije la fecha hasta");
-                            } else if (Date.valueOf(txtFDesdeR.getText().trim()).after(Date.valueOf(txtFHastaR.getText().trim()))) {
-                                Mensajes.error("Error en los parametros fijados.\nFavor verifique las fechas Desde y Hasta.");
-                            } else {
-                                LevantarReporte("\\Reports\\transferencias\\TransferenciasUno.jasper", Date.valueOf(txtFDesdeR.getText().trim()), Date.valueOf(txtFHastaR.getText().trim()), Integer.parseInt(txtIdResponsable.getText().trim()));
-                            }
-                        }  
+                        LevantarReporte("\\Reports\\transferencias\\TransferenciasUno.jasper", Date.valueOf(lbFechaActualR.getText().trim()), Date.valueOf(lbFechaActualR.getText().trim()), Integer.parseInt(txtIdResponsable.getText().trim()));
+                    } else if (rbGFF.isSelected()) {
+                        if (txtFDesde.getText().trim().isEmpty()) {
+                            Mensajes.informacion("Fije la fecha desde");
+                        } else if (txtFHasta.getText().trim().isEmpty()) {
+                            Mensajes.informacion("Fije la fecha hasta");
+                        } else if (Date.valueOf(txtFDesdeR.getText().trim()).after(Date.valueOf(txtFHastaR.getText().trim()))) {
+                            Mensajes.error("Error en los parametros fijados.\nFavor verifique las fechas Desde y Hasta.");
+                        } else {
+                            LevantarReporte("\\Reports\\transferencias\\TransferenciasUno.jasper", Date.valueOf(txtFDesdeR.getText().trim()), Date.valueOf(txtFHastaR.getText().trim()), Integer.parseInt(txtIdResponsable.getText().trim()));
+                        }
+                    }
                 } else if (ckRO.isSelected()) {
                     if (cboOrigen.getSelectedIndex() == 0) {
                         Mensajes.informacion("SELECCIONE UN RESPONSABLE");
@@ -648,11 +611,11 @@ public class dlgReporteTransferencias extends javax.swing.JDialog {
                         }
                     }
                 }
-            } catch (Exception e) {
+            } catch (NumberFormatException e) {
                 System.out.println(e.getMessage());
             }
 
-        }   
+        }
     }//GEN-LAST:event_btnGenerarActionPerformed
 
     private void rbGFAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbGFAActionPerformed
@@ -701,13 +664,13 @@ public class dlgReporteTransferencias extends javax.swing.JDialog {
 
     private void cbCompletoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbCompletoActionPerformed
         // TODO add your handling code here:
-        if(cbCompleto.isSelected()){
+        if (cbCompleto.isSelected()) {
             ckLO.setEnabled(false);
             ckRO.setEnabled(false);
             cboOrigen.setEnabled(false);
             lbInfoMovilO.setText("");
             txtIdResponsable.setText("");
-        }else{
+        } else {
             ckLO.setEnabled(true);
             ckLO.setSelected(true);
             ckLOActionPerformed(null);
@@ -736,21 +699,15 @@ public class dlgReporteTransferencias extends javax.swing.JDialog {
             txtIdResponsable.setText("");
             lbInfoMovilO.setText("");
         } else {
-            prepararBD();
-            try {
-                String resp;
-                resp = cargarComboBox.getCodidgo(cboOrigen);
-                try {
-                    rs = sentencia.executeQuery("SELECT ven_codigo,idmovil, movil, ven_comision FROM v_vendedores WHERE ven_codigo=" + resp);
-                    rs.last();
-                    txtIdResponsable.setText(String.valueOf(rs.getInt("idmovil")));
-                    lbInfoMovilO.setText(" Referencia: " + rs.getString("movil"));
-                    rs.close();
-                } catch (SQLException ex) {
-                    Mensajes.error("Error al querer obtener ID del móvil: " + ex.getMessage());
-                }
-
+            String resp = cargarComboBox.getCodidgo(cboOrigen);
+            String sql = "SELECT ven_codigo,idmovil, movil, ven_comision FROM v_vendedores WHERE ven_codigo=" + resp;
+            try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
+                rs.last();
+                txtIdResponsable.setText(String.valueOf(rs.getInt("idmovil")));
+                lbInfoMovilO.setText(" Referencia: " + rs.getString("movil"));
+                rs.close();
             } catch (Exception pr) {
+                Mensajes.error("Error al querer obtener ID del móvil: " + pr.getMessage());
             }
         }
         //Comparar();

@@ -1,6 +1,5 @@
 package IU;
 
-import Componentes.ConexionBD;
 import Componentes.Mensajes;
 import Componentes.Software;
 import Componentes.cargarComboBoxMovil;
@@ -30,7 +29,7 @@ public class dlgGestArticulosMovil1 extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         titulo();
-        prepararBD();
+        //prepararBD();
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/Iconos/logo1.png")));
         Invisible();
         //calcularGanancia();
@@ -1633,7 +1632,7 @@ public class dlgGestArticulosMovil1 extends javax.swing.JDialog {
             dlgBuscarArticuloCompra1.tbDetalle.clearSelection();
     }
 
-    public static void prepararBD() {
+    /*public static void prepararBD() {
         try {
             con = (MariaDbConnection) new ConexionBD().getConexionMovil();
             if (con == null) {
@@ -1644,7 +1643,7 @@ public class dlgGestArticulosMovil1 extends javax.swing.JDialog {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-    }
+    }*/
 
     public void modcboClasificacion() {
         DefaultComboBoxModel ml = new DefaultComboBoxModel();

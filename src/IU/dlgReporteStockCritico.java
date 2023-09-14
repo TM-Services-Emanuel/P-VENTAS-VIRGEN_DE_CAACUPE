@@ -1,24 +1,22 @@
 package IU;
 
-import Componentes.ConexionBD;
+import Componentes.DataSourceService;
 import Componentes.Mensajes;
 import Componentes.Reporte;
 import Componentes.cargarComboBox;
 import java.awt.Toolkit;
-import org.mariadb.jdbc.MariaDbConnection;
-import org.mariadb.jdbc.MariaDbStatement;
 import java.sql.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class dlgReporteStockCritico extends javax.swing.JDialog {
 
     public Reporte jasper;
-    public static ResultSet rs;
-    public static MariaDbStatement sentencia;
-    public static MariaDbConnection con;
     static int codLab;
     static int codFam;
+    static DataSourceService dss = new DataSourceService();
 
-    public dlgReporteStockCritico(java.awt.Frame parent, boolean modal) {
+    public dlgReporteStockCritico(java.awt.Frame parent, boolean modal) throws SQLException {
         super(parent, modal);
         initComponents();
         jasper = new Reporte();
@@ -29,21 +27,6 @@ public class dlgReporteStockCritico extends javax.swing.JDialog {
     private void CargarCombos() {
         cargarComboBox.cargar(cbLaboratorio, "SELECT * FROM laboratorio WHERE lab_indicador='S'");
         cargarComboBox.cargar(cbFamilia, "SELECT * FROM familia WHERE fam_indicador='S'");
-    }
-
-    public static void prepararBD() {
-        {
-            try {
-                con = (MariaDbConnection) new ConexionBD().getConexion();
-                if (con == null) {
-                    System.out.println("No hay Conexion con la Base de Datos");
-                } else {
-                    sentencia = (MariaDbStatement) con.createStatement();
-                }
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -247,23 +230,18 @@ public class dlgReporteStockCritico extends javax.swing.JDialog {
             jasper.StockCrGral(/*System.getProperty("user.dir")+*/"\\Reports\\articulos\\controlstock.jasper");
         } else if (rbReporteL.isSelected()) {
             if (cbLaboratorio.getSelectedIndex() != 0) {
-                try {
-                    prepararBD();
-                    String lab;
-                    lab = cbLaboratorio.getSelectedItem().toString();
-                    try {
-                        rs = sentencia.executeQuery("SELECT * FROM laboratorio WHERE lab_nombre='" + lab + "'");
-                        rs.last();
-                        codLab = rs.getInt("lab_codigo");
-                        rs.close();
-                    } catch (SQLException ex) {
-                        Mensajes.error("Error al querer obtener ID del laboratorio");
-                    }
+                String lab = cbLaboratorio.getSelectedItem().toString();
+                String sql = "SELECT * FROM laboratorio WHERE lab_nombre='" + lab + "'";
+                try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
+                    rs.last();
+                    codLab = rs.getInt("lab_codigo");
+                    rs.close();
                     jasper.StockCrL("\\Reports\\articulos\\controlstockxlaboratorio.jasper", "codLab", codLab);
                 } catch (Exception pr) {
-                    Mensajes.informacion("No existe Reporte para esta Marca");
+                    Mensajes.error("Error al querer obtener ID del laboratorio");
                 }
             } else {
+                jasper.StockCrL("\\Reports\\articulos\\controlstockxlaboratorio.jasper", "codLab", codLab);
                 Mensajes.error("Seleccione un Laboratorio");
                 cbLaboratorio.requestFocus();
                 cbLaboratorio.setPopupVisible(true);
@@ -271,21 +249,15 @@ public class dlgReporteStockCritico extends javax.swing.JDialog {
 
         } else {
             if (cbFamilia.getSelectedIndex() != 0) {
-                try {
-                    prepararBD();
-                    String fam;
-                    fam = cbFamilia.getSelectedItem().toString();
-                    try {
-                        rs = sentencia.executeQuery("SELECT * FROM familia WHERE fam_nombre='" + fam + "'");
-                        rs.last();
-                        codFam = rs.getInt("fam_codigo");
-                        rs.close();
-                    } catch (SQLException ex) {
-                        Mensajes.error("Error al querer obtener ID de la Familia");
-                    }
+                String fam = cbFamilia.getSelectedItem().toString();
+                String sql = "SELECT * FROM familia WHERE fam_nombre='" + fam + "'";
+                try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
+                    rs.last();
+                    codFam = rs.getInt("fam_codigo");
+                    rs.close();
                     jasper.StockCrL("\\Reports\\articulos\\controlstockxfamilia.jasper", "codFam", codFam);
                 } catch (Exception pr) {
-                    Mensajes.informacion("No existe Reporte para esta Familia");
+                    Mensajes.error("Error al querer obtener ID de la Familia");
                 }
             } else {
                 Mensajes.error("Seleccione una Familia");
@@ -340,8 +312,8 @@ public class dlgReporteStockCritico extends javax.swing.JDialog {
         //</editor-fold>
 
         /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
+        java.awt.EventQueue.invokeLater(() -> {
+            try {
                 dlgReporteStockCritico dialog = new dlgReporteStockCritico(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
@@ -350,6 +322,8 @@ public class dlgReporteStockCritico extends javax.swing.JDialog {
                     }
                 });
                 dialog.setVisible(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(dlgReporteStockCritico.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
     }

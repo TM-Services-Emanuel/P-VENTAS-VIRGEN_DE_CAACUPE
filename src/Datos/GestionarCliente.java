@@ -99,7 +99,7 @@ public class GestionarCliente {
         sql.append(" FROM clientes ");
         sql.append(" JOIN ciudad ON clientes.ciudad_idciudad = ciudad.idciudad");
         sql.append(" WHERE clientes.estado = 'S'");
-        //sql.append(" LIMIT 4000 ");
+        sql.append(" ORDER BY clientes.idcliente");
         return OperacionMovil.getTabla(sql.toString());
     }
 

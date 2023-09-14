@@ -1,6 +1,7 @@
 package IU;
 
-import Componentes.ConexionBD;
+import Componentes.DataSourceService;
+import Componentes.DataSourceService1;
 import Componentes.Fecha;
 import Componentes.Mensajes;
 import Componentes.cargarComboBox;
@@ -11,87 +12,56 @@ import Datos.GestionarDeudas;
 import java.awt.HeadlessException;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.text.DecimalFormat;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
-import org.mariadb.jdbc.MariaDbConnection;
-import org.mariadb.jdbc.MariaDbStatement;
 
 public final class dlgGestDeudas extends javax.swing.JDialog {
 
-    public static ResultSet rs;
-    public static MariaDbStatement sentencia;
-    public static MariaDbConnection con;
-    public static MariaDbStatement sentenciaM;
-    public static MariaDbConnection conM;
+    static DataSourceService1 dss1 = new DataSourceService1();
+    static DataSourceService dss = new DataSourceService();
 
     public dlgGestDeudas(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         cargarIcono();
-        prepararBD();
         idmovil.setVisible(false);
         idCliente.setVisible(false);
         btnNuevo.doClick();
     }
 
-    public static void prepararBD() {
-        try {
-            con = (MariaDbConnection) new ConexionBD().getConexion();
-            if (con == null) {
-                System.out.println("No hay Conexion con la Base de Datos");
-            } else {
-                sentencia = (MariaDbStatement) con.createStatement();
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-
-        try {
-            conM = (MariaDbConnection) new ConexionBD().getConexionMovil();
-            if (conM == null) {
-                System.out.println("No hay Conexion con la Base de Datos Móvil");
-            } else {
-                sentenciaM = (MariaDbStatement) conM.createStatement();
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
     public void modCbOrigen() {
         DefaultComboBoxModel ml = new DefaultComboBoxModel();
-        String codMovil = idmovil.getText().trim();
-        try {
-            rs = sentencia.executeQuery("SELECT * FROM movil_reparto WHERE estado='S'");
+        String sql = "SELECT * FROM movil_reparto WHERE estado='S'";
+        String sql2 = "SELECT * FROM movil_reparto WHERE idmovil=" + idmovil.getText().trim();
+        try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql); ResultSet rss = st.executeQuery(sql2)) {
             ml.addElement("SELEC. UNA OPCIÓN");
             while (rs.next()) {
                 ml.addElement(rs.getString("descripcion"));
-
             }
-
-            ResultSet rss = sentencia.executeQuery("SELECT * FROM movil_reparto WHERE idmovil=" + codMovil);
             rss.first();
             Object descripcion = (Object) rss.getString("descripcion");
             dlgGestDeudas.cbReparto.setModel(ml);
             dlgGestDeudas.cbReparto.setSelectedItem(descripcion);
             rs.close();
             rss.close();
+            st.close();
+            cn.close();
         } catch (SQLException ew) {
             //Mensajes.error("TIENES UN ERROR AL CARGAR LOS LABORATORIOS: "+ew.getMessage().toUpperCase());
         }
     }
 
     public void modCliente() {
-        String codCliente = idCliente.getText().trim();
-        try {
-            rs = sentenciaM.executeQuery("SELECT razon_social, ruc FROM clientes WHERE idcliente=" + codCliente);
+        String sql = "SELECT razon_social, ruc FROM clientes WHERE idcliente=" + idCliente.getText().trim();
+        try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
             rs.first();
             txtRazonS.setText(rs.getString("razon_social"));
             txtRuc.setText(rs.getString("ruc"));
             rs.close();
+            st.close();
+            cn.close();
         } catch (Exception e) {
         }
     }
@@ -938,7 +908,7 @@ public final class dlgGestDeudas extends javax.swing.JDialog {
         CabecerasTablas.DeudaPendiete(dlgDeudas.tbDeudasSaldadas);
         CabecerasTablas.limpiarTablasDeudasPendientes(dlgDeudas.tbDeudasSaldadas);
         ControlDeudas.listarDeudasSaldadas(dlgDeudas.tbDeudasSaldadas);
-        
+
         dlgDeudas.Renders();
 
         DecimalFormat formateador = new DecimalFormat("#,###");

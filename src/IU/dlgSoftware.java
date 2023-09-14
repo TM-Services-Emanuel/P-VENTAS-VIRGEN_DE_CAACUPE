@@ -5,26 +5,22 @@
  */
 package IU;
 
-import Componentes.ConexionBD;
+import Componentes.DataSourceService;
 import Componentes.Mensajes;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import org.mariadb.jdbc.MariaDbConnection;
-import org.mariadb.jdbc.MariaDbStatement;
+import java.sql.*;
 
 /**
  *
  * @author ADMIN
  */
 public class dlgSoftware extends javax.swing.JDialog {
-    
-    public static ResultSet rs;
-    public static MariaDbStatement st;
-    public static MariaDbConnection con;
+
     public static int ban;
+    static DataSourceService dss = new DataSourceService();
 
     /**
      * Creates new form dlgSoftware
+     *
      * @param parent
      * @param modal
      */
@@ -34,28 +30,12 @@ public class dlgSoftware extends javax.swing.JDialog {
         Informacion();
         txtCod.setVisible(false);
     }
-    
-    public static void prepararBD() {
-        try {
-            con = (MariaDbConnection) new ConexionBD().getConexion();
-            if (con == null) {
-                System.out.println("No hay Conexion con la Base de Datos");
-            } else {
-                st = (MariaDbStatement) con.createStatement();
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-    
+
     public static void Informacion() {
-        prepararBD();
-        try {
-            String sql = "SELECT * FROM software WHERE indicador='S'";
-            rs = st.executeQuery(sql);
+        String sql = "SELECT * FROM software WHERE indicador='S'";
+        try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
             rs.first();
-            ban=1;
-            
+            ban = 1;
             txtCod.setText(rs.getString(1));
             txtNombre.setText(rs.getString(2));
             txtDescripcion.setText(rs.getString(3));
@@ -64,9 +44,9 @@ public class dlgSoftware extends javax.swing.JDialog {
             txtTitulo.setText(rs.getString(6));
             txtCelular.setText(rs.getString(7));
             txtCorreo.setText(rs.getString(8));
-            
+
         } catch (SQLException ee) {
-            ban=0;
+            ban = 0;
             txtNombre.setText("");
             txtDescripcion.setText("");
             txtVersion.setText("");
@@ -76,42 +56,38 @@ public class dlgSoftware extends javax.swing.JDialog {
             txtCorreo.setText("");
         }
     }
-    
+
     public void Guardar() {
-        prepararBD();
-        try {
-            String sql= "INSERT INTO software VALUES (0,'"+txtNombre.getText()+"','"+txtDescripcion.getText()+"','"+txtVersion.getText()+"','"+txtDesarrollador.getText()+"','"+txtTitulo.getText()+"','"+txtCelular.getText()+"','"+txtCorreo.getText()+"','S')";
-            rs = st.executeQuery(sql);
+        String sql = "INSERT INTO software VALUES (0,'" + txtNombre.getText() + "','" + txtDescripcion.getText() + "','" + txtVersion.getText() + "','" + txtDesarrollador.getText() + "','" + txtTitulo.getText() + "','" + txtCelular.getText() + "','" + txtCorreo.getText() + "','S')";
+        try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
             Mensajes.informacion("Datos del software guardado");
             this.dispose();
-        }catch(SQLException e){
-            Mensajes.error("Error al guardar datos del software: "+e.getMessage());
+        } catch (SQLException e) {
+            Mensajes.error("Error al guardar datos del software: " + e.getMessage());
         }
     }
-    
+
     public void Modificar() {
-        prepararBD();
-        try {
-            String sql= "UPDATE software SET nombre='"+txtNombre.getText()+"', descripcion='"+txtDescripcion.getText()+"', version='"+txtVersion.getText()+"', desarrollador='"+txtDesarrollador.getText()+"', profesion='"+txtTitulo.getText()+"', tel_desarrollador='"+txtCelular.getText()+"', correo='"+txtCorreo.getText()+"' WHERE idsoftware="+txtCod.getText();
-            rs = st.executeQuery(sql);
+        String sql = "UPDATE software SET nombre='" + txtNombre.getText() + "', descripcion='" + txtDescripcion.getText() + "', version='" + txtVersion.getText() + "', desarrollador='" + txtDesarrollador.getText() + "', profesion='" + txtTitulo.getText() + "', tel_desarrollador='" + txtCelular.getText() + "', correo='" + txtCorreo.getText() + "' WHERE idsoftware=" + txtCod.getText();
+        try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
             Mensajes.informacion("Datos del software actualizado");
             this.dispose();
-        }catch(SQLException e){
-            Mensajes.error("Error al Actualizar datos del software: "+e.getMessage());
+        } catch (SQLException e) {
+            Mensajes.error("Error al Actualizar datos del software: " + e.getMessage());
         }
     }
+
     public void Eliminar() {
-        prepararBD();
-        try {
-            String sql= "UPDATE software SET indicador='N' WHERE idsoftware="+txtCod.getText();
-            rs = st.executeQuery(sql);
+        String sql = "UPDATE software SET indicador='N' WHERE idsoftware=" + txtCod.getText();
+        try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
             Mensajes.informacion("Datos del software Eliminados");
             this.dispose();
-        }catch(SQLException e){
-            Mensajes.error("Error al Eliminar datos del software: "+e.getMessage());
+        } catch (SQLException e) {
+            Mensajes.error("Error al Eliminar datos del software: " + e.getMessage());
         }
     }
-    public void Limpiar(){
+
+    public void Limpiar() {
         txtCod.setText("");
         txtNombre.setText("");
         txtDescripcion.setText("");
@@ -120,7 +96,7 @@ public class dlgSoftware extends javax.swing.JDialog {
         txtTitulo.setText("");
         txtCelular.setText("");
         txtCorreo.setText("");
-        
+
     }
 
     /**
@@ -290,29 +266,29 @@ public class dlgSoftware extends javax.swing.JDialog {
 
     private void GuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GuardarActionPerformed
         // TODO add your handling code here:
-        if(txtNombre.getText().trim().isEmpty()){
+        if (txtNombre.getText().trim().isEmpty()) {
             txtNombre.requestFocus();
-        }else if(txtDescripcion.getText().trim().isEmpty()){
+        } else if (txtDescripcion.getText().trim().isEmpty()) {
             txtDescripcion.requestFocus();
-        }else if(txtVersion.getText().trim().isEmpty()){
+        } else if (txtVersion.getText().trim().isEmpty()) {
             txtVersion.requestFocus();
-        }else if(txtDesarrollador.getText().trim().isEmpty()){
+        } else if (txtDesarrollador.getText().trim().isEmpty()) {
             txtDesarrollador.requestFocus();
-        }else if(txtTitulo.getText().trim().isEmpty()){
+        } else if (txtTitulo.getText().trim().isEmpty()) {
             txtTitulo.requestFocus();
-        }else if(txtCelular.getText().trim().isEmpty()){
+        } else if (txtCelular.getText().trim().isEmpty()) {
             txtCelular.requestFocus();
-        }else if(txtCorreo.getText().trim().isEmpty()){
+        } else if (txtCorreo.getText().trim().isEmpty()) {
             txtCorreo.requestFocus();
-        }else{
-            if(ban==1){
+        } else {
+            if (ban == 1) {
                 Modificar();
-            }else{
+            } else {
                 Guardar();
             }
-            
+
         }
-        
+
     }//GEN-LAST:event_GuardarActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed

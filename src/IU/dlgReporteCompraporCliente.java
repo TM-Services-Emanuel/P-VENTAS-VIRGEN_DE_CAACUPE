@@ -1,6 +1,6 @@
 package IU;
 
-import Componentes.ConexionBD;
+import Componentes.DataSourceService;
 import Componentes.Fecha;
 import Componentes.Mensajes;
 import Componentes.Reporte;
@@ -11,6 +11,8 @@ import org.mariadb.jdbc.MariaDbStatement;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -21,15 +23,9 @@ import net.sf.jasperreports.swing.JRViewer;
 public class dlgReporteCompraporCliente extends javax.swing.JDialog {
 
     public Reporte jasper;
-    public static ResultSet rs;
-    public static MariaDbStatement sentencia;
-    public static MariaDbConnection con;
-    public static MariaDbStatement sentenciaM;
-    public static MariaDbConnection conM;
-    static String Fdesde;
-    static String Fhasta;
+    static DataSourceService dss = new DataSourceService();
 
-    public dlgReporteCompraporCliente(java.awt.Frame parent, boolean modal) {
+    public dlgReporteCompraporCliente(java.awt.Frame parent, boolean modal) throws SQLException {
         super(parent, modal);
         initComponents();
         jasper = new Reporte();
@@ -66,35 +62,9 @@ public class dlgReporteCompraporCliente extends javax.swing.JDialog {
         txtCod.setVisible(false);
     }
 
-    public static void prepararBD() {
-        {
-            try {
-                con = (MariaDbConnection) new ConexionBD().getConexion();
-                if (con == null) {
-                    System.out.println("No hay Conexion con la Base de Datos");
-                } else {
-                    sentencia = (MariaDbStatement) con.createStatement();
-                }
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
-
-            try {
-                conM = (MariaDbConnection) new ConexionBD().getConexionMovil();
-                if (con == null) {
-                    System.out.println("No hay Conexion con la Base de Datos Móvil");
-                } else {
-                    sentenciaM = (MariaDbStatement) conM.createStatement();
-                }
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
-        }
-    }
-
     private void LevantarReporte(String Dir, String Nombre1, Date Valor1, String Nombre2, Date Valor2) {
         VisorReportes vr = new VisorReportes(null, true);
-        try {
+        try (Connection cn = dss.getDataSource().getConnection()) {
             //prepararBD();
             //archivo jasper
             //URL  jasperUrl = this.getClass().getResource("\\Reports\\repartos\\movimiento_reparto_E.jasper");
@@ -108,7 +78,7 @@ public class dlgReporteCompraporCliente extends javax.swing.JDialog {
             parametros.put(Nombre2, Valor2);
 
             //agregamos los parametros y la conexion a la base de datos
-            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametros, con);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametros, cn);
             //se crea el visor con el reporte
             JRViewer jRViewer = new JRViewer(jasperPrint);
             //se elimina elementos del contenedor JPanel
@@ -120,8 +90,8 @@ public class dlgReporteCompraporCliente extends javax.swing.JDialog {
             jRViewer.setVisible(true);
             VisorReportes.jpContainer.repaint();
             VisorReportes.jpContainer.revalidate();
-        } catch (JRException ex) {
-            System.err.println(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
         }
         //vr.setSize(250, 50);
         vr.setResizable(false);
@@ -131,10 +101,7 @@ public class dlgReporteCompraporCliente extends javax.swing.JDialog {
 
     private void LevantarReporte1(String Dir, String Nombre1, Date Valor1, String Nombre2, Date Valor2, String Nombre3, int Valor3) {
         VisorReportes vr = new VisorReportes(null, true);
-        try {
-            //prepararBD();
-            //archivo jasper
-            //URL  jasperUrl = this.getClass().getResource("\\Reports\\repartos\\movimiento_reparto_E.jasper");
+        try (Connection cn = dss.getDataSource().getConnection()){
             String jasperUrl = System.getProperty("user.dir").concat(Dir);
             JasperReport report = (JasperReport) JRLoader.loadObjectFromFile(jasperUrl);
             //para los parametro
@@ -146,7 +113,7 @@ public class dlgReporteCompraporCliente extends javax.swing.JDialog {
             parametros.put(Nombre2, Valor2);
 
             //agregamos los parametros y la conexion a la base de datos
-            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametros, con);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametros, cn);
             //se crea el visor con el reporte
             JRViewer jRViewer = new JRViewer(jasperPrint);
             //se elimina elementos del contenedor JPanel
@@ -158,8 +125,8 @@ public class dlgReporteCompraporCliente extends javax.swing.JDialog {
             jRViewer.setVisible(true);
             VisorReportes.jpContainer.repaint();
             VisorReportes.jpContainer.revalidate();
-        } catch (JRException ex) {
-            System.err.println(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
         }
         //vr.setSize(250, 50);
         vr.setResizable(false);
@@ -636,7 +603,6 @@ public class dlgReporteCompraporCliente extends javax.swing.JDialog {
     private void btnGenerarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerarActionPerformed
         // TODO add your handling code here:
         try {
-            prepararBD();
             if (cbTodos.isSelected()) {
                 if (rbC.isSelected()) {
                     if (rbRankingA.isSelected()) {
@@ -712,8 +678,6 @@ public class dlgReporteCompraporCliente extends javax.swing.JDialog {
 
                 }
             }
-            con.close();
-            conM.close();
         } catch (Exception e) {
         }
 
@@ -935,8 +899,8 @@ public class dlgReporteCompraporCliente extends javax.swing.JDialog {
         //</editor-fold>
 
         /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
+        java.awt.EventQueue.invokeLater(() -> {
+            try {
                 dlgReporteCompraporCliente dialog = new dlgReporteCompraporCliente(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
@@ -945,6 +909,8 @@ public class dlgReporteCompraporCliente extends javax.swing.JDialog {
                     }
                 });
                 dialog.setVisible(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(dlgReporteCompraporCliente.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
     }

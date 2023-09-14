@@ -1,6 +1,6 @@
 package Controladores;
 
-import Componentes.ConexionBD;
+import Componentes.DataSourceService1;
 import Componentes.Fecha;
 import Componentes.Login;
 import Componentes.Mensajes;
@@ -13,32 +13,14 @@ import java.text.DecimalFormat;
 import java.util.List;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
-import org.mariadb.jdbc.MariaDbConnection;
-import org.mariadb.jdbc.MariaDbStatement;
 import java.sql.*;
 
 public class controlArticuloMovil {
 
-    public static MariaDbStatement sentencia;
-    public static MariaDbConnection con;
+    static DataSourceService1 dss = new DataSourceService1();
     static int codClasificacion;
     static int codUM;
     static int codImpuesto;
-
-    public static void prepararBD() {
-        {
-            try {
-                con = (MariaDbConnection) new ConexionBD().getConexionMovil();
-                if (con == null) {
-                    System.out.println("No hay Conexion con la Base de Datos");
-                } else {
-                    sentencia = (MariaDbStatement) con.createStatement();
-                }
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
-        }
-    }
 
     public static void aModifcar() {
         try {
@@ -128,53 +110,37 @@ public class controlArticuloMovil {
 
         String descripcion = dlgGestArticulosMovil.txtDescripcion.getText().toUpperCase();
 
-        try {
-            prepararBD();
-            String clas;
-            clas = dlgGestArticulosMovil.cboClasificacion.getSelectedItem().toString();
-            try {
-                ResultSet rs = sentencia.executeQuery("SELECT * FROM division WHERE descripcion='" + clas + "'");
-                rs.last();
-                codClasificacion = rs.getInt("iddivision");
-                rs.close();
-                sentencia.close();
-                con.close();
-            } catch (SQLException ex) {
-                Mensajes.error("Error al querer obtener valor de la clasificación: " + ex.getMessage());
-            }
-        } catch (Exception pr) {
+        String sql = "SELECT * FROM division WHERE descripcion='" + dlgGestArticulosMovil.cboClasificacion.getSelectedItem().toString() + "'";
+        try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
+            rs.last();
+            codClasificacion = rs.getInt("iddivision");
+            rs.close();
+            st.close();
+            cn.close();
+        } catch (SQLException ex) {
+            Mensajes.error("Error al querer obtener valor de la clasificación: " + ex.getMessage());
         }
-        try {
-            prepararBD();
-            String um;
-            um = dlgGestArticulosMovil.cboUM.getSelectedItem().toString();
-            try {
-                ResultSet rs = sentencia.executeQuery("SELECT * FROM unidad_medida WHERE unidadmedida='" + um + "'");
-                rs.last();
-                codUM = rs.getInt("idunidad");
-                rs.close();
-                sentencia.close();
-                con.close();
-            } catch (SQLException ex) {
-                Mensajes.error("Error al querer obtener valor de la Unidad de medida: " + ex.getMessage());
-            }
-        } catch (Exception pr) {
+
+        String sql1 = "SELECT * FROM unidad_medida WHERE unidadmedida='" + dlgGestArticulosMovil.cboUM.getSelectedItem().toString() + "'";
+        try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql1)) {
+            rs.last();
+            codUM = rs.getInt("idunidad");
+            rs.close();
+            st.close();
+            cn.close();
+        } catch (SQLException ex) {
+            Mensajes.error("Error al querer obtener valor de la Unidad de medida: " + ex.getMessage());
         }
-        try {
-            prepararBD();
-            String iva;
-            iva = dlgGestArticulosMovil.cboImpuesto.getSelectedItem().toString();
-            try {
-                ResultSet rs = sentencia.executeQuery("SELECT * FROM iva WHERE descripcion='" + iva + "'");
-                rs.last();
-                codImpuesto = rs.getInt("idiva");
-                rs.close();
-                sentencia.close();
-                con.close();
-            } catch (SQLException ex) {
-                Mensajes.error("Error al querer obtener valor del impuesto: " + ex.getMessage());
-            }
-        } catch (Exception pr) {
+
+        String sql2 = "SELECT * FROM iva WHERE descripcion='" + dlgGestArticulosMovil.cboImpuesto.getSelectedItem().toString() + "'";
+        try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql2)) {
+            rs.last();
+            codImpuesto = rs.getInt("idiva");
+            rs.close();
+            st.close();
+            cn.close();
+        } catch (SQLException ex) {
+            Mensajes.error("Error al querer obtener valor del impuesto: " + ex.getMessage());
         }
 
         int Pcosto = Integer.parseInt(dlgGestArticulosMovil.txtPrecioCostoL.getText().trim());
@@ -232,53 +198,37 @@ public class controlArticuloMovil {
 
         String descripcion = dlgGestArticulosMovil11.txtDescripcion.getText().toUpperCase();
 
-        try {
-            prepararBD();
-            String clas;
-            clas = dlgGestArticulosMovil11.cboClasificacion.getSelectedItem().toString();
-            try {
-                ResultSet rs = sentencia.executeQuery("SELECT * FROM division WHERE descripcion='" + clas + "'");
-                rs.last();
-                codClasificacion = rs.getInt("iddivision");
-                rs.close();
-                sentencia.close();
-                con.close();
-            } catch (SQLException ex) {
-                Mensajes.error("Error al querer obtener valor de la clasificación: " + ex.getMessage());
-            }
-        } catch (Exception pr) {
+        String sql = "SELECT * FROM division WHERE descripcion='" + dlgGestArticulosMovil.cboClasificacion.getSelectedItem().toString() + "'";
+        try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
+            rs.last();
+            codClasificacion = rs.getInt("iddivision");
+            rs.close();
+            st.close();
+            cn.close();
+        } catch (SQLException ex) {
+            Mensajes.error("Error al querer obtener valor de la clasificación: " + ex.getMessage());
         }
-        try {
-            prepararBD();
-            String um;
-            um = dlgGestArticulosMovil11.cboUM.getSelectedItem().toString();
-            try {
-                ResultSet rs = sentencia.executeQuery("SELECT * FROM unidad_medida WHERE unidadmedida='" + um + "'");
-                rs.last();
-                codUM = rs.getInt("idunidad");
-                rs.close();
-                sentencia.close();
-                con.close();
-            } catch (SQLException ex) {
-                Mensajes.error("Error al querer obtener valor de la Unidad de medida: " + ex.getMessage());
-            }
-        } catch (Exception pr) {
+
+        String sql1 = "SELECT * FROM unidad_medida WHERE unidadmedida='" + dlgGestArticulosMovil.cboUM.getSelectedItem().toString() + "'";
+        try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql1)) {
+            rs.last();
+            codUM = rs.getInt("idunidad");
+            rs.close();
+            st.close();
+            cn.close();
+        } catch (SQLException ex) {
+            Mensajes.error("Error al querer obtener valor de la Unidad de medida: " + ex.getMessage());
         }
-        try {
-            prepararBD();
-            String iva;
-            iva = dlgGestArticulosMovil11.cboImpuesto.getSelectedItem().toString();
-            try {
-                ResultSet rs = sentencia.executeQuery("SELECT * FROM iva WHERE descripcion='" + iva + "'");
-                rs.last();
-                codImpuesto = rs.getInt("idiva");
-                rs.close();
-                sentencia.close();
-                con.close();
-            } catch (SQLException ex) {
-                Mensajes.error("Error al querer obtener valor del impuesto: " + ex.getMessage());
-            }
-        } catch (Exception pr) {
+
+        String sql2 = "SELECT * FROM iva WHERE descripcion='" + dlgGestArticulosMovil.cboImpuesto.getSelectedItem().toString() + "'";
+        try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql2)) {
+            rs.last();
+            codImpuesto = rs.getInt("idiva");
+            rs.close();
+            st.close();
+            cn.close();
+        } catch (SQLException ex) {
+            Mensajes.error("Error al querer obtener valor del impuesto: " + ex.getMessage());
         }
 
         int Pcosto = Integer.parseInt(dlgGestArticulosMovil11.txtPrecioCostoL.getText().trim());
@@ -620,8 +570,8 @@ public class controlArticuloMovil {
             tb.addRow(fila);
         }
     }
-    
-     public static void listAuditoriaProductos(JTable tabla,String idproducto, String fecha1, String fecha2)//Lista las facturas realizadas
+
+    public static void listAuditoriaProductos(JTable tabla, String idproducto, String fecha1, String fecha2)//Lista las facturas realizadas
     {
         List lista;
         lista = GestionarArticulosMovil.listAuditoriaProductos(idproducto, fecha1, fecha2);
@@ -629,9 +579,14 @@ public class controlArticuloMovil {
             DefaultTableModel tb = (DefaultTableModel) tabla.getModel();
             Object[] fila = (Object[]) lista.get(i);
             fila[0] = fila[0].toString();
-            fila[1] = fila[1].toString();
+            if(fila[1] == null){
+                fila[1]=0;
+            }else{
+                fila[1] = fila[1].toString();
+            }
+            //fila[1] = fila[1].toString();
             fila[2] = fila[2].toString();
-            fila[3] = String.valueOf(Double.parseDouble(fila[2].toString())-Double.parseDouble(fila[1].toString()));
+            fila[3] = String.valueOf(Double.parseDouble(fila[2].toString()) - Double.parseDouble(fila[1].toString()));
             fila[4] = Fecha.formatoFechaFFHH(fila[4].toString());
             fila[5] = fila[5].toString();
             tb.addRow(fila);

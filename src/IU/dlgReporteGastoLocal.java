@@ -1,16 +1,13 @@
 package IU;
 
-import Componentes.ConexionBD;
+import Componentes.DataSourceService;
 import Componentes.Fecha;
 import Componentes.Mensajes;
 import java.awt.BorderLayout;
 import java.awt.Toolkit;
-import org.mariadb.jdbc.MariaDbConnection;
-import org.mariadb.jdbc.MariaDbStatement;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
-import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
@@ -19,11 +16,7 @@ import net.sf.jasperreports.swing.JRViewer;
 
 public class dlgReporteGastoLocal extends javax.swing.JDialog {
 
-    public static ResultSet rs;
-    public static MariaDbStatement sentencia;
-    public static MariaDbConnection con;
-    static String Fdesde;
-    static String Fhasta;
+    static DataSourceService dss = new DataSourceService();
 
     public dlgReporteGastoLocal(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -31,38 +24,22 @@ public class dlgReporteGastoLocal extends javax.swing.JDialog {
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/Iconos/logo1.png")));
         CargarFecha();
         invisible();
-        prepararBD();
     }
 
     private void CargarFecha() {
         lbFechaActual.setText(Fecha.fechaFormulario());
         lbFechaActualR.setText(Fecha.fechaCorrecta());
     }
-    
-    private void invisible(){
+
+    private void invisible() {
         txtFDesdeR.setVisible(false);
         txtFHastaR.setVisible(false);
         lbFechaActualR.setVisible(false);
     }
 
-    public static void prepararBD() {
-        {
-            try {
-                con = (MariaDbConnection) new ConexionBD().getConexion();
-                if (con == null) {
-                    System.out.println("No hay Conexion con la Base de Datos");
-                } else {
-                    sentencia = (MariaDbStatement) con.createStatement();
-                }
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
-        }
-    }
-    
-    private void LevantarReporte(String Dir, Date desde, Date hasta, String tipo, String origen){
+    private void LevantarReporte(String Dir, Date desde, Date hasta, String tipo, String origen) {
         VisorReportes vr = new VisorReportes(null, true);
-        try {
+        try (Connection cn = dss.getDataSource().getConnection()){
             //prepararBD();
             //archivo jasper
             //URL  jasperUrl = this.getClass().getResource("\\Reports\\repartos\\movimiento_reparto_E.jasper");
@@ -77,7 +54,7 @@ public class dlgReporteGastoLocal extends javax.swing.JDialog {
             parametros.put("tipo", tipo);
             parametros.put("origen", origen);
             //agregamos los parametros y la conexion a la base de datos
-            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametros, con);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametros, cn);
             //se crea el visor con el reporte
             JRViewer jRViewer = new JRViewer(jasperPrint);
             //se elimina elementos del contenedor JPanel
@@ -89,7 +66,8 @@ public class dlgReporteGastoLocal extends javax.swing.JDialog {
             jRViewer.setVisible(true);
             VisorReportes.jpContainer.repaint();
             VisorReportes.jpContainer.revalidate();
-        } catch (JRException ex) {
+            cn.close();
+        } catch (Exception ex) {
             System.err.println(ex.getMessage());
         }
         vr.setLocationRelativeTo(this);
@@ -529,7 +507,7 @@ public class dlgReporteGastoLocal extends javax.swing.JDialog {
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
-        }       
+        }
     }//GEN-LAST:event_btnGenerarActionPerformed
 
     private void rbGFAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbGFAActionPerformed

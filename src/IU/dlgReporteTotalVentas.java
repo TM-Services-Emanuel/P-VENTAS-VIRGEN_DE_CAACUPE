@@ -1,22 +1,19 @@
 package IU;
 
-import Componentes.ConexionBD;
+import Componentes.DataSourceService;
 import Componentes.Fecha;
 import Componentes.Mensajes;
-import Componentes.Reporte;
 import Componentes.clsExportarExcel1;
 import Controladores.CabecerasTablas;
 import Controladores.controlFactura;
-import static IU.dlgEmpresa.conM;
 import java.awt.BorderLayout;
 import java.awt.Toolkit;
 import java.io.IOException;
-import org.mariadb.jdbc.MariaDbConnection;
-import org.mariadb.jdbc.MariaDbStatement;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
-import net.sf.jasperreports.engine.JRException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
@@ -25,20 +22,12 @@ import net.sf.jasperreports.swing.JRViewer;
 
 public class dlgReporteTotalVentas extends javax.swing.JDialog {
 
-    public Reporte jasper;
-    public static ResultSet rs;
-    public static MariaDbStatement sentencia;
-    public static MariaDbConnection con;
-    public static MariaDbStatement sentenciaM;
-    public static MariaDbConnection conM;
-    static String Fdesde;
-    static String Fhasta;
     CabecerasTablas cabe = new CabecerasTablas();
+    static DataSourceService dss = new DataSourceService();
 
-    public dlgReporteTotalVentas(java.awt.Frame parent, boolean modal) {
+    public dlgReporteTotalVentas(java.awt.Frame parent, boolean modal) throws SQLException {
         super(parent, modal);
         initComponents();
-        jasper = new Reporte();
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/Iconos/logo1.png")));
         CargarFecha();
         invisible();
@@ -57,38 +46,9 @@ public class dlgReporteTotalVentas extends javax.swing.JDialog {
         lbFechaActualR.setVisible(false);
     }
 
-    public static void prepararBD() {
-        {
-            try {
-                con = (MariaDbConnection) new ConexionBD().getConexion();
-                if (con == null) {
-                    System.out.println("No hay Conexion con la Base de Datos");
-                } else {
-                    sentencia = (MariaDbStatement) con.createStatement();
-                }
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
-
-            try {
-                conM = (MariaDbConnection) new ConexionBD().getConexionMovil();
-                if (con == null) {
-                    System.out.println("No hay Conexion con la Base de Datos Móvil");
-                } else {
-                    sentenciaM = (MariaDbStatement) conM.createStatement();
-                }
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
-        }
-    }
-
     private void LevantarReporte(String Dir, String Nombre1, Date Valor1, String Nombre2, Date Valor2) {
         VisorReportes vr = new VisorReportes(null, true);
-        try {
-            //prepararBD();
-            //archivo jasper
-            //URL  jasperUrl = this.getClass().getResource("\\Reports\\repartos\\movimiento_reparto_E.jasper");
+        try (Connection cn = dss.getDataSource().getConnection()){
             String jasperUrl = System.getProperty("user.dir").concat(Dir);
             JasperReport report = (JasperReport) JRLoader.loadObjectFromFile(jasperUrl);
             //para los parametro
@@ -99,7 +59,7 @@ public class dlgReporteTotalVentas extends javax.swing.JDialog {
             parametros.put(Nombre2, Valor2);
 
             //agregamos los parametros y la conexion a la base de datos
-            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametros, con);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametros, cn);
             //se crea el visor con el reporte
             JRViewer jRViewer = new JRViewer(jasperPrint);
             //se elimina elementos del contenedor JPanel
@@ -110,8 +70,9 @@ public class dlgReporteTotalVentas extends javax.swing.JDialog {
             jRViewer.setZoomRatio((float) 1.00);
             jRViewer.setVisible(true);
             VisorReportes.jpContainer.repaint();
+            cn.close();
             VisorReportes.jpContainer.revalidate();
-        } catch (JRException ex) {
+        } catch (Exception ex) {
             System.err.println(ex.getMessage());
         }
         //vr.setSize(250, 50);
@@ -587,7 +548,6 @@ public class dlgReporteTotalVentas extends javax.swing.JDialog {
     private void btnGenerarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerarActionPerformed
         // TODO add your handling code here:
         try {
-            prepararBD();
             if (cbCompleto.isSelected()) {
                 if (rbRankingA.isSelected()) {
                     LevantarReporte("\\Reports\\ventas\\DetalleVentasFG.jasper", "desde", Date.valueOf(lbFechaActualR.getText().trim()), "hasta", Date.valueOf(lbFechaActualR.getText().trim()));
@@ -673,8 +633,6 @@ public class dlgReporteTotalVentas extends javax.swing.JDialog {
                 }
 
             }
-            con.close();
-            conM.close();
         } catch (Exception e) {
         }
     }//GEN-LAST:event_btnGenerarActionPerformed
@@ -801,8 +759,8 @@ public class dlgReporteTotalVentas extends javax.swing.JDialog {
         //</editor-fold>
 
         /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
+        java.awt.EventQueue.invokeLater(() -> {
+            try {
                 dlgReporteTotalVentas dialog = new dlgReporteTotalVentas(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
@@ -811,6 +769,8 @@ public class dlgReporteTotalVentas extends javax.swing.JDialog {
                     }
                 });
                 dialog.setVisible(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(dlgReporteTotalVentas.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
     }

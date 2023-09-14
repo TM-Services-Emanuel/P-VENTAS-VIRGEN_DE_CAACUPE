@@ -1,6 +1,7 @@
 package IU;
 
-import Componentes.ConexionBD;
+import Componentes.DataSourceService;
+import Componentes.DataSourceService1;
 import Componentes.Fecha;
 import Componentes.Mensajes;
 import Componentes.Reporte;
@@ -11,15 +12,14 @@ import Controladores.ControlCaja;
 import Datos.GestionarCaja;
 import Modelo.Caja;
 import java.awt.HeadlessException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import org.mariadb.jdbc.MariaDbConnection;
-import org.mariadb.jdbc.MariaDbStatement;
 
 public final class dlgCajaDia1 extends javax.swing.JDialog {
 
@@ -29,14 +29,10 @@ public final class dlgCajaDia1 extends javax.swing.JDialog {
     public int INI;
 
     public Reporte jasper;
+    static DataSourceService1 dss1 = new DataSourceService1();
+    static DataSourceService dss = new DataSourceService();
 
-    public static ResultSet rs;
-    public static MariaDbConnection con;
-    public static MariaDbStatement sentencia;
-    public static MariaDbConnection conMovil;
-    public static MariaDbStatement sentenciaMovil;
-
-    public dlgCajaDia1(java.awt.Frame parent, boolean modal) {
+    public dlgCajaDia1(java.awt.Frame parent, boolean modal) throws SQLException {
         super(parent, modal);
         initComponents();
         jasper = new Reporte();
@@ -65,7 +61,7 @@ public final class dlgCajaDia1 extends javax.swing.JDialog {
             } else {
                 lbEstado.setText("CERRADO");
             }
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             System.out.println(e.getMessage());
         }
         totalVentasCont();
@@ -115,34 +111,13 @@ public final class dlgCajaDia1 extends javax.swing.JDialog {
 
     }
 
-    public static void prepararBD() {
-        try {
-            con = (MariaDbConnection) new ConexionBD().getConexion();
-            conMovil = (MariaDbConnection) new ConexionBD().getConexionMovil();
-            if (con == null) {
-                System.out.println("No hay Conexion con la Base de Datos");
-            } else {
-                sentencia = (MariaDbStatement) con.createStatement();
-            }
-            if (conMovil == null) {
-                System.out.println("No hay Conexion con la Base de Datos Movil");
-            } else {
-                sentenciaMovil = (MariaDbStatement) conMovil.createStatement();
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
     public static void CalcularDiferencia(String desde, String hasta) {
-        prepararBD();
-        try {
+        StringBuilder sql = new StringBuilder("SELECT SUM(ca_diferencia) FROM caja WHERE ca_fechainicio>='");
+        sql.append(desde);
+        sql.append("' AND ca_fechainicio<='");
+        sql.append(hasta).append("'");
+        try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql.toString())) {
             DecimalFormat df = new DecimalFormat("#,###");
-            StringBuilder sql = new StringBuilder("SELECT SUM(ca_diferencia) FROM caja WHERE ca_fechainicio>='");
-            sql.append(desde);
-            sql.append("' AND ca_fechainicio<='");
-            sql.append(hasta).append("'");
-            rs = sentencia.executeQuery(sql.toString());
             rs.first();
             txtDifAcumulada.setText(df.format(rs.getInt(1)));
             rs.close();
@@ -1289,7 +1264,7 @@ public final class dlgCajaDia1 extends javax.swing.JDialog {
             String TotalVenta = (generarCodigos.getDecimales("SELECT IFNULL((select SUM(fac_totalfinal) from factura where caja_ca_id = " + NCaja + " and fac_indicador='S' and fac_tipoventa='CONTADO'),0)"));
             DecimalFormat df = new DecimalFormat("#,###");
             txtTotalVentas.setText(df.format(Integer.valueOf((TotalVenta.trim().replace(".", "").replace(",", "")))));
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             txtTotalVentas.setText("0");
         }
     }
@@ -1299,7 +1274,7 @@ public final class dlgCajaDia1 extends javax.swing.JDialog {
             String TotalVenta = (generarCodigos.getDecimales("SELECT IFNULL((select SUM(fac_totalfinal) from factura where caja_ca_id = " + NCaja + " and fac_indicador='S' and fac_tipoventa='CREDITO'),0)"));
             DecimalFormat df = new DecimalFormat("#,###");
             txtTotalVentasC.setText(df.format(Integer.valueOf((TotalVenta.trim().replace(".", "").replace(",", "")))));
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             txtTotalVentasC.setText("0");
         }
     }
@@ -1309,7 +1284,7 @@ public final class dlgCajaDia1 extends javax.swing.JDialog {
             String TotalCompra = (generarCodigos.getDecimales("SELECT IFNULL((select SUM(com_total) from compra where caja_ca_id = " + NCaja + " and com_indicador='S' and com_condpago='CONTADO' and tipo='L'),0)"));
             DecimalFormat df = new DecimalFormat("#,###");
             txtTotalCompra.setText(df.format(Integer.valueOf((TotalCompra.trim().replace(".", "").replace(",", "")))));
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             txtTotalCompra.setText("0");
         }
 
@@ -1320,7 +1295,7 @@ public final class dlgCajaDia1 extends javax.swing.JDialog {
             String TotalCompra = (generarCodigos.getDecimales("SELECT IFNULL((select SUM(com_total) from compra where caja_ca_id = " + NCaja + " and com_indicador='S' and com_condpago='CREDITO' and tipo='L'),0)"));
             DecimalFormat df = new DecimalFormat("#,###");
             txtTotalCompraC.setText(df.format(Integer.valueOf((TotalCompra.trim().replace(".", "").replace(",", "")))));
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             txtTotalCompraC.setText("0");
         }
 
@@ -1331,7 +1306,7 @@ public final class dlgCajaDia1 extends javax.swing.JDialog {
             DecimalFormat df = new DecimalFormat("#,###");
             String TotalGasto = (generarCodigos.getDecimales("SELECT IFNULL((select SUM(ga_importe) from gastos where caja_ca_id = " + NCaja + " and ga_indicador='S' AND tipo='L'),0)"));
             txtTotalGastos.setText(df.format(Integer.valueOf((TotalGasto.trim().replace(".", "").replace(",", "")))));
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             txtTotalGastos.setText("0");
         }
     }
@@ -1341,7 +1316,7 @@ public final class dlgCajaDia1 extends javax.swing.JDialog {
             DecimalFormat df = new DecimalFormat("#,###");
             String TotalGasto = (generarCodigos.getDecimales("SELECT IFNULL((select SUM(sal_totalfinal) from salida where sal_fecha='" + dlgBuscarCaja.txtFDesdeR.getText().trim() + "' and sal_indicador='S'),0)"));
             txtTotalSalida.setText(df.format(Integer.valueOf((TotalGasto.trim().replace(".", "").replace(",", "")))));
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             txtTotalSalida.setText("0");
         }
     }
@@ -1351,7 +1326,7 @@ public final class dlgCajaDia1 extends javax.swing.JDialog {
             String TotalIngreso = (generarCodigos.getDecimales("SELECT IFNULL((select SUM(ing_importe) from ingreso where caja_ca_id = " + NCaja + " and ing_indicador='S'),0)"));
             DecimalFormat df = new DecimalFormat("#,###");
             txtTotalIngreso.setText(df.format(Integer.valueOf((TotalIngreso.trim().replace(".", "").replace(",", "")))));
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             txtTotalIngreso.setText("0");
         }
 
@@ -1374,7 +1349,7 @@ public final class dlgCajaDia1 extends javax.swing.JDialog {
             int IG = Integer.parseInt(txtTotalVentas.getText().replace(",", "").replace(".", "")) + (Integer.parseInt(txtTotalIngreso.getText().replace(",", "").replace(".", "")));
             ING = IG;
             txtIngresoT.setText(df.format(IG));
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             txtIngresoT.setText("0");
         }
     }
@@ -1390,7 +1365,7 @@ public final class dlgCajaDia1 extends javax.swing.JDialog {
             String TotalVenta = (generarCodigos.getDecimales("SELECT IFNULL((select SUM(fac_totalfinal) from factura where caja_ca_id = " + NCaja + " and fac_indicador='S' and fac_tipoventa='CONTADO' and idboca=1),0)"));
             DecimalFormat df = new DecimalFormat("#,###");
             txtB1.setText(df.format(Integer.valueOf((TotalVenta.trim().replace(".", "").replace(",", "")))));
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             txtB1.setText("0");
         }
     }
@@ -1400,7 +1375,7 @@ public final class dlgCajaDia1 extends javax.swing.JDialog {
             String TotalVenta = (generarCodigos.getDecimales("SELECT IFNULL((select SUM(fac_totalfinal) from factura where caja_ca_id = " + NCaja + " and fac_indicador='S' and fac_tipoventa='CONTADO' and idboca=2),0)"));
             DecimalFormat df = new DecimalFormat("#,###");
             txtB2.setText(df.format(Integer.valueOf((TotalVenta.trim().replace(".", "").replace(",", "")))));
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             txtB2.setText("0");
         }
     }
@@ -1421,7 +1396,7 @@ public final class dlgCajaDia1 extends javax.swing.JDialog {
             String boca_1 = (generarCodigos.getDecimales("SELECT IFNULL((select entregado from arreglo_caja where idcaja = " + NCaja + " and idboca= 1),0) AS entregado1"));
             DecimalFormat df = new DecimalFormat("#,###");
             txtEntregado_boca_1.setText(df.format(Integer.valueOf((boca_1.trim().replace(".", "").replace(",", "")))));
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             txtEntregado_boca_1.setText("0");
         }
     }
@@ -1431,7 +1406,7 @@ public final class dlgCajaDia1 extends javax.swing.JDialog {
             String gastos_1 = (generarCodigos.getDecimales("SELECT IFNULL((select gastos from arreglo_caja where idcaja = " + NCaja + " and idboca= 1),0) AS gastos1"));
             DecimalFormat df = new DecimalFormat("#,###");
             txtGastos_boca_1.setText(df.format(Integer.valueOf((gastos_1.trim().replace(".", "").replace(",", "")))));
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             txtGastos_boca_1.setText("0");
         }
     }
@@ -1465,7 +1440,7 @@ public final class dlgCajaDia1 extends javax.swing.JDialog {
             String boca_2 = (generarCodigos.getDecimales("SELECT IFNULL((select entregado from arreglo_caja where idcaja = " + NCaja + " and idboca= 2),0) AS entregado2"));
             DecimalFormat df = new DecimalFormat("#,###");
             txtEntregado_boca_2.setText(df.format(Integer.valueOf((boca_2.trim().replace(".", "").replace(",", "")))));
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             txtEntregado_boca_2.setText("0");
         }
     }
@@ -1475,7 +1450,7 @@ public final class dlgCajaDia1 extends javax.swing.JDialog {
             String gastos_2 = (generarCodigos.getDecimales("SELECT IFNULL((select gastos from arreglo_caja where idcaja = " + NCaja + " and idboca= 2),0) AS gastos2"));
             DecimalFormat df = new DecimalFormat("#,###");
             txtGastos_boca_2.setText(df.format(Integer.valueOf((gastos_2.trim().replace(".", "").replace(",", "")))));
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             txtGastos_boca_2.setText("0");
         }
     }
@@ -1831,14 +1806,18 @@ public final class dlgCajaDia1 extends javax.swing.JDialog {
 
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(() -> {
-            dlgCajaDia1 dialog = new dlgCajaDia1(new javax.swing.JFrame(), true);
-            dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                @Override
-                public void windowClosing(java.awt.event.WindowEvent e) {
-                    System.exit(0);
-                }
-            });
-            dialog.setVisible(true);
+            try {
+                dlgCajaDia1 dialog = new dlgCajaDia1(new javax.swing.JFrame(), true);
+                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        System.exit(0);
+                    }
+                });
+                dialog.setVisible(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(dlgCajaDia1.class.getName()).log(Level.SEVERE, null, ex);
+            }
         });
     }
 

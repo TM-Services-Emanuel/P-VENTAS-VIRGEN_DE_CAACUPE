@@ -1,17 +1,14 @@
 package IU;
 
-import Componentes.ConexionBD;
+import Componentes.DataSourceService;
 import Componentes.Fecha;
 import Componentes.Mensajes;
 import Componentes.cargarComboBox;
 import java.awt.BorderLayout;
 import java.awt.Toolkit;
-import org.mariadb.jdbc.MariaDbConnection;
-import org.mariadb.jdbc.MariaDbStatement;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
-import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
@@ -20,13 +17,7 @@ import net.sf.jasperreports.swing.JRViewer;
 
 public class dlgReporteGananciaReparto extends javax.swing.JDialog {
 
-    public static ResultSet rs;
-    public static MariaDbStatement sentencia;
-    public static MariaDbConnection con;
-    public static MariaDbStatement sentenciaM;
-    public static MariaDbConnection conM;
-    static String Fdesde;
-    static String Fhasta;
+    static DataSourceService dss = new DataSourceService();
 
     public dlgReporteGananciaReparto(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -34,7 +25,6 @@ public class dlgReporteGananciaReparto extends javax.swing.JDialog {
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/Iconos/logo1.png")));
         CargarFecha();
         invisible();
-        prepararBD();
         cbCompletoActionPerformed(null);
         cargarComboBox.cargarResponsable(cboResponsable, "SELECT * FROM v_vendedores WHERE idfuncion=2 AND ven_indicador='S'");
     }
@@ -43,45 +33,17 @@ public class dlgReporteGananciaReparto extends javax.swing.JDialog {
         lbFechaActual.setText(Fecha.fechaFormulario());
         lbFechaActualR.setText(Fecha.fechaCorrecta());
     }
-    
-    private void invisible(){
+
+    private void invisible() {
         txtFDesdeR.setVisible(false);
         txtFHastaR.setVisible(false);
         lbFechaActualR.setVisible(false);
         txtIdResponsable.setVisible(false);
     }
 
-    public static void prepararBD() {
-        {
-            try {
-                con = (MariaDbConnection) new ConexionBD().getConexion();
-                if (con == null) {
-                    System.out.println("No hay Conexion con la Base de Datos");
-                } else {
-                    sentencia = (MariaDbStatement) con.createStatement();
-                }
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
-            try {
-                conM = (MariaDbConnection) new ConexionBD().getConexionMovil();
-                if (con == null) {
-                    System.out.println("No hay Conexion con la Base de Datos Móvil");
-                } else {
-                    sentenciaM = (MariaDbStatement) conM.createStatement();
-                }
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
-        }
-    }
-    
-    private void LevantarReporte(String Dir, Date desde, Date hasta, int idResponsable){
+    private void LevantarReporte(String Dir, Date desde, Date hasta, int idResponsable) {
         VisorReportes vr = new VisorReportes(null, true);
-        try {
-            //prepararBD();
-            //archivo jasper
-            //URL  jasperUrl = this.getClass().getResource("\\Reports\\repartos\\movimiento_reparto_E.jasper");
+        try (Connection cn = dss.getDataSource().getConnection()) {
             String jasperUrl = System.getProperty("user.dir").concat(Dir);
             JasperReport report = (JasperReport) JRLoader.loadObjectFromFile(jasperUrl);
             //para los parametro
@@ -92,7 +54,7 @@ public class dlgReporteGananciaReparto extends javax.swing.JDialog {
             parametros.put("hasta", hasta);
             parametros.put("idResponsable", idResponsable);
             //agregamos los parametros y la conexion a la base de datos
-            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametros, con);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametros, cn);
             //se crea el visor con el reporte
             JRViewer jRViewer = new JRViewer(jasperPrint);
             //se elimina elementos del contenedor JPanel
@@ -104,19 +66,16 @@ public class dlgReporteGananciaReparto extends javax.swing.JDialog {
             jRViewer.setVisible(true);
             VisorReportes.jpContainer.repaint();
             VisorReportes.jpContainer.revalidate();
-        } catch (JRException ex) {
-            System.err.println(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
         }
         vr.setLocationRelativeTo(this);
         vr.setVisible(true);
     }
-    
-    private void LevantarReporteCompleto(String Dir, Date desde, Date hasta){
+
+    private void LevantarReporteCompleto(String Dir, Date desde, Date hasta) {
         VisorReportes vr = new VisorReportes(null, true);
-        try {
-            //prepararBD();
-            //archivo jasper
-            //URL  jasperUrl = this.getClass().getResource("\\Reports\\repartos\\movimiento_reparto_E.jasper");
+        try (Connection cn = dss.getDataSource().getConnection()) {
             String jasperUrl = System.getProperty("user.dir").concat(Dir);
             JasperReport report = (JasperReport) JRLoader.loadObjectFromFile(jasperUrl);
             //para los parametro
@@ -126,7 +85,7 @@ public class dlgReporteGananciaReparto extends javax.swing.JDialog {
             parametros.put("desde", desde);
             parametros.put("hasta", hasta);
             //agregamos los parametros y la conexion a la base de datos
-            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametros, con);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametros, cn);
             //se crea el visor con el reporte
             JRViewer jRViewer = new JRViewer(jasperPrint);
             //se elimina elementos del contenedor JPanel
@@ -138,8 +97,8 @@ public class dlgReporteGananciaReparto extends javax.swing.JDialog {
             jRViewer.setVisible(true);
             VisorReportes.jpContainer.repaint();
             VisorReportes.jpContainer.revalidate();
-        } catch (JRException ex) {
-            System.err.println(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
         }
         vr.setLocationRelativeTo(this);
         vr.setVisible(true);
@@ -567,9 +526,8 @@ public class dlgReporteGananciaReparto extends javax.swing.JDialog {
 
     private void btnGenerarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerarActionPerformed
         // TODO add your handling code here:
-        if(cbCompleto.isSelected()){
-            
-            try{
+        if (cbCompleto.isSelected()) {
+            try {
                 if (rbGFA.isSelected()) {
                     LevantarReporteCompleto("\\Reports\\repartos\\GananciaRepartosTodosGral.jasper", Date.valueOf(lbFechaActualR.getText().trim()), Date.valueOf(lbFechaActualR.getText().trim()));
                 } else if (rbGFF.isSelected()) {
@@ -583,33 +541,33 @@ public class dlgReporteGananciaReparto extends javax.swing.JDialog {
                         LevantarReporteCompleto("\\Reports\\repartos\\GananciaRepartosTodosGral.jasper", Date.valueOf(txtFDesdeR.getText().trim()), Date.valueOf(txtFHastaR.getText().trim()));
                     }
                 }
-            }catch (Exception e) {
-            System.out.println(e.getMessage());
-        }           
-        }else{
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        } else {
             try {
-            if (cboResponsable.getSelectedIndex() == 0) {
-                Mensajes.informacion("Seleccione un Responsable");
-            } else {
-                if (rbGFA.isSelected()) {
-                    LevantarReporte("\\Reports\\repartos\\GananciaRepartos.jasper", Date.valueOf(lbFechaActualR.getText().trim()), Date.valueOf(lbFechaActualR.getText().trim()), Integer.parseInt(txtIdResponsable.getText().trim()));
-                } else if (rbGFF.isSelected()) {
-                    if (txtFDesde.getText().trim().isEmpty()) {
-                        Mensajes.informacion("Fije la fecha desde");
-                    } else if (txtFHasta.getText().trim().isEmpty()) {
-                        Mensajes.informacion("Fije la fecha hasta");
-                    } else if (Date.valueOf(txtFDesdeR.getText().trim()).after(Date.valueOf(txtFHastaR.getText().trim()))) {
-                        Mensajes.error("Error en los parametros fijados.\nFavor verifique las fechas Desde y Hasta.");
-                    } else {
-                        LevantarReporte("\\Reports\\repartos\\GananciaRepartos.jasper", Date.valueOf(txtFDesdeR.getText().trim()), Date.valueOf(txtFHastaR.getText().trim()), Integer.parseInt(txtIdResponsable.getText().trim()));
+                if (cboResponsable.getSelectedIndex() == 0) {
+                    Mensajes.informacion("Seleccione un Responsable");
+                } else {
+                    if (rbGFA.isSelected()) {
+                        LevantarReporte("\\Reports\\repartos\\GananciaRepartos.jasper", Date.valueOf(lbFechaActualR.getText().trim()), Date.valueOf(lbFechaActualR.getText().trim()), Integer.parseInt(txtIdResponsable.getText().trim()));
+                    } else if (rbGFF.isSelected()) {
+                        if (txtFDesde.getText().trim().isEmpty()) {
+                            Mensajes.informacion("Fije la fecha desde");
+                        } else if (txtFHasta.getText().trim().isEmpty()) {
+                            Mensajes.informacion("Fije la fecha hasta");
+                        } else if (Date.valueOf(txtFDesdeR.getText().trim()).after(Date.valueOf(txtFHastaR.getText().trim()))) {
+                            Mensajes.error("Error en los parametros fijados.\nFavor verifique las fechas Desde y Hasta.");
+                        } else {
+                            LevantarReporte("\\Reports\\repartos\\GananciaRepartos.jasper", Date.valueOf(txtFDesdeR.getText().trim()), Date.valueOf(txtFHastaR.getText().trim()), Integer.parseInt(txtIdResponsable.getText().trim()));
+                        }
                     }
                 }
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
             }
-        }catch (Exception e) {
-            System.out.println(e.getMessage());
+
         }
-            
-        }    
     }//GEN-LAST:event_btnGenerarActionPerformed
 
     private void rbGFAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbGFAActionPerformed
@@ -654,25 +612,20 @@ public class dlgReporteGananciaReparto extends javax.swing.JDialog {
 
     private void cboResponsableActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboResponsableActionPerformed
         // TODO add your handling code here:
-            if (cboResponsable.getSelectedIndex() == 0) {
-                lbInfoMovil.setText("");
-            } else {
-                prepararBD();
-                try {
-                    String resp;
-                    resp = cargarComboBox.getCodidgo(cboResponsable);
-                    try {
-                        rs = sentencia.executeQuery("SELECT ven_codigo,idmovil, movil, ven_comision FROM v_vendedores WHERE ven_codigo=" + resp);
-                        rs.last();
-                        txtIdResponsable.setText(String.valueOf(rs.getInt("ven_codigo")));
-                        lbInfoMovil.setText(" Referencia: " + rs.getString("movil"));
-                        rs.close();
-                    } catch (SQLException ex) {
-                        Mensajes.error("Error al querer obtener ID del móvil: " + ex.getMessage());
-                    }
-                } catch (Exception pr) {
-                }
+        if (cboResponsable.getSelectedIndex() == 0) {
+            lbInfoMovil.setText("");
+        } else {
+            String resp = cargarComboBox.getCodidgo(cboResponsable);
+            String sql = "SELECT ven_codigo,idmovil, movil, ven_comision FROM v_vendedores WHERE ven_codigo=" + resp;
+            try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
+                rs.last();
+                txtIdResponsable.setText(String.valueOf(rs.getInt("ven_codigo")));
+                lbInfoMovil.setText(" Referencia: " + rs.getString("movil"));
+                rs.close();
+            } catch (Exception pr) {
+                Mensajes.error("Error al querer obtener ID del móvil: " + pr.getMessage());
             }
+        }
     }//GEN-LAST:event_cboResponsableActionPerformed
 
     private void cboResponsableKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cboResponsableKeyPressed
@@ -685,9 +638,9 @@ public class dlgReporteGananciaReparto extends javax.swing.JDialog {
 
     private void cbCompletoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbCompletoActionPerformed
         // TODO add your handling code here:
-        if(cbCompleto.isSelected()){
+        if (cbCompleto.isSelected()) {
             cboResponsable.setEnabled(false);
-        }else{
+        } else {
             cboResponsable.setEnabled(true);
         }
     }//GEN-LAST:event_cbCompletoActionPerformed

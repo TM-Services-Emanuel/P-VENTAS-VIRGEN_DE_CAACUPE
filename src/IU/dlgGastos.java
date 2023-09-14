@@ -1,6 +1,6 @@
 package IU;
 
-import Componentes.ConexionBD;
+import Componentes.DataSourceService;
 import Componentes.Fecha;
 import Componentes.Mensajes;
 import Componentes.Software;
@@ -12,34 +12,25 @@ import Controladores.ControlGasto;
 import java.awt.HeadlessException;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.text.DecimalFormat;
 import javax.swing.JOptionPane;
-import org.mariadb.jdbc.MariaDbConnection;
-import org.mariadb.jdbc.MariaDbStatement;
 
 public class dlgGastos extends javax.swing.JDialog {
 
-    public static ResultSet rs;
-    public static MariaDbConnection con;
-    public static MariaDbStatement sentencia;
-    public static MariaDbConnection conMovil;
-    public static MariaDbStatement sentenciaMovil;
+    static DataSourceService dss = new DataSourceService();
 
     public dlgGastos(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         java.awt.Image icon = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/Iconos/logo1.png"));
         setIconImage(icon);
-        titulo();   
+        titulo();
         noVisible();
-        //cargarComboBox.cargar(cbDetalleGasto, "SELECT * FROM detallegasto WHERE dg_indicador='S'"); 
-        //cargarComboBox.cargarResponsable(cboResponsable, "SELECT * FROM v_vendedores WHERE idfuncion>=2 AND idfuncion<=4 AND ven_indicador='S'");
         btnCancelarActionPerformed(null);
     }
-    
-    private void noVisible(){
+
+    private void noVisible() {
         txtIdMovil.setVisible(false);
         lblCodDetalle.setVisible(false);
         txtImporteL.setVisible(false);
@@ -63,26 +54,7 @@ public class dlgGastos extends javax.swing.JDialog {
         txtIdMovil.setText("");
     }
 
-    public static void prepararBD() {
-        try {
-            con = (MariaDbConnection) new ConexionBD().getConexion();
-            conMovil = (MariaDbConnection) new ConexionBD().getConexionMovil();
-            if (con == null) {
-                System.out.println("No hay Conexion con la Base de Datos");
-            } else {
-                sentencia = (MariaDbStatement) con.createStatement();
-            }
-            if (conMovil == null) {
-                System.out.println("No hay Conexion con la Base de Datos Movil");
-            } else {
-                sentenciaMovil = (MariaDbStatement) conMovil.createStatement();
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-    
-    public void nuevo(){
+    public void nuevo() {
         try {
             String FechaI = String.valueOf(Fecha.fechaCorrecta());
             txtCaja.setText(generarCodigos.ObtenerCodigo("SELECT ca_id from caja WHERE ca_fechainicio='" + FechaI + "' and ca_indicador='S'"));
@@ -91,7 +63,7 @@ public class dlgGastos extends javax.swing.JDialog {
         }
         cargarComboBox.cargar(cbDetalleGasto, "SELECT * FROM detallegasto WHERE dg_indicador='S'");
         cargarComboBox.cargarResponsable(cboResponsable, "SELECT * FROM v_vendedores WHERE idfuncion>=2 AND idfuncion<=4 AND ven_indicador='S'");
-        
+
         cbDetalleGasto.setEnabled(true);
         txtImporte.setEnabled(true);
         txtObservacion.setEnabled(true);
@@ -112,8 +84,8 @@ public class dlgGastos extends javax.swing.JDialog {
         cbDetalleGasto.requestFocus();
         cbDetalleGasto.setPopupVisible(true);
     }
-    
-    public void Volver(){
+
+    public void Volver() {
         dlgGestGastos.txtGL.setText("0");
         dlgGestGastos.txtGR.setText("0");
         dlgGestGastos.txtGA.setText("0");
@@ -631,7 +603,7 @@ public class dlgGastos extends javax.swing.JDialog {
         }
         cargarComboBox.cargar(cbDetalleGasto, "SELECT * FROM detallegasto WHERE dg_indicador='S'");
         cargarComboBox.cargarResponsable(cboResponsable, "SELECT * FROM v_vendedores WHERE idfuncion>=2 AND idfuncion<=4 AND ven_indicador='S'");
-        
+
         cbDetalleGasto.setEnabled(true);
         txtImporte.setEnabled(true);
         txtObservacion.setEnabled(true);
@@ -693,11 +665,11 @@ public class dlgGastos extends javax.swing.JDialog {
             Mensajes.error("Seleccione un Motivo");
             cbDetalleGasto.requestFocus();
             cbDetalleGasto.setPopupVisible(true);
-        }else if (cboResponsable.getSelectedIndex()==0) {
+        } else if (cboResponsable.getSelectedIndex() == 0) {
             Mensajes.error("Seleccione el Responsable");
             cboResponsable.requestFocus();
             cboResponsable.setPopupVisible(true);
-        }else if (cbGenerado.getSelectedIndex()==0) {
+        } else if (cbGenerado.getSelectedIndex() == 0) {
             Mensajes.error("Seleccione el origen del gasto");
             cbGenerado.requestFocus();
             cbGenerado.setPopupVisible(true);
@@ -711,7 +683,7 @@ public class dlgGastos extends javax.swing.JDialog {
             } catch (HeadlessException ee) {
                 System.out.println(ee.getMessage());
             }
-            
+
         }
     }//GEN-LAST:event_btnGuardarActionPerformed
 
@@ -774,7 +746,7 @@ public class dlgGastos extends javax.swing.JDialog {
         int rpta = Mensajes.confirmar("¿Seguro que desea salir del formulario?");
         if (rpta == 0) {
             this.dispose();
-             Volver();
+            Volver();
         }
     }//GEN-LAST:event_btnSalirActionPerformed
 
@@ -848,12 +820,10 @@ public class dlgGastos extends javax.swing.JDialog {
             txtIdMovil.setText("");
             lbInfoMovil.setText("");
         } else {
-            prepararBD();
             try {
-                String resp;
-                resp = cargarComboBox.getCodidgo(cboResponsable);
-                try {
-                    rs = sentencia.executeQuery("SELECT idmovil, movil FROM v_vendedores WHERE ven_codigo=" + resp);
+                String resp = cargarComboBox.getCodidgo(cboResponsable);
+                String sql = "SELECT idmovil, movil FROM v_vendedores WHERE ven_codigo=" + resp;
+                try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
                     rs.last();
                     txtIdMovil.setText(String.valueOf(rs.getInt("idmovil")));
                     lbInfoMovil.setText("Referencia: " + rs.getString("movil"));

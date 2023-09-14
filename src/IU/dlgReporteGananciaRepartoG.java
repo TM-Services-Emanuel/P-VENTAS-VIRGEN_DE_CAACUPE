@@ -1,9 +1,8 @@
 package IU;
 
-import Componentes.ConexionBD;
+import Componentes.DataSourceService;
 import Componentes.Fecha;
 import Componentes.Mensajes;
-import Componentes.cargarComboBox;
 import java.awt.BorderLayout;
 import java.awt.Toolkit;
 import org.mariadb.jdbc.MariaDbConnection;
@@ -11,7 +10,6 @@ import org.mariadb.jdbc.MariaDbStatement;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
-import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
@@ -20,13 +18,7 @@ import net.sf.jasperreports.swing.JRViewer;
 
 public class dlgReporteGananciaRepartoG extends javax.swing.JDialog {
 
-    public static ResultSet rs;
-    public static MariaDbStatement sentencia;
-    public static MariaDbConnection con;
-    public static MariaDbStatement sentenciaM;
-    public static MariaDbConnection conM;
-    static String Fdesde;
-    static String Fhasta;
+    static DataSourceService dss = new DataSourceService();
 
     public dlgReporteGananciaRepartoG(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -40,45 +32,17 @@ public class dlgReporteGananciaRepartoG extends javax.swing.JDialog {
         lbFechaActual.setText(Fecha.fechaFormulario());
         lbFechaActualR.setText(Fecha.fechaCorrecta());
     }
-    
-    private void invisible(){
+
+    private void invisible() {
         txtFDesdeR.setVisible(false);
         txtFHastaR.setVisible(false);
         lbFechaActualR.setVisible(false);
         txtIdResponsable.setVisible(false);
     }
 
-    public static void prepararBD() {
-        {
-            try {
-                con = (MariaDbConnection) new ConexionBD().getConexion();
-                if (con == null) {
-                    System.out.println("No hay Conexion con la Base de Datos");
-                } else {
-                    sentencia = (MariaDbStatement) con.createStatement();
-                }
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
-            try {
-                conM = (MariaDbConnection) new ConexionBD().getConexionMovil();
-                if (con == null) {
-                    System.out.println("No hay Conexion con la Base de Datos Móvil");
-                } else {
-                    sentenciaM = (MariaDbStatement) conM.createStatement();
-                }
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
-        }
-    }
-    
-    private void LevantarReporteCompleto(String Dir, Date desde, Date hasta){
+    private void LevantarReporteCompleto(String Dir, Date desde, Date hasta) {
         VisorReportes vr = new VisorReportes(null, true);
-        try {
-            //prepararBD();
-            //archivo jasper
-            //URL  jasperUrl = this.getClass().getResource("\\Reports\\repartos\\movimiento_reparto_E.jasper");
+        try (Connection cn = dss.getDataSource().getConnection()){
             String jasperUrl = System.getProperty("user.dir").concat(Dir);
             JasperReport report = (JasperReport) JRLoader.loadObjectFromFile(jasperUrl);
             //para los parametro
@@ -88,7 +52,7 @@ public class dlgReporteGananciaRepartoG extends javax.swing.JDialog {
             parametros.put("desde", desde);
             parametros.put("hasta", hasta);
             //agregamos los parametros y la conexion a la base de datos
-            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametros, con);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametros, cn);
             //se crea el visor con el reporte
             JRViewer jRViewer = new JRViewer(jasperPrint);
             //se elimina elementos del contenedor JPanel
@@ -100,7 +64,8 @@ public class dlgReporteGananciaRepartoG extends javax.swing.JDialog {
             jRViewer.setVisible(true);
             VisorReportes.jpContainer.repaint();
             VisorReportes.jpContainer.revalidate();
-        } catch (JRException ex) {
+            cn.close();
+        } catch (Exception ex) {
             System.err.println(ex.getMessage());
         }
         vr.setLocationRelativeTo(this);
@@ -453,7 +418,6 @@ public class dlgReporteGananciaRepartoG extends javax.swing.JDialog {
     private void btnGenerarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerarActionPerformed
         // TODO add your handling code here:
         try {
-            prepararBD();
             if (rbGFA.isSelected()) {
                 LevantarReporteCompleto("\\Reports\\repartos\\GananciaRepartosTodos.jasper", Date.valueOf(lbFechaActualR.getText().trim()), Date.valueOf(lbFechaActualR.getText().trim()));
             } else if (rbGFF.isSelected()) {
@@ -467,11 +431,9 @@ public class dlgReporteGananciaRepartoG extends javax.swing.JDialog {
                     LevantarReporteCompleto("\\Reports\\repartos\\GananciaRepartosTodos.jasper", Date.valueOf(txtFDesdeR.getText().trim()), Date.valueOf(txtFHastaR.getText().trim()));
                 }
             }
-            con.close();
-            conM.close();
         } catch (Exception e) {
             System.out.println(e.getMessage());
-        }           
+        }
     }//GEN-LAST:event_btnGenerarActionPerformed
 
     private void rbGFAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbGFAActionPerformed

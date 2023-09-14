@@ -1,6 +1,6 @@
 package IU;
 
-import Componentes.ConexionBD;
+import Componentes.DataSourceService1;
 import Componentes.Mensajes;
 import Componentes.cargarComboBoxMovil;
 import Componentes.validarCampos;
@@ -10,17 +10,12 @@ import Datos.GestionarCliente;
 import java.awt.HeadlessException;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import javax.swing.JOptionPane;
-import org.mariadb.jdbc.MariaDbConnection;
-import org.mariadb.jdbc.MariaDbStatement;
 
 public final class dlgGestClientes extends javax.swing.JDialog {
 
-    public static MariaDbConnection conMovil;
-    public static MariaDbStatement stMovil;
-    public static ResultSet rs;
+    static DataSourceService1 dss1 = new DataSourceService1();
 
     public dlgGestClientes(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -36,26 +31,12 @@ public final class dlgGestClientes extends javax.swing.JDialog {
         btnNuevo.doClick();
     }
 
-    public static void prepararBD() {
-        try {
-            conMovil = (MariaDbConnection) new ConexionBD().getConexionMovil();
-            if (conMovil == null) {
-                System.out.println("No hay Conexion con la Base de Datos Movil");
-            } else {
-                stMovil = (MariaDbStatement) conMovil.createStatement();
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
     public static void BuscarRUC() {
-        
+
         String ruc = dlgClientes.txtBuscar.getText().trim();
         if (!ruc.isEmpty()) {
-            try {
-                prepararBD();
-                rs = stMovil.executeQuery("SELECT * FROM clientesbd WHERE cedula Like '" + ruc + "%'");
+            String sql = "SELECT * FROM clientesbd WHERE cedula Like '" + ruc + "%'";
+            try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
                 rs.last();
                 dlgGestClientes.txtRazonS.setText(rs.getString("nombre"));
                 dlgGestClientes.txtRuc.setText(rs.getString("cedula"));
@@ -63,7 +44,8 @@ public final class dlgGestClientes extends javax.swing.JDialog {
                 dlgGestClientes.txtTelefono.setText("0");
                 dlgGestClientes.cbCiudad.setSelectedIndex(1);
                 rs.close();
-                conMovil.close();
+                st.close();
+                cn.close();
             } catch (SQLException ex) {
                 Mensajes.informacion("OBSERVACIÓN:\nLamentablemete no se ha encontrado coincidencia en el registro externo de clientes.");
                 dlgGestClientes.txtRuc.setText(ruc);
@@ -78,9 +60,8 @@ public final class dlgGestClientes extends javax.swing.JDialog {
 
         String ruc = txtRuc.getText().trim();
         if (!ruc.isEmpty()) {
-            try {
-                prepararBD();
-                rs = stMovil.executeQuery("SELECT * FROM clientesbd WHERE cedula Like '" + ruc + "%'");
+            String sql = "SELECT * FROM clientesbd WHERE cedula Like '" + ruc + "%'";
+            try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
                 rs.first();
                 txtRazonS.setText(rs.getString("nombre"));
                 txtRuc.setText(rs.getString("cedula"));
@@ -88,7 +69,8 @@ public final class dlgGestClientes extends javax.swing.JDialog {
                 txtTelefono.setText("0");
                 cbCiudad.setSelectedIndex(1);
                 rs.close();
-                conMovil.close();
+                st.close();
+                cn.close();
             } catch (SQLException ex) {
                 Mensajes.informacion("OBSERVACIÓN:\nLamentablemete no se ha encontrado coincidencia en el registro externo de clientes.");
                 txtRazonS.setText("");
@@ -98,7 +80,7 @@ public final class dlgGestClientes extends javax.swing.JDialog {
                 cbCiudad.setSelectedIndex(1);
                 txtRazonS.requestFocus();
             }
-        }else{
+        } else {
             Mensajes.informacion("Ingrese el RUC o CI para buscar coincidencia.");
             txtRuc.requestFocus();
         }

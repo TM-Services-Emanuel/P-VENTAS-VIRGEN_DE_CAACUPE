@@ -1,6 +1,6 @@
 package Datos;
 
-import Componentes.ConexionBD;
+import Componentes.DataSourceService;
 import Componentes.Mensajes;
 import Componentes.Operacion;
 import Componentes.SeleccionarImagen;
@@ -10,15 +10,15 @@ import Modelo.Vendedor;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
 public class GestionarVendedor {
+
+    static DataSourceService dss = new DataSourceService();
 
     public static String getCodigo() {
         String cod = generarCodigos.getCodigo("SELECT MAX(ven_codigo) FROM vendedor");
@@ -50,28 +50,13 @@ public class GestionarVendedor {
         sql.append("','S','");
         sql.append(usuario);
         sql.append("')");
-//        String sql = "INSERT INTO vendedor VALUES ("
-//                + getCodigo() + ",'"
-//                + v.getNombreV() + "','" 
-//                + v.getDireccion() + "','" 
-//                + v.getTelefono() + "','" 
-//                + v.getCelular() + "',"
-//                + v.getSueldo() + "," 
-//                + v.getCodProv() + "," 
-//                + v.getCodZona() + ","
-//                + v.getComision() + ",'" 
-//                + v.getEmail() + "','" 
-//                + v.getObs() + "','S')";
         msg = Operacion.exeOperacion(sql.toString());
         return msg;
     }
 
     public static void addImagen(String cod) {
-        try {
-
-            String sql = "INSERT INTO imagenVendedor (img_vendedor, img_imagen) VALUES (?, ?)";
-
-            PreparedStatement ps = new ConexionBD().getConexion().prepareStatement(sql);
+        String sql = "INSERT INTO imagenVendedor (img_vendedor, img_imagen) VALUES (?, ?)";
+        try (Connection cn = dss.getDataSource().getConnection(); PreparedStatement ps = cn.prepareStatement(sql)) {
             ps.setInt(1, Integer.parseInt(cod));
             ps.setBinaryStream(2, SeleccionarImagen.fis, SeleccionarImagen.longitudBytes);
             ps.execute();
@@ -83,9 +68,8 @@ public class GestionarVendedor {
     }
 
     public static void actImagen(String cod) {
-        try {
-            String sql = "UPDATE imagenVendedor SET img_imagen=? WHERE img_vendedor=?";
-            PreparedStatement ps = new ConexionBD().getConexion().prepareStatement(sql);
+        String sql = "UPDATE imagenVendedor SET img_imagen=? WHERE img_vendedor=?";
+        try (Connection cn = dss.getDataSource().getConnection(); PreparedStatement ps = cn.prepareStatement(sql)) {
             ps.setInt(2, Integer.parseInt(cod));
             ps.setBinaryStream(1, SeleccionarImagen.fis, SeleccionarImagen.longitudBytes);
             ps.executeUpdate();
@@ -99,24 +83,16 @@ public class GestionarVendedor {
     public static void busImagen(String cod, JLabel lblImagen) {
         String sql = new StringBuffer("SELECT img_imagen FROM imagenVendedor WHERE img_vendedor = ")
                 .append(cod).toString();
-//        String sql="SELECT img_imagen FROM \"imagenArticulo\" WHERE img_articulo = "+cod;
         ImageIcon foto;
         InputStream is;
-        try {
-            ResultSet rs;
-            PreparedStatement sentencia = new ConexionBD().getConexion().prepareStatement(sql);
-            rs = sentencia.executeQuery();
+        try (Connection cn = dss.getDataSource().getConnection(); PreparedStatement sentencia = cn.prepareStatement(sql); ResultSet rs = sentencia.executeQuery();) {
             while (rs.next()) {
                 is = rs.getBinaryStream(1);
-
                 BufferedImage bi = ImageIO.read(is);
                 foto = new ImageIcon(bi);
-
                 Image img = foto.getImage();
                 Image newimg = img.getScaledInstance(lblImagen.getWidth(), lblImagen.getHeight(), java.awt.Image.SCALE_SMOOTH);
-
                 ImageIcon newicon = new ImageIcon(newimg);
-
                 lblImagen.setIcon(newicon);
             }
         } catch (Exception ex) {
@@ -166,7 +142,7 @@ public class GestionarVendedor {
 
     public static Vendedor busVendedor(String cod) {
         Vendedor v = null;
-        String sql = "SELECT * FROM vendedor WHERE ven_codigo="+cod;
+        String sql = "SELECT * FROM vendedor WHERE ven_codigo=" + cod;
 //        String sql = "SELECT * FROM vendedor WHERE ven_codigo = " + cod + "";
         Object[] filaObt = Operacion.getFila(sql);
         if (filaObt != null) {
@@ -181,11 +157,12 @@ public class GestionarVendedor {
             v.setSueldo((filaObt[7].toString()));
             v.setComision(Double.parseDouble(filaObt[8].toString()));
             v.setObs(filaObt[9].toString());
-            } else {
+        } else {
             System.out.println("No encontrado");
         }
         return v;
     }
+
     public static Vendedor busVendedor2(String cod) {
         Vendedor v = null;
         StringBuilder sql = new StringBuilder("SELECT * FROM vendedor WHERE ven_codigo =");
@@ -204,6 +181,7 @@ public class GestionarVendedor {
         }
         return v;
     }
+
     public static Vendedor busVendedorFactura(String cod) {
         Vendedor v = null;
         StringBuilder sql = new StringBuilder("SELECT * FROM v_usuario WHERE CodVend =");
@@ -214,7 +192,7 @@ public class GestionarVendedor {
         if (filaObt != null) {
             v = new Vendedor();
             v.setNombreV(filaObt[2].toString());
-            
+
         } else {
             System.out.println("No encontrado");
             Mensajes.error("CODIGO EQUIVOCADO O NO POSEE PERFIL PARA VENTA");
@@ -224,6 +202,7 @@ public class GestionarVendedor {
         }
         return v;
     }
+
     public static Vendedor busVendedorTicket(String cod) {
         Vendedor v = null;
         StringBuilder sql = new StringBuilder("SELECT * FROM v_usuario WHERE CodVend =");
@@ -234,7 +213,7 @@ public class GestionarVendedor {
         if (filaObt != null) {
             v = new Vendedor();
             v.setNombreV(filaObt[2].toString());
-            
+
         } else {
             System.out.println("No encontrado");
             Mensajes.error("CODIGO EQUIVOCADO O NO POSEE PERFIL PARA VENTA");

@@ -1,6 +1,5 @@
 package Controladores;
 
-import Componentes.ConexionBD;
 import Componentes.Fecha;
 import Componentes.Login;
 import Componentes.Mensajes;
@@ -30,14 +29,10 @@ import Modelo.ClienteMovil;
 import Modelo.DetalleFactura;
 import Modelo.DetalleTransferencia;
 import Modelo.Vendedor;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.List;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
-import org.mariadb.jdbc.MariaDbConnection;
-import org.mariadb.jdbc.MariaDbStatement;
 
 public class controlFactura {
 
@@ -47,25 +42,8 @@ public class controlFactura {
     static DetalleTransferencia dtran;
     static ArregloFactura array = new ArregloFactura();
     static ArregloTransferencia arrayT = new ArregloTransferencia();
-    public static MariaDbConnection con;
-    public static MariaDbStatement st;
-    public static ResultSet rss;
 
-    public static void prepararBD() {
-        try {
-            con = (MariaDbConnection) new ConexionBD().getConexion();
-            if (con == null) {
-                System.out.println("No hay Conexion con la Base de Datos");
-            } else {
-                st = (MariaDbStatement) con.createStatement();
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    public static void selecArticulo()//Seleccionar Artículo
-    {
+    public static void selecArticulo() {
         int x = dlgBuscarArticuloVenta.tbDetalle.getSelectedRow();
         String cod = dlgBuscarArticuloVenta.tbDetalle.getValueAt(x, 0).toString();
         art = GestionarArticulosMovil.busArticulo(cod);
@@ -73,12 +51,9 @@ public class controlFactura {
         dlgVentas.txtArt.setText(art.getDescripcion());
         dlgVentas.txtCant.setText("1");
         dlgVentas.btnAtras.setEnabled(true);
-        //DecimalFormat df = new DecimalFormat("#,###");
-        //String PV = String.valueOf(art.getPrecio_venta());
     }
 
-    public static void selecArticuloT()//Seleccionar Artículo
-    {
+    public static void selecArticuloT() {
         int x = dlgBuscarArticuloVenta1.tbDetalle.getSelectedRow();
         String cod = dlgBuscarArticuloVenta1.tbDetalle.getValueAt(x, 0).toString();
         art = GestionarArticulosMovil.busArticulo(cod);
@@ -87,8 +62,7 @@ public class controlFactura {
         dlgGestTransferencias.txtCant.setText("1");
     }
 
-    public static void selecArticuloTR()//Seleccionar Artículo
-    {
+    public static void selecArticuloTR() {
         int x = dlgBuscarArticuloTransferencia.tbDetalle.getSelectedRow();
         String cod = dlgBuscarArticuloTransferencia.tbDetalle.getValueAt(x, 0).toString();
         art = GestionarArticulosMovil.busArticulo(cod);
@@ -97,8 +71,7 @@ public class controlFactura {
         dlgGestTransferencias.txtCant.setText("1");
     }
 
-    public static void selectCliente()//Seleccionar Cliente
-    {
+    public static void selectCliente() {
         int x = dlgBuscarCliente.tbDetalle.getSelectedRow();
         String cod = dlgBuscarCliente.tbDetalle.getValueAt(x, 0).toString();
         cl = GestionarCliente.busCliente(cod);
@@ -107,8 +80,7 @@ public class controlFactura {
         dlgVentas.txtRazonS.setText(cl.getRazonSocial());
     }
 
-    public static void selectCliente1()//Seleccionar Cliente
-    {
+    public static void selectCliente1() {
         int x = dlgBuscarCliente1.tbDetalle.getSelectedRow();
         String cod = dlgBuscarCliente1.tbDetalle.getValueAt(x, 0).toString();
         cl = GestionarCliente.busCliente(cod);
@@ -117,8 +89,7 @@ public class controlFactura {
         dlgReporteVentapoCliente.txtDescripcion.setText(cl.getRazonSocial());
     }
 
-    public static void selectCliente2()//Seleccionar Cliente
-    {
+    public static void selectCliente2() {
         int x = dlgBuscarCliente2.tbDetalle.getSelectedRow();
         String cod = dlgBuscarCliente2.tbDetalle.getValueAt(x, 0).toString();
         cl = GestionarCliente.busCliente(cod);
@@ -127,10 +98,7 @@ public class controlFactura {
         dlgGestDeudas.txtRazonS.setText(cl.getRazonSocial());
     }
 
-    public static void selectClienteInicio(String cod)//Seleccionar Cliente
-    {
-        //int x = dlgBuscarCliente.tbDetalle.getSelectedRow();
-        //String cod = dlgBuscarCliente.tbDetalle.getValueAt(x, 0).toString();
+    public static void selectClienteInicio(String cod) {
         cl = GestionarCliente.busCliente(cod);
         dlgVentas.txtCodCliente.setText(String.valueOf(cl.getidCliente()));
         dlgVentas.txtRuc.setText((cl.getRuc()));
@@ -187,75 +155,69 @@ public class controlFactura {
         return total;
     }
 
-    public static int getTotal()//Calcula el total de la venta
-    {
+    public static int getTotal() {
         int total = 0;
         DefaultTableModel tb = (DefaultTableModel) dlgVentas.tbDetalle.getModel();
         int fila = tb.getRowCount();
         for (int i = 0; i < fila; i++) {
             total += Integer.parseInt(String.valueOf(dlgVentas.tbDetalle.getModel().getValueAt(i, 10)).replace(".", "").replace(",", ""));
         }
-        return /*Redondeo.redondearD*/ (total);
+        return (total);
     }
-    
-    public static int getTotalFacturado()//Calcula el total de la venta
-    {
+
+    public static int getTotalFacturado() {
         int total = 0;
         DefaultTableModel tb = (DefaultTableModel) dlgConsultarFacturas.tblFactura.getModel();
         int fila = tb.getRowCount();
         for (int i = 0; i < fila; i++) {
-            if(dlgConsultarFacturas.tblFactura.getModel().getValueAt(i, 13).equals("")){
+            if (dlgConsultarFacturas.tblFactura.getModel().getValueAt(i, 13).equals("")) {
                 total += Integer.parseInt(String.valueOf(dlgConsultarFacturas.tblFactura.getModel().getValueAt(i, 11)).replace(".", "").replace(",", ""));
-            }            
+            }
         }
-        return /*Redondeo.redondearD*/ (total);
+        return (total);
     }
-    
+
     public static int getTotalFacturadoAnulado()//Calcula el total de la venta
     {
         int total = 0;
         DefaultTableModel tb = (DefaultTableModel) dlgConsultarFacturas.tblFactura.getModel();
         int fila = tb.getRowCount();
         for (int i = 0; i < fila; i++) {
-            if(dlgConsultarFacturas.tblFactura.getModel().getValueAt(i, 13).equals("ANULADO")){
+            if (dlgConsultarFacturas.tblFactura.getModel().getValueAt(i, 13).equals("ANULADO")) {
                 total += Integer.parseInt(String.valueOf(dlgConsultarFacturas.tblFactura.getModel().getValueAt(i, 11)).replace(".", "").replace(",", ""));
-            }            
+            }
         }
-        return /*Redondeo.redondearD*/ (total);
+        return (total);
     }
 
-    public static int getTotalCosto()//Calcula el total de la venta
-    {
+    public static int getTotalCosto() {
         int total = 0;
         DefaultTableModel tb = (DefaultTableModel) dlgVentas.tbDetalle.getModel();
         int fila = tb.getRowCount();
         for (int i = 0; i < fila; i++) {
             total += Integer.parseInt(String.valueOf(dlgVentas.tbDetalle.getModel().getValueAt(i, 12)).replace(".", "").replace(",", ""));
         }
-        return /*Redondeo.redondearD*/ (total);
+        return (total);
     }
 
-    public static int getTotaltransferencia()//Calcula el total de la venta
-    {
+    public static int getTotaltransferencia() {
         int total = 0;
         DefaultTableModel tb = (DefaultTableModel) dlgGestTransferencias.tbDetalle.getModel();
         int fila = tb.getRowCount();
         for (int i = 0; i < fila; i++) {
             total += Integer.parseInt(String.valueOf(dlgGestTransferencias.tbDetalle.getModel().getValueAt(i, 5)).replace(".", "").replace(",", ""));
         }
-        return /*Redondeo.redondearD*/ (total);
+        return (total);
     }
 
-    public static int calCulosT()//Metodo que realiza los calculos finales de la venta
-    {
+    public static int calCulosT() {
         int total = Integer.parseInt(dlgVentas.txtTotalL.getText());
         int abono = Integer.parseInt(dlgVentas.txtAbonoTL.getText());
         int vuelto = abono - total;
         return (vuelto);
     }
 
-    public static int calCulosF()//Metodo que realiza los calculos finales de la venta
-    {
+    public static int calCulosF() {
         int total = Integer.parseInt(dlgVentas.txtTotalL.getText());
         int abono = Integer.parseInt(dlgVentas.txtAbonoL.getText());
         int vuelto = abono - total;
@@ -308,10 +270,6 @@ public class controlFactura {
         tb.addRow(fila);
     }
 
-    /*  public static double actStock() {
-        int cant = Integer.parseInt(dlgVentas.txtCant.getText());
-        return art.getStock() - cant;
-    }*/
     public static void addmismoItemFactura(int fila, double cantTabla, int iva, double cantAdd, int precio, int costo, String MensajePromocion) {
         try {
             double cantFinal = (cantTabla + cantAdd);
@@ -372,7 +330,6 @@ public class controlFactura {
 
     public static void addTabla(JTable tabla) {
         try {
-            //int f = dlgBuscarArticuloVenta.tbDetalle.getSelectedRow();
             String dependecia = art.getDependencia();
             String MensajePromocion;
             if (dependecia.equals("S")) {
@@ -400,7 +357,7 @@ public class controlFactura {
 
                     if (art.getProm().equals("S")) {
                         if (cant >= art.getCant_prom()) {
-                            MensajePromocion = "- PROMOCIÓN HABILITADO (-"+art.getPorc_prom()+"%)";
+                            MensajePromocion = "- PROMOCIÓN HABILITADO (-" + art.getPorc_prom() + "%)";
                             precio = art.getPrecio_prom();
                             monto = (int) (cant * precio);
                             montocosto = (int) (cant * costo);
@@ -450,7 +407,7 @@ public class controlFactura {
 
                         if (art.getProm().equals("S")) {
                             if (cantTabla + cant >= art.getCant_prom()) {
-                                MensajePromocion = "- PROMOCIÓN HABILITADO (-"+art.getPorc_prom()+"%)";
+                                MensajePromocion = "- PROMOCIÓN HABILITADO (-" + art.getPorc_prom() + "%)";
                                 precio = art.getPrecio_prom();
                             } else {
                                 if (art.getVentam().equals("SI")) {
@@ -537,7 +494,7 @@ public class controlFactura {
                 int montocosto = 0;
                 if (art.getProm().equals("S")) {
                     if (cant >= art.getCant_prom()) {
-                        MensajePromocion = "- PROMOCIÓN HABILITADO (-"+art.getPorc_prom()+"%)";
+                        MensajePromocion = "- PROMOCIÓN HABILITADO (-" + art.getPorc_prom() + "%)";
                         precio = art.getPrecio_prom();
                         monto = (int) (cant * precio);
                         montocosto = (int) (cant * costo);
@@ -592,7 +549,7 @@ public class controlFactura {
                     } else {
                         if (art.getProm().equals("S")) {
                             if (cantTabla + cant >= art.getCant_prom()) {
-                                MensajePromocion = "- PROMOCIÓN HABILITADO (-"+art.getPorc_prom()+"%)";
+                                MensajePromocion = "- PROMOCIÓN HABILITADO (-" + art.getPorc_prom() + "%)";
                                 precio = art.getPrecio_prom();
                             } else {
                                 if (art.getVentam().equals("SI")) {
@@ -865,10 +822,10 @@ public class controlFactura {
             fila[4] = Fecha.FormatoHoraSinSSString(fila[4].toString());
             fila[5].toString();
             fila[6].toString();
-            if(fila[7].toString().equals("T")){
-                fila[7]="TICKET";
-            }else if(fila[7].toString().equals("F")){
-                fila[7]="FACTURA LEGAL";
+            if (fila[7].toString().equals("T")) {
+                fila[7] = "TICKET";
+            } else if (fila[7].toString().equals("F")) {
+                fila[7] = "FACTURA LEGAL";
             }
             fila[8].toString();
             fila[9].toString();
@@ -889,7 +846,7 @@ public class controlFactura {
             tb.addRow(fila);
         }
     }
-    
+
     public static void listFacturas1(JTable tabla, int idV, String fecha)//Lista las facturas realizadas
     {
         List lista;
@@ -904,10 +861,10 @@ public class controlFactura {
             fila[4] = Fecha.FormatoHoraSinSSString(fila[4].toString());
             fila[5].toString();
             fila[6].toString();
-            if(fila[7].toString().equals("T")){
-                fila[7]="TICKET";
-            }else if(fila[7].toString().equals("F")){
-                fila[7]="FACTURA LEGAL";
+            if (fila[7].toString().equals("T")) {
+                fila[7] = "TICKET";
+            } else if (fila[7].toString().equals("F")) {
+                fila[7] = "FACTURA LEGAL";
             }
             fila[8].toString();
             fila[9].toString();
@@ -928,7 +885,7 @@ public class controlFactura {
             tb.addRow(fila);
         }
     }
-    
+
     public static void listVentasContaduria(JTable tabla, String fecha1, String fecha2)//Lista las facturas realizadas
     {
         List lista;
@@ -1317,11 +1274,11 @@ public class controlFactura {
             tb.addRow(fila);
         }
     }
-    
+
     public static void listDetalleENTER(JTable tabla)//Lista el detalle de la factura seleccionada
     {
         int x = dlgConsultarFacturas.tblFactura.getSelectedRow();
-        String cod = dlgConsultarFacturas.tblFactura.getValueAt((x-1), 0).toString();
+        String cod = dlgConsultarFacturas.tblFactura.getValueAt((x - 1), 0).toString();
         List lista = null;
         lista = GestionarFactura.listDetalles(cod);
         for (int i = 1; i < lista.size(); i++) {
@@ -1450,7 +1407,7 @@ public class controlFactura {
             ar = GestionarArticulosMovil.busArticulo(cod);
             if (ar.getProm().equals("S")) {
                 if (cant >= ar.getCant_prom()) {
-                    MensajePromocion = "- PROMOCIÓN HABILITADO (-"+ar.getPorc_prom()+"%)";
+                    MensajePromocion = "- PROMOCIÓN HABILITADO (-" + ar.getPorc_prom() + "%)";
                     pre = ar.getPrecio_prom();
                     monto = (int) (cant * pre);
                     costo = (int) (cant * ar.getPrecio_costo());

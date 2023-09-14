@@ -1,6 +1,7 @@
 package IU;
 
-import Componentes.ConexionBD;
+import Componentes.DataSourceService;
+import Componentes.DataSourceService1;
 import Componentes.Mensajes;
 import Componentes.Software;
 import Componentes.cargarComboBox;
@@ -11,21 +12,15 @@ import Controladores.controlPuntoEmisionMovil;
 import Datos.GestionarPuntoEmisionMovil;
 import java.awt.HeadlessException;
 import java.awt.event.KeyEvent;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
-import org.mariadb.jdbc.MariaDbConnection;
-import org.mariadb.jdbc.MariaDbStatement;
 
 public class dlgPuntoEmisionMovil extends javax.swing.JDialog {
 
     CabecerasTablas cabe = new CabecerasTablas();
-    public MariaDbStatement sentencia;
-    public MariaDbConnection con;
-    public MariaDbStatement sentenciaG;
-    public MariaDbConnection conG;
-    private ResultSet rs;
+    static DataSourceService1 dss1 = new DataSourceService1();
+    static DataSourceService dss = new DataSourceService();
 
     public dlgPuntoEmisionMovil(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -45,33 +40,6 @@ public class dlgPuntoEmisionMovil extends javax.swing.JDialog {
             this.setTitle("Gestionar Punto de Emisión");
         } else {
             this.setTitle(Software.getSoftware() + " - Gestionar Punto de Emisión");
-        }
-    }
-
-    public void prepararBD() {
-        {
-            try {
-                con = (MariaDbConnection) new ConexionBD().getConexionMovil();
-                if (con == null) {
-                    System.out.println("No hay Conexion con la Base de Datos");
-                } else {
-                    sentencia = (MariaDbStatement) con.createStatement();
-                }
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
-
-            try {
-                conG = (MariaDbConnection) new ConexionBD().getConexion();
-                if (conG == null) {
-                    System.out.println("No hay Conexion con la Base de Datos");
-                } else {
-                    sentenciaG = (MariaDbStatement) conG.createStatement();
-                }
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
-
         }
     }
 
@@ -109,59 +77,55 @@ public class dlgPuntoEmisionMovil extends javax.swing.JDialog {
         btnNuevo.requestFocus();
     }
 
-    public void modcboBocaCobranza(String idBoca) {
-        prepararBD();
+    public void modcboBocaCobranza(int idBoca) {
         DefaultComboBoxModel ml = new DefaultComboBoxModel();
-        try {
-            rs = sentenciaG.executeQuery("SELECT * FROM laboratorio WHERE lab_indicador='S'");
+        String sql = "SELECT * FROM laboratorio WHERE lab_indicador='S'";
+        String sql2 = "SELECT * FROM laboratorio WHERE lab_codigo=" + idBoca;
+        try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql); ResultSet rss = st.executeQuery(sql2)) {
             ml.addElement("SELEC. UNA OPCIÓN");
             while (rs.next()) {
                 ml.addElement(rs.getString("lab_nombre"));
-
             }
-            ResultSet rss = sentenciaG.executeQuery("SELECT * FROM laboratorio WHERE lab_codigo=" + idBoca);
             rss.first();
             Object descripcion = (Object) rss.getString("lab_nombre");
             cbBoca_de_cobranza.setModel(ml);
             cbBoca_de_cobranza.setSelectedItem(descripcion);
             rs.close();
             rss.close();
-            con.close();
-            conG.close();
+            st.close();
+            cn.close();
         } catch (SQLException ew) {
             //Mensajes.error("TIENES UN ERROR AL CARGAR LOS LABORATORIOS: "+ew.getMessage().toUpperCase());
         }
     }
 
     public void modcboTimbrado(String idTimbrado) {
-        prepararBD();
         DefaultComboBoxModel ml = new DefaultComboBoxModel();
-        try {
-            rs = sentencia.executeQuery("SELECT * FROM timbrado WHERE estado='Activo'");
+        String sql = "SELECT * FROM timbrado WHERE estado='Activo'";
+        String sql2 = "SELECT * FROM timbrado WHERE idtimbrado=" + idTimbrado;
+        try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql); ResultSet rss = st.executeQuery(sql2)) {
             ml.addElement("SELEC. UNA OPCIÓN");
             while (rs.next()) {
                 ml.addElement(rs.getString("descripcion"));
-
             }
-            ResultSet rss = sentencia.executeQuery("SELECT * FROM timbrado WHERE idtimbrado=" + idTimbrado);
             rss.first();
             Object descripcion = (Object) rss.getString("descripcion");
             try {
-                    if (rss.getRow() != 0) {
-                        lbFechaTimbrado.setText("VALIDEZ: " + rss.getString(3) + " - " + rss.getString(4));
-                        txtEstablecimiento.requestFocus();
-                    } else {
-                        System.out.println("No se puede cargar Fecha timbrado.");
-                    }
-                } catch (SQLException ee) {
-                    System.out.println(ee.getMessage());
+                if (rss.getRow() != 0) {
+                    lbFechaTimbrado.setText("VALIDEZ: " + rss.getString(3) + " - " + rss.getString(4));
+                    txtEstablecimiento.requestFocus();
+                } else {
+                    System.out.println("No se puede cargar Fecha timbrado.");
                 }
+            } catch (SQLException ee) {
+                System.out.println(ee.getMessage());
+            }
             cboTimbrado.setModel(ml);
             cboTimbrado.setSelectedItem(descripcion);
             rs.close();
             rss.close();
-            con.close();
-            conG.close();
+            st.close();
+            cn.close();
         } catch (SQLException ew) {
             //Mensajes.error("TIENES UN ERROR AL CARGAR LOS LABORATORIOS: "+ew.getMessage().toUpperCase());
         }
@@ -644,7 +608,7 @@ public class dlgPuntoEmisionMovil extends javax.swing.JDialog {
                     .addComponent(jLabel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
                 .addComponent(rbActivo, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(rbInactivo, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -676,6 +640,11 @@ public class dlgPuntoEmisionMovil extends javax.swing.JDialog {
         cbBoca_de_cobranza.setFont(new java.awt.Font("Roboto", 1, 11)); // NOI18N
         cbBoca_de_cobranza.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
         cbBoca_de_cobranza.setEnabled(false);
+        cbBoca_de_cobranza.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbBoca_de_cobranzaActionPerformed(evt);
+            }
+        });
 
         jLabel4.setFont(new java.awt.Font("Roboto", 1, 11)); // NOI18N
         jLabel4.setText("Boca de Cobranza");
@@ -699,7 +668,7 @@ public class dlgPuntoEmisionMovil extends javax.swing.JDialog {
                             .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addComponent(txtEstablecimiento, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
@@ -707,10 +676,10 @@ public class dlgPuntoEmisionMovil extends javax.swing.JDialog {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(txtEmision, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
                                 .addComponent(jLabel2)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(cboTimbrado, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(txtDireccion, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                     .addComponent(txtFActual, javax.swing.GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE)
@@ -725,7 +694,8 @@ public class dlgPuntoEmisionMovil extends javax.swing.JDialog {
                                         .addComponent(txtNVenta, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(jPanel2Layout.createSequentialGroup()
                                         .addGap(12, 12, 12)
-                                        .addComponent(txtFFin)))))))
+                                        .addComponent(txtFFin))))
+                            .addComponent(txtDireccion, javax.swing.GroupLayout.Alignment.TRAILING))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -828,16 +798,11 @@ public class dlgPuntoEmisionMovil extends javax.swing.JDialog {
         BlancoLayout.setHorizontalGroup(
             BlancoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(BlancoLayout.createSequentialGroup()
-                .addGroup(BlancoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(BlancoLayout.createSequentialGroup()
-                        .addGroup(BlancoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(BlancoLayout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1020, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(Oscuro, javax.swing.GroupLayout.DEFAULT_SIZE, 1020, Short.MAX_VALUE))
-                .addContainerGap())
+                .addContainerGap()
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(Oscuro, javax.swing.GroupLayout.DEFAULT_SIZE, 1042, Short.MAX_VALUE)
+            .addComponent(jScrollPane1)
         );
         BlancoLayout.setVerticalGroup(
             BlancoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -846,14 +811,14 @@ public class dlgPuntoEmisionMovil extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 254, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 243, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(Blanco, javax.swing.GroupLayout.PREFERRED_SIZE, 1022, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(Blanco, javax.swing.GroupLayout.PREFERRED_SIZE, 1044, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1074,21 +1039,37 @@ public class dlgPuntoEmisionMovil extends javax.swing.JDialog {
 
             int fila = tbPuntoEmision.getSelectedRow();
             String cod = tbPuntoEmision.getValueAt(fila, 0).toString();
+            System.out.println(cod);
             String itTimbrado = tbPuntoEmision.getValueAt(fila, 1).toString();
+            System.out.println("ID Timbrado: " + itTimbrado);
             String establecimiento = tbPuntoEmision.getValueAt(fila, 3).toString();
+            System.out.println("Establecimiento: " + establecimiento);
             String puntoEmision = tbPuntoEmision.getValueAt(fila, 4).toString();
+            System.out.println("Punto emision: " + puntoEmision);
             String direccion = tbPuntoEmision.getValueAt(fila, 5).toString();
+            System.out.println("Direccion: " + direccion);
             String fi = tbPuntoEmision.getValueAt(fila, 6).toString();
+            System.out.println("Factura Inicio: " + fi);
             String ff = tbPuntoEmision.getValueAt(fila, 7).toString();
+            System.out.println("Factura Fin: " + ff);
             String fa = tbPuntoEmision.getValueAt(fila, 8).toString();
+            System.out.println("Factura Actual: " + fa);
             String nv = tbPuntoEmision.getValueAt(fila, 9).toString();
+            System.out.println("Numero Venta: " + nv);
             String tipo = tbPuntoEmision.getValueAt(fila, 10).toString();
+            System.out.println("Tipo: " + tipo);
             String tipo2 = tbPuntoEmision.getValueAt(fila, 11).toString();
+            System.out.println("Tipo2: " + tipo2);
             String ip = tbPuntoEmision.getValueAt(fila, 12).toString();
+            System.out.println("IP: " + ip);
             String estado = tbPuntoEmision.getValueAt(fila, 13).toString();
-            String idboca = tbPuntoEmision.getValueAt(fila, 14).toString();
+            System.out.println("Estado: " + estado);
+            int idboca = Integer.parseInt(tbPuntoEmision.getValueAt(fila, 14).toString());
+            System.out.println("ID boca de cobranza:" + idboca);
             String boca = tbPuntoEmision.getValueAt(fila, 15).toString();
+            System.out.println("Boca de cobranza: " + boca);
             String impresora = tbPuntoEmision.getValueAt(fila, 16).toString();
+            System.out.println("Impresora: " + impresora);
 
             txtCod.setText(cod);
             modcboTimbrado(itTimbrado);
@@ -1121,7 +1102,8 @@ public class dlgPuntoEmisionMovil extends javax.swing.JDialog {
             modcboBocaCobranza(idboca);
             txtImpresora.setText(impresora);
             txtEstablecimiento.requestFocus();
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
+            System.out.println("Error Punto emision Mouse clicked: " + e.getMessage());
         }
 
     }//GEN-LAST:event_tbPuntoEmisionMouseClicked
@@ -1190,49 +1172,9 @@ public class dlgPuntoEmisionMovil extends javax.swing.JDialog {
             if (cboTimbrado.getSelectedIndex() == 0) {
                 lbFechaTimbrado.setText("");
             } else {
-                try {
-                    int idT;
-                    idT = Integer.parseInt(cargarComboBoxMovil.getCodidgo(cboTimbrado));
-                    try {
-                        prepararBD();
-                        rs = sentencia.executeQuery("select * from timbrado where idtimbrado=" + idT);
-                        rs.first();
-                        try {
-                            if (rs.getRow() != 0) {
-                                lbFechaTimbrado.setText("VALIDEZ: " + rs.getString(3) + " - " + rs.getString(4));
-                                txtEstablecimiento.requestFocus();
-                            } else {
-                                System.out.println("No se puede cargar Fecha timbrado.");
-                            }
-                        } catch (SQLException ee) {
-                            System.out.println(ee.getMessage());
-                        }
-                        rs.close();
-                        con.close();
-                        conG.close();
-                    } catch (SQLException ex) {
-                        System.out.println(ex.getMessage());
-                    }
-
-                } catch (Exception e) {
-                }
-                txtEstablecimiento.requestFocus();
-            }
-
-        }
-    }//GEN-LAST:event_cboTimbradoKeyPressed
-
-    private void cboTimbradoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboTimbradoActionPerformed
-        // TODO add your handling code here:
-        if (cboTimbrado.getSelectedIndex() == 0) {
-            lbFechaTimbrado.setText("");
-        } else {
-            try {
-                int idT;
-                idT = Integer.parseInt(cargarComboBoxMovil.getCodidgo(cboTimbrado));
-                try {
-                    prepararBD();
-                    rs = sentencia.executeQuery("select * from timbrado where idtimbrado=" + idT);
+                int idT = Integer.parseInt(cargarComboBoxMovil.getCodidgo(cboTimbrado));
+                String sql = "select * from timbrado where idtimbrado=" + idT;
+                try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
                     rs.first();
                     try {
                         if (rs.getRow() != 0) {
@@ -1245,13 +1187,52 @@ public class dlgPuntoEmisionMovil extends javax.swing.JDialog {
                         System.out.println(ee.getMessage());
                     }
                     rs.close();
-                    con.close();
-                    conG.close();
+                    st.close();
+                    cn.close();
                 } catch (SQLException ex) {
-                    System.out.println(ex.getMessage());
+                    System.out.println("Error cboTimbradoKeyPressed" + ex.getMessage());
                 }
+                txtEstablecimiento.requestFocus();
+            }
 
+        }
+    }//GEN-LAST:event_cboTimbradoKeyPressed
+
+    private void cboTimbradoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboTimbradoActionPerformed
+        // TODO add your handling code here:
+        if (cboTimbrado.getSelectedIndex() == 0) {
+            lbFechaTimbrado.setText("");
+        } else {
+            int idT = 0;
+            String sqlx = "Select * from timbrado where descripcion=" + cboTimbrado.getSelectedItem()+" and estado='Activo'";
+            try (Connection cnx = dss1.getDataSource().getConnection(); Statement st = cnx.createStatement(); ResultSet rsx = st.executeQuery(sqlx)) {
+                rsx.last();
+                if (rsx.getRow() != 0) {
+                    idT = rsx.getInt("idtimbrado");
+                } else {
+                    System.out.println("Busqueda sin resultados");
+                }
             } catch (Exception e) {
+                System.out.println("Error obteniendo ID de timbrado");
+            }
+            String sql = "select * from timbrado where idtimbrado=" + idT;
+            try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
+                rs.first();
+                try {
+                    if (rs.getRow() != 0) {
+                        lbFechaTimbrado.setText("VALIDEZ: " + rs.getString(3) + " - " + rs.getString(4));
+                        txtEstablecimiento.requestFocus();
+                    } else {
+                        System.out.println("No se puede cargar Fecha timbrado.");
+                    }
+                } catch (SQLException ee) {
+                    System.out.println(ee.getMessage());
+                }
+                rs.close();
+                st.close();
+                cn.close();
+            } catch (SQLException ex) {
+                System.out.println("Error cboTimbradoActionPerformed: " + ex.getMessage());
             }
         }
     }//GEN-LAST:event_cboTimbradoActionPerformed
@@ -1368,6 +1349,10 @@ public class dlgPuntoEmisionMovil extends javax.swing.JDialog {
     private void cboTimbradoPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_cboTimbradoPropertyChange
         // TODO add your handling code here:
     }//GEN-LAST:event_cboTimbradoPropertyChange
+
+    private void cbBoca_de_cobranzaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbBoca_de_cobranzaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cbBoca_de_cobranzaActionPerformed
 
     void limpiarCampos() {
         txtCod.setText("");

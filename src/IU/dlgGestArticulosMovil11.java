@@ -1,6 +1,6 @@
 package IU;
 
-import Componentes.ConexionBD;
+import Componentes.DataSourceService1;
 import Componentes.Mensajes;
 import Componentes.Software;
 import Componentes.cargarComboBoxMovil;
@@ -20,10 +20,8 @@ import org.mariadb.jdbc.MariaDbStatement;
 
 public class dlgGestArticulosMovil11 extends javax.swing.JDialog {
 
-    //public static ResultSet rs;
-    public static MariaDbStatement sentencia;
-    public static MariaDbConnection con;
     public static int id;
+    static DataSourceService1 dss1 = new DataSourceService1();
 
     public dlgGestArticulosMovil11(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -1750,39 +1748,23 @@ public class dlgGestArticulosMovil11 extends javax.swing.JDialog {
         dlgBuscarArticuloCompra1.tbDetalle.clearSelection();
     }
 
-    public static void prepararBD() {
-        try {
-            con = (MariaDbConnection) new ConexionBD().getConexionMovil();
-            if (con == null) {
-                System.out.println("No hay Conexion con la Base de Datos");
-            } else {
-                sentencia = (MariaDbStatement) con.createStatement();
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
     public void modcboClasificacion() {
         DefaultComboBoxModel ml = new DefaultComboBoxModel();
-        String codClasificacion = txtCodClasificacion.getText().trim();
-        try {
-            prepararBD();
-            ResultSet rs = sentencia.executeQuery("SELECT * FROM division WHERE estado='S'");
+        String sql = "SELECT * FROM division WHERE estado='S'";
+        String sql2 = "SELECT * FROM division WHERE iddivision=" + txtCodClasificacion.getText().trim();
+        try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql); ResultSet rss = st.executeQuery(sql2)) {
             ml.addElement("SELEC. UNA OPCIÓN");
             while (rs.next()) {
                 ml.addElement(rs.getString("descripcion"));
-
             }
-            rs.close();
-            ResultSet rss = sentencia.executeQuery("SELECT * FROM division WHERE iddivision=" + codClasificacion);
             rss.first();
             Object descripcion = (Object) rss.getString("descripcion");
-            dlgGestArticulosMovil11.cboClasificacion.setModel(ml);
-            dlgGestArticulosMovil11.cboClasificacion.setSelectedItem(descripcion);
+            dlgGestArticulosMovil.cboClasificacion.setModel(ml);
+            dlgGestArticulosMovil.cboClasificacion.setSelectedItem(descripcion);
+            rs.close();
             rss.close();
-            sentencia.close();
-            con.close();
+            st.close();
+            cn.close();
         } catch (SQLException ew) {
             //Mensajes.error("TIENES UN ERROR AL CARGAR LOS LABORATORIOS: "+ew.getMessage().toUpperCase());
         }
@@ -1790,22 +1772,21 @@ public class dlgGestArticulosMovil11 extends javax.swing.JDialog {
 
     public void modcboUM() {
         DefaultComboBoxModel pr = new DefaultComboBoxModel();
-        String codUM = txtCodUM.getText().trim();
-        try {
-            ResultSet rs = sentencia.executeQuery("SELECT * FROM unidad_medida WHERE estado='S'");
+        String sql = "SELECT * FROM unidad_medida WHERE estado='S'";
+        String sql2 = "SELECT * FROM unidad_medida WHERE idunidad=" + txtCodUM.getText().trim();
+        try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql); ResultSet rss = st.executeQuery(sql2)) {
             pr.addElement("SELEC. UNA OPCIÓN");
             while (rs.next()) {
                 pr.addElement(rs.getString("unidadmedida"));
             }
-            rs.close();
-            ResultSet rss = sentencia.executeQuery("SELECT * FROM unidad_medida WHERE idunidad=" + codUM);
             rss.first();
             Object descripcion = (Object) rss.getString("unidadmedida");
-            dlgGestArticulosMovil11.cboUM.setModel(pr);
-            dlgGestArticulosMovil11.cboUM.setSelectedItem(descripcion);
+            dlgGestArticulosMovil.cboUM.setModel(pr);
+            dlgGestArticulosMovil.cboUM.setSelectedItem(descripcion);
+            rs.close();
             rss.close();
-            sentencia.close();
-            con.close();
+            st.close();
+            cn.close();
         } catch (SQLException ew) {
             //Mensajes.error("TIENES UN ERROR AL CARGAR LOS PROVEEDORES: "+ew.getMessage().toUpperCase());
         }
@@ -1813,22 +1794,21 @@ public class dlgGestArticulosMovil11 extends javax.swing.JDialog {
 
     public void modcboImpuesto() {
         DefaultComboBoxModel fm = new DefaultComboBoxModel();
-        String codImpuesto = txtCodImpuesto.getText().trim();
-        try {
-            ResultSet rs = sentencia.executeQuery("SELECT * FROM iva WHERE estado='S'");
+        String sql = "SELECT * FROM iva WHERE estado='S'";
+        String sql2 = "SELECT * FROM iva WHERE idiva=" + txtCodImpuesto.getText().trim();
+        try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql); ResultSet rss = st.executeQuery(sql2)) {
             fm.addElement("SELEC. UNA OPCIÓN");
             while (rs.next()) {
                 fm.addElement(rs.getString("descripcion"));
             }
-            rs.close();
-            ResultSet rss = sentencia.executeQuery("SELECT * FROM iva WHERE idiva=" + codImpuesto);
             rss.first();
             Object descripcion = (Object) rss.getString("descripcion");
-            dlgGestArticulosMovil11.cboImpuesto.setModel(fm);
-            dlgGestArticulosMovil11.cboImpuesto.setSelectedItem(descripcion);
+            dlgGestArticulosMovil.cboImpuesto.setModel(fm);
+            dlgGestArticulosMovil.cboImpuesto.setSelectedItem(descripcion);
+            rs.close();
             rss.close();
-            sentencia.close();
-            con.close();
+            st.close();
+            cn.close();
         } catch (SQLException ew) {
             //Mensajes.error("TIENES UN ERROR AL CARGAR LAS FAMILIAS: "+ew.getMessage().toUpperCase());
         }

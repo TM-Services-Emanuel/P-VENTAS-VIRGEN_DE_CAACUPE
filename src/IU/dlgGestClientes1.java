@@ -1,6 +1,6 @@
 package IU;
 
-import Componentes.ConexionBD;
+import Componentes.DataSourceService1;
 import Componentes.Mensajes;
 import Componentes.cargarComboBoxMovil;
 import Componentes.validarCampos;
@@ -11,15 +11,12 @@ import static IU.dlgBuscarCliente.tbDetalle;
 import java.awt.HeadlessException;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import javax.swing.JOptionPane;
-import org.mariadb.jdbc.MariaDbConnection;
-import org.mariadb.jdbc.MariaDbStatement;
 
 public final class dlgGestClientes1 extends javax.swing.JDialog {
-    public static MariaDbConnection conMovil;
-    public static MariaDbStatement stMovil;
+
+    static DataSourceService1 dss1 = new DataSourceService1();
 
     public dlgGestClientes1(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -34,94 +31,79 @@ public final class dlgGestClientes1 extends javax.swing.JDialog {
         c4.setVisible(false);
         btnNuevo.doClick();
     }
-    public static void prepararBD() {
-        try {
-            conMovil = (MariaDbConnection) new ConexionBD().getConexionMovil();
-            if (conMovil == null) {
-                System.out.println("No hay Conexion con la Base de Datos Movil");
-            } else {
-                stMovil = (MariaDbStatement) conMovil.createStatement();
+
+    public static void BuscarRUC() {
+        String ruc = dlgBuscarCliente.txtBuscar.getText().trim();
+        if (!ruc.isEmpty()) {
+            String sql = "SELECT * FROM clientesbd WHERE cedula Like '" + ruc + "%'";
+            try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
+                rs.last();
+                dlgGestClientes1.txtRazonS.setText(rs.getString("nombre"));
+                dlgGestClientes1.txtRuc.setText(rs.getString("cedula"));
+                dlgGestClientes1.txtDireccion.setText("SIN ESPECIFICAR");
+                dlgGestClientes1.txtTelefono.setText("0");
+                dlgGestClientes1.cbCiudad.setSelectedIndex(1);
+                rs.close();
+                st.close();
+                cn.close();
+            } catch (SQLException ex) {
+                Mensajes.informacion("OBSERVACIÓN:\nLamentablemete no se ha encontrado coincidencia en el registro externo de clientes.");
+                dlgGestClientes1.txtRuc.setText(ruc);
+                dlgGestClientes1.txtDireccion.setText("SIN ESPECIFICAR");
+                dlgGestClientes1.txtTelefono.setText("0");
+                dlgGestClientes1.cbCiudad.setSelectedIndex(1);
             }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
         }
     }
-    public static void BuscarRUC(){
-         prepararBD();
-         String ruc=dlgBuscarCliente.txtBuscar.getText().trim();
-         if(!ruc.isEmpty()){
-             try {
-            ResultSet rs = stMovil.executeQuery("SELECT * FROM clientesbd WHERE cedula Like '"+ruc+"%'");
-            rs.last();
-            dlgGestClientes1.txtRazonS.setText(rs.getString("nombre"));
-            dlgGestClientes1.txtRuc.setText(rs.getString("cedula"));
-            dlgGestClientes1.txtDireccion.setText("SIN ESPECIFICAR");
-            dlgGestClientes1.txtTelefono.setText("0");
-            dlgGestClientes1.cbCiudad.setSelectedIndex(1);
-            rs.close();
-            stMovil.close();
-            conMovil.close();
-        } catch (SQLException ex) {
-            Mensajes.informacion("OBSERVACIÓN:\nLamentablemete no se ha encontrado coincidencia en el registro externo de clientes.");
-            dlgGestClientes1.txtRuc.setText(ruc);
-            dlgGestClientes1.txtDireccion.setText("SIN ESPECIFICAR");
-            dlgGestClientes1.txtTelefono.setText("0");
-            dlgGestClientes1.cbCiudad.setSelectedIndex(1);
+
+    public static void BuscarRUC2() {
+        String ruc = txtRuc.getText().trim();
+        if (!ruc.isEmpty()) {
+            String sql = "SELECT * FROM clientesbd WHERE cedula Like '" + ruc + "%'";
+            try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
+                rs.last();
+                dlgGestClientes1.txtRazonS.setText(rs.getString("nombre"));
+                dlgGestClientes1.txtRuc.setText(rs.getString("cedula"));
+                dlgGestClientes1.txtDireccion.setText("SIN ESPECIFICAR");
+                dlgGestClientes1.txtTelefono.setText("0");
+                dlgGestClientes1.cbCiudad.setSelectedIndex(1);
+                rs.close();
+                st.close();
+                cn.close();
+            } catch (SQLException ex) {
+                Mensajes.informacion("OBSERVACIÓN:\nLamentablemete no se ha encontrado coincidencia en el registro externo de clientes.");
+                dlgGestClientes1.txtRuc.setText(ruc);
+                dlgGestClientes1.txtDireccion.setText("SIN ESPECIFICAR");
+                dlgGestClientes1.txtTelefono.setText("0");
+                dlgGestClientes1.cbCiudad.setSelectedIndex(1);
+            }
         }
-         }
     }
-    
-    public static void BuscarRUC2(){
-         prepararBD();
-         String ruc=txtRuc.getText().trim();
-         if(!ruc.isEmpty()){
-             try {
-            ResultSet rs = stMovil.executeQuery("SELECT * FROM clientesbd WHERE cedula Like '"+ruc+"%'");
-            rs.last();
-            dlgGestClientes1.txtRazonS.setText(rs.getString("nombre"));
-            dlgGestClientes1.txtRuc.setText(rs.getString("cedula"));
-            dlgGestClientes1.txtDireccion.setText("SIN ESPECIFICAR");
-            dlgGestClientes1.txtTelefono.setText("0");
-            dlgGestClientes1.cbCiudad.setSelectedIndex(1);
-            rs.close();
-            stMovil.close();
-            conMovil.close();
-        } catch (SQLException ex) {
-            Mensajes.informacion("OBSERVACIÓN:\nLamentablemete no se ha encontrado coincidencia en el registro externo de clientes.");
-            dlgGestClientes1.txtRazonS.setText("");
-            dlgGestClientes1.txtRuc.setText("");
-            dlgGestClientes1.txtDireccion.setText("SIN ESPECIFICAR");
-            dlgGestClientes1.txtTelefono.setText("0");
-            dlgGestClientes1.cbCiudad.setSelectedIndex(1);
-            dlgGestClientes1.txtRazonS.requestFocus();
-        }
-         }
-    }
-    
-    private void Cancelar(){
+
+    private void Cancelar() {
         limpiarCampos();
-            btnNuevo.setEnabled(true);
-            itemNuevo.setEnabled(true);
-            btnGuardar.setEnabled(false);
-            itemGuardar.setEnabled(false);
-            btnCancelar.setEnabled(false);
-            itemCancelar.setEnabled(false);
-            btnCiudad.setEnabled(false);
-            txtRazonS.setEnabled(false);
-            txtDireccion.setEnabled(false);
-            txtTelefono.setEnabled(false);
-            cbCiudad.setEnabled(false);
-            txtRuc.setEnabled(false);
-            txaS.setEnabled(false);
-            lbm.setText("");
-            c1.setVisible(false);
-            c2.setVisible(false);
-            c3.setVisible(false);
-            c4.setVisible(false);
-            CabecerasTablas.limpiarTablasBuscarClientes(tbDetalle);
-            controlCliente.listClientes(tbDetalle, "clientes.idcliente");
-            dlgBuscarCliente.txtBuscar.requestFocus();
-            this.dispose();
+        btnNuevo.setEnabled(true);
+        itemNuevo.setEnabled(true);
+        btnGuardar.setEnabled(false);
+        itemGuardar.setEnabled(false);
+        btnCancelar.setEnabled(false);
+        itemCancelar.setEnabled(false);
+        btnCiudad.setEnabled(false);
+        txtRazonS.setEnabled(false);
+        txtDireccion.setEnabled(false);
+        txtTelefono.setEnabled(false);
+        cbCiudad.setEnabled(false);
+        txtRuc.setEnabled(false);
+        txaS.setEnabled(false);
+        lbm.setText("");
+        c1.setVisible(false);
+        c2.setVisible(false);
+        c3.setVisible(false);
+        c4.setVisible(false);
+        CabecerasTablas.limpiarTablasBuscarClientes(tbDetalle);
+        controlCliente.listClientes(tbDetalle, "clientes.idcliente");
+        dlgBuscarCliente.txtBuscar.requestFocus();
+        this.dispose();
     }
 
     @SuppressWarnings("unchecked")
@@ -696,7 +678,7 @@ public final class dlgGestClientes1 extends javax.swing.JDialog {
             dlgBuscarCliente.txtBuscar.requestFocus();
             this.dispose();
         }
-        
+
     }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void itemCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemCancelarActionPerformed
@@ -784,7 +766,7 @@ public final class dlgGestClientes1 extends javax.swing.JDialog {
     private void cbCiudadKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cbCiudadKeyPressed
         // TODO add your handling code here:
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-                btnGuardar.doClick();
+            btnGuardar.doClick();
         }
     }//GEN-LAST:event_cbCiudadKeyPressed
 

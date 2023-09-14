@@ -2,6 +2,9 @@ package IU;
 
 import Componentes.Fecha;
 import Componentes.Reporte;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class dlgFechasReportes extends javax.swing.JFrame {
 
@@ -102,8 +105,12 @@ public class dlgFechasReportes extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        Reporte gr;
-        gr = new Reporte();
+        Reporte gr = null;
+        try {
+            gr = new Reporte();
+        } catch (SQLException ex) {
+            Logger.getLogger(dlgFechasReportes.class.getName()).log(Level.SEVERE, null, ex);
+        }
         String fecha1 = Fecha.formatoFecha(dcDesde.getText());
         String fecha2 = Fecha.formatoFecha(dcHasta.getText());
         //gr.MostrarReporte2Parametros(System.getProperty("user.dir")+"/Reportes/"+carpeta+"/"+jasper+".jasper", "Reporte de ventas", fecha1, fecha2);

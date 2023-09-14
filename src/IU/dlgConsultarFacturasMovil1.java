@@ -1,6 +1,5 @@
 package IU;
 
-import Componentes.ConexionBD;
 import Componentes.Fecha;
 import Componentes.Mensajes;
 import Componentes.Numero_a_Letra;
@@ -37,12 +36,12 @@ public class dlgConsultarFacturasMovil1 extends javax.swing.JDialog {
         Renders();
         txtIdPE.setVisible(false);
         txtIdT.setVisible(false);
-        prepararBD();
+        //prepararBD();
         d = new Numero_a_Letra();
 
     }
 
-    public static void prepararBD() {
+    /*public static void prepararBD() {
         {
             try {
                 con = (MariaDbConnection) new ConexionBD().getConexionMovil();
@@ -55,7 +54,7 @@ public class dlgConsultarFacturasMovil1 extends javax.swing.JDialog {
                 System.out.println(e.getMessage());
             }
         }
-    }
+    }*/
 
     final void titulo() {
         if (Software.getSoftware().equals("null")) {
@@ -854,7 +853,7 @@ public class dlgConsultarFacturasMovil1 extends javax.swing.JDialog {
                 } catch (Exception e) {
                     txtIdT.setText("");
                 }
-                prepararBD();
+                //prepararBD();
                 String timb;
                 timb = cboTimbrado.getSelectedItem().toString();
                 try {

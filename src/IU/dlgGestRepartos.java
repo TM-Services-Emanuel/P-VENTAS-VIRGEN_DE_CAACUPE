@@ -5,7 +5,8 @@
  */
 package IU;
 
-import Componentes.ConexionBD;
+import Componentes.DataSourceService;
+import Componentes.DataSourceService1;
 import Componentes.Fecha;
 import Componentes.Login;
 import Componentes.Mensajes;
@@ -25,21 +26,17 @@ import Controladores.controlReparto;
 import Datos.GestionarReparto;
 import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
-import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.swing.JRViewer;
-import org.mariadb.jdbc.MariaDbConnection;
-import org.mariadb.jdbc.MariaDbStatement;
 
 /**
  *
@@ -47,19 +44,12 @@ import org.mariadb.jdbc.MariaDbStatement;
  */
 public class dlgGestRepartos extends javax.swing.JDialog {
 
-    private static final CabecerasTablas cabe = new CabecerasTablas();
-
-    public static ResultSet rs;
-    public static MariaDbConnection con;
-    public static MariaDbStatement sentencia;
-    public static MariaDbConnection conMovil;
-    public static MariaDbStatement sentenciaMovil;
-    public static MariaDbStatement stTransaccionMovil;
-    static String UsuarioL = "";
     static String opcion = "";
     public Reporte jasper;
     public Numero_a_Letra d;
-    static int anterior,dif,inicio, cierre, vacio, diferencia, totalc;
+    static int anterior, dif, inicio, cierre, vacio, diferencia, totalc;
+    static DataSourceService1 dss1 = new DataSourceService1();
+    static DataSourceService dss = new DataSourceService();
 
     /**
      * Creates new form dlgGestRepartos
@@ -74,9 +64,8 @@ public class dlgGestRepartos extends javax.swing.JDialog {
         noVisible();
         CabecerasTablas.reparto(tbDetalleReparto);
         Renders();
-        UsuarioL = Login.getUsuarioLogueado();
         d = new Numero_a_Letra();
-        
+
     }
 
     public static void Renders() {
@@ -129,26 +118,6 @@ public class dlgGestRepartos extends javax.swing.JDialog {
             txtCantidad.setEnabled(false);
         } else {
             txtCantidad.setEnabled(true);
-        }
-    }
-
-    public static void prepararBD() {
-        try {
-            con = (MariaDbConnection) new ConexionBD().getConexion();
-            conMovil = (MariaDbConnection) new ConexionBD().getConexionMovil();
-            if (con == null) {
-                System.out.println("No hay Conexion con la Base de Datos");
-            } else {
-                sentencia = (MariaDbStatement) con.createStatement();
-            }
-            if (conMovil == null) {
-                System.out.println("No hay Conexion con la Base de Datos Movil");
-            } else {
-                sentenciaMovil = (MariaDbStatement) conMovil.createStatement();
-                stTransaccionMovil = (MariaDbStatement) conMovil.createStatement();
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
         }
     }
 
@@ -234,39 +203,35 @@ public class dlgGestRepartos extends javax.swing.JDialog {
     public static void calcularCajas() {
         try {
             //int anterior,dif, inicio,cierre, vacio, diferencia, totalc;
-            
+
             anterior = Integer.parseInt(txtCAnterior.getText());
-            if(txtContenedorI.getText().trim().length()==0){
+            if (txtContenedorI.getText().trim().length() == 0) {
                 inicio = 0;
-            }else if(txtContenedorI.getText().trim().length()>0){
+            } else if (txtContenedorI.getText().trim().length() > 0) {
                 inicio = Integer.parseInt(txtContenedorI.getText());
-            }            
+            }
             totalc = anterior + inicio;
             txtContenedorT.setText(String.valueOf(totalc));
-            
-            
-            if(txtContenedorF.getText().trim().length()==0){
+
+            if (txtContenedorF.getText().trim().length() == 0) {
                 cierre = 0;
-            }else if(txtContenedorF.getText().trim().length()>0){
+            } else if (txtContenedorF.getText().trim().length() > 0) {
                 cierre = Integer.parseInt(txtContenedorF.getText());
             }
-            if(txtContenedorV.getText().length()==0){
+            if (txtContenedorV.getText().length() == 0) {
                 vacio = 0;
-            }else if(txtContenedorV.getText().length()>0){
-                vacio = Integer.parseInt(txtContenedorV.getText());    
+            } else if (txtContenedorV.getText().length() > 0) {
+                vacio = Integer.parseInt(txtContenedorV.getText());
             }
-                    
-                    
-                    
-            diferencia = (cierre+vacio) - Integer.parseInt(txtContenedorT.getText());
-            
+
+            diferencia = (cierre + vacio) - Integer.parseInt(txtContenedorT.getText());
+
             dif = Integer.parseInt(txtCdifACA.getText());
-            int difFinal =(diferencia);
-            int difAC = (diferencia)+(dif);
+            int difFinal = (diferencia);
+            int difAC = (diferencia) + (dif);
             txtContenedorD.setText(String.valueOf(difFinal));
             txtContenedorDA.setText(String.valueOf(difAC));
-            
-            
+
         } catch (Exception e) {
         }
 
@@ -320,31 +285,29 @@ public class dlgGestRepartos extends javax.swing.JDialog {
 
     public static void modificarcboResponsable() {
         DefaultComboBoxModel ml = new DefaultComboBoxModel();
-        String codResponsable = txtIdResponsable.getText().trim();
-        try {
-            prepararBD();
-            ResultSet res = sentencia.executeQuery("SELECT * FROM v_vendedores WHERE idfuncion=2 AND ven_indicador='S'");
+        String sql = "SELECT * FROM v_vendedores WHERE idfuncion=2 AND ven_indicador='S'";
+        String sql2 = "SELECT * FROM v_vendedores WHERE ven_codigo=" + txtIdResponsable.getText().trim();
+        try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql); ResultSet rss = st.executeQuery(sql2)) {
             ml.addElement("SELECCIONE UN RESPONSABLE");
-            while (res.next()) {
-                ml.addElement(res.getString("ven_nombre"));
-
+            while (rs.next()) {
+                ml.addElement(rs.getString("ven_nombre"));
             }
-            ResultSet rss = sentencia.executeQuery("SELECT * FROM v_vendedores WHERE ven_codigo=" + codResponsable);
             rss.first();
             Object descripcion = (Object) rss.getString("ven_nombre");
             cboResponsable.setModel(ml);
             cboResponsable.setSelectedItem(descripcion);
+            rs.close();
+            rss.close();
+            st.close();
+            cn.close();
         } catch (SQLException ew) {
         }
     }
 
     public static void ObtenerGastosA() {
-        prepararBD();
         try {
-            String idm;
-            idm = txtIdMovil.getText();
-            try {
-                rs = sentencia.executeQuery("SELECT SUM(ga_importe) AS total FROM gastos WHERE ga_idmovil=" + idm + " AND caja_ca_id=" + txtCaja.getText().trim() + " AND ga_indicador='S' AND tipo='A'");
+            String sql = "SELECT SUM(ga_importe) AS total FROM gastos WHERE ga_idmovil=" + txtIdMovil.getText() + " AND caja_ca_id=" + txtCaja.getText().trim() + " AND ga_indicador='S' AND tipo='A'";
+            try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
                 rs.last();
                 if (rs.getString("total") == null) {
                     txtGastosTotal.setText("0");
@@ -353,10 +316,12 @@ public class dlgGestRepartos extends javax.swing.JDialog {
                     txtGastosTotal.setText(df.format(Integer.parseInt(String.valueOf(rs.getString("total")).replace(".", "").replace(",", ""))));
                 }
                 rs.close();
+                st.close();
+                cn.close();
             } catch (SQLException ex) {
                 Mensajes.error("Error al querer obtener valor del gasto: " + ex.getMessage());
             }
-        } catch (Exception pr) {
+        } catch (NumberFormatException pr) {
         }
 
     }
@@ -2383,12 +2348,12 @@ public class dlgGestRepartos extends javax.swing.JDialog {
 
     private void txtContenedorIKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtContenedorIKeyReleased
         // TODO add your handling code here:
-        calcularCajas();        
+        calcularCajas();
     }//GEN-LAST:event_txtContenedorIKeyReleased
 
     private void txtContenedorFKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtContenedorFKeyReleased
         // TODO add your handling code here:
-            calcularCajas();        
+        calcularCajas();
     }//GEN-LAST:event_txtContenedorFKeyReleased
 
     private void txtDiferenciaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDiferenciaActionPerformed
@@ -2445,16 +2410,14 @@ public class dlgGestRepartos extends javax.swing.JDialog {
         // TODO add your handling code here:
 
         VisorReportes vr = new VisorReportes(null, true);
-        try {
-            //archivo jasper
-            //URL  jasperUrl = this.getClass().getResource("\\Reports\\repartos\\movimiento_reparto_E.jasper");
+        try (Connection con = dss.getDataSource().getConnection()) {
             String jasperUrl = System.getProperty("user.dir").concat("\\Reports\\repartos\\movimiento_reparto.jasper");
             JasperReport report = (JasperReport) JRLoader.loadObjectFromFile(jasperUrl);
             //para los parametro
             Map parametros = new HashMap();
             parametros.clear();
             //Nuestro parametro se llama "pLastName"
-            parametros.put("id_reparto", Integer.parseInt(txtIdReparto.getText().trim()));
+            parametros.put("id_reparto", Integer.valueOf(txtIdReparto.getText().trim()));
             parametros.put("estado", txtEstado.getText());
             //agregamos los parametros y la conexion a la base de datos
             JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametros, con);
@@ -2469,8 +2432,8 @@ public class dlgGestRepartos extends javax.swing.JDialog {
             jRViewer.setVisible(true);
             VisorReportes.jpContainer.repaint();
             VisorReportes.jpContainer.revalidate();
-        } catch (JRException ex) {
-            System.err.println(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
         }
         vr.setLocationRelativeTo(this);
         vr.setVisible(true);
@@ -2479,7 +2442,7 @@ public class dlgGestRepartos extends javax.swing.JDialog {
     private void itemHojaApunteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemHojaApunteActionPerformed
         // TODO add your handling code here:
         VisorReportes vr = new VisorReportes(null, true);
-        try {
+        try (Connection con = dss.getDataSource().getConnection()) {
             //archivo jasper
             //URL  jasperUrl = this.getClass().getResource("\\Reports\\repartos\\movimiento_reparto_E.jasper");
             String jasperUrl = System.getProperty("user.dir").concat("\\Reports\\repartos\\Hoja_reparto.jasper");
@@ -2488,7 +2451,7 @@ public class dlgGestRepartos extends javax.swing.JDialog {
             Map parametros = new HashMap();
             parametros.clear();
             //Nuestro parametro se llama "pLastName"
-            parametros.put("id_reparto", Integer.parseInt(txtIdReparto.getText().trim()));
+            parametros.put("id_reparto", Integer.valueOf(txtIdReparto.getText().trim()));
             parametros.put("estado", txtEstado.getText());
             //agregamos los parametros y la conexion a la base de datos
             JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametros, con);
@@ -2503,8 +2466,8 @@ public class dlgGestRepartos extends javax.swing.JDialog {
             jRViewer.setVisible(true);
             VisorReportes.jpContainer.repaint();
             VisorReportes.jpContainer.revalidate();
-        } catch (JRException ex) {
-            System.err.println(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
         }
         vr.setLocationRelativeTo(this);
         vr.setVisible(true);
@@ -2514,7 +2477,7 @@ public class dlgGestRepartos extends javax.swing.JDialog {
         // TODO add your handling code here:
         String letras = d.Convertir(txtComisionR.getText().replace(".", "").replace(",", ""), true);
         VisorReportes vr = new VisorReportes(null, true);
-        try {
+        try (Connection con = dss.getDataSource().getConnection()) {
             //archivo jasper
             //URL  jasperUrl = this.getClass().getResource("\\Reports\\repartos\\movimiento_reparto_E.jasper");
             String jasperUrl = System.getProperty("user.dir").concat("\\Reports\\repartos\\reciboDinero.jasper");
@@ -2523,8 +2486,8 @@ public class dlgGestRepartos extends javax.swing.JDialog {
             Map parametros = new HashMap();
             parametros.clear();
             //Nuestro parametro se llama "pLastName"
-            parametros.put("idreparto", Integer.parseInt(txtIdReparto.getText().trim()));
-            parametros.put("idvendedor", Integer.parseInt(txtIdResponsable.getText().trim()));
+            parametros.put("idreparto", Integer.valueOf(txtIdReparto.getText().trim()));
+            parametros.put("idvendedor", Integer.valueOf(txtIdResponsable.getText().trim()));
             parametros.put("Letras", letras);
             //agregamos los parametros y la conexion a la base de datos
             JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametros, con);
@@ -2539,8 +2502,8 @@ public class dlgGestRepartos extends javax.swing.JDialog {
             jRViewer.setVisible(true);
             VisorReportes.jpContainer.repaint();
             VisorReportes.jpContainer.revalidate();
-        } catch (JRException ex) {
-            System.err.println(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
         }
         vr.setLocationRelativeTo(this);
         vr.setVisible(true);
@@ -2550,7 +2513,7 @@ public class dlgGestRepartos extends javax.swing.JDialog {
 
         String letras = d.Convertir(txtComisionC.getText().replace(".", "").replace(",", ""), true);
         VisorReportes vr = new VisorReportes(null, true);
-        try {
+        try (Connection con = dss.getDataSource().getConnection()) {
             //archivo jasper
             //URL  jasperUrl = this.getClass().getResource("\\Reports\\repartos\\movimiento_reparto_E.jasper");
             String jasperUrl = System.getProperty("user.dir").concat("\\Reports\\repartos\\reciboDinero.jasper");
@@ -2559,8 +2522,8 @@ public class dlgGestRepartos extends javax.swing.JDialog {
             Map parametros = new HashMap();
             parametros.clear();
             //Nuestro parametro se llama "pLastName"
-            parametros.put("idreparto", Integer.parseInt(txtIdReparto.getText().trim()));
-            parametros.put("idvendedor", Integer.parseInt(txtIdChofer.getText().trim()));
+            parametros.put("idreparto", Integer.valueOf(txtIdReparto.getText().trim()));
+            parametros.put("idvendedor", Integer.valueOf(txtIdChofer.getText().trim()));
             parametros.put("Letras", letras);
             //agregamos los parametros y la conexion a la base de datos
             JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametros, con);
@@ -2575,8 +2538,8 @@ public class dlgGestRepartos extends javax.swing.JDialog {
             jRViewer.setVisible(true);
             VisorReportes.jpContainer.repaint();
             VisorReportes.jpContainer.revalidate();
-        } catch (JRException ex) {
-            System.err.println(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
         }
         vr.setLocationRelativeTo(this);
         vr.setVisible(true);
@@ -2598,16 +2561,15 @@ public class dlgGestRepartos extends javax.swing.JDialog {
 
     private void itemHojaR1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemHojaR1ActionPerformed
         VisorReportes vr = new VisorReportes(null, true);
-        try {
+        try (Connection con = dss.getDataSource().getConnection()) {
             //archivo jasper
-            //URL  jasperUrl = this.getClass().getResource("\\Reports\\repartos\\movimiento_reparto_E.jasper");
             String jasperUrl = System.getProperty("user.dir").concat("\\Reports\\repartos\\movimiento_reparto_E.jasper");
             JasperReport report = (JasperReport) JRLoader.loadObjectFromFile(jasperUrl);
             //para los parametro
             Map parametros = new HashMap();
             parametros.clear();
             //Nuestro parametro se llama "pLastName"
-            parametros.put("id_reparto", Integer.parseInt(txtIdReparto.getText().trim()));
+            parametros.put("id_reparto", Integer.valueOf(txtIdReparto.getText().trim()));
             parametros.put("estado", txtEstado.getText());
             //agregamos los parametros y la conexion a la base de datos
             JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametros, con);
@@ -2622,8 +2584,8 @@ public class dlgGestRepartos extends javax.swing.JDialog {
             jRViewer.setVisible(true);
             VisorReportes.jpContainer.repaint();
             VisorReportes.jpContainer.revalidate();
-        } catch (JRException ex) {
-            System.err.println(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
         }
         vr.setLocationRelativeTo(this);
         vr.setVisible(true);
@@ -2632,7 +2594,7 @@ public class dlgGestRepartos extends javax.swing.JDialog {
     private void itemHojaApunte1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemHojaApunte1ActionPerformed
         // TODO add your handling code here:
         VisorReportes vr = new VisorReportes(null, true);
-        try {
+        try (Connection con = dss.getDataSource().getConnection()) {
             //archivo jasper
             //URL  jasperUrl = this.getClass().getResource("\\Reports\\repartos\\movimiento_reparto_E.jasper");
             String jasperUrl = System.getProperty("user.dir").concat("\\Reports\\repartos\\ControlST.jasper");
@@ -2656,8 +2618,8 @@ public class dlgGestRepartos extends javax.swing.JDialog {
             jRViewer.setVisible(true);
             VisorReportes.jpContainer.repaint();
             VisorReportes.jpContainer.revalidate();
-        } catch (JRException ex) {
-            System.err.println(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
         }
         vr.setLocationRelativeTo(this);
         vr.setVisible(true);
@@ -2726,61 +2688,51 @@ public class dlgGestRepartos extends javax.swing.JDialog {
                 txtIdChofer.setText("");
             } else {
                 txtResponsable.setText(cboResponsable.getSelectedItem().toString());
-                prepararBD();
-                try {
-                    String resp;
-                    resp = cargarComboBox.getCodidgo(cboResponsable);
-                    try {
-                        rs = sentencia.executeQuery("SELECT ven_codigo,idmovil, movil, ven_comision FROM v_vendedores WHERE ven_codigo=" + resp);
-                        rs.last();
-                        txtIdResponsable.setText(String.valueOf(rs.getInt("ven_codigo")));
-                        txtIdMovil.setText(String.valueOf(rs.getInt("idmovil")));
-                        lbInfoMovil.setText(" Referencia: " + rs.getString("movil"));
-                        txtMovil.setText(rs.getString("movil"));
-                        lbComR.setText(String.valueOf(rs.getDouble("ven_comision")));
-                        lbComR1.setText(String.valueOf(rs.getDouble("ven_comision"))+"%");
-                        
-                        rs.close();
-                    } catch (SQLException ex) {
-                        Mensajes.error("Error al querer obtener ID del móvil: " + ex.getMessage());
-                    }
+                String resp = cargarComboBox.getCodidgo(cboResponsable);
+                String sql = "SELECT ven_codigo,idmovil, movil, ven_comision FROM v_vendedores WHERE ven_codigo=" + resp;
+                try (Connection con = dss.getDataSource().getConnection(); Statement st = con.createStatement(); ResultSet rs = st.executeQuery(sql)) {
+                    rs.last();
+                    txtIdResponsable.setText(String.valueOf(rs.getInt("ven_codigo")));
+                    txtIdMovil.setText(String.valueOf(rs.getInt("idmovil")));
+                    lbInfoMovil.setText(" Referencia: " + rs.getString("movil"));
+                    txtMovil.setText(rs.getString("movil"));
+                    lbComR.setText(String.valueOf(rs.getDouble("ven_comision")));
+                    lbComR1.setText(String.valueOf(rs.getDouble("ven_comision")) + "%");
+                    rs.close();
+                    st.close();
+                    con.close();
                 } catch (Exception pr) {
+                    Mensajes.error("Error al querer obtener ID del móvil: " + pr.getMessage());
                 }
-                try {
-                    String idm;
-                    idm = txtIdMovil.getText();
-                    try {
-                        rs = sentencia.executeQuery("SELECT ven_codigo,ven_nombre, ven_comision FROM v_vendedores WHERE idmovil=" + idm + " AND idfuncion=1");
-                        rs.last();
-                        lbInfoChofer.setText(" Chofer: " + rs.getString("ven_nombre"));
-                        txtIdChofer.setText(rs.getString("ven_codigo"));
-                        txtChofer.setText(rs.getString("ven_nombre"));
-                        lbComC.setText(String.valueOf(rs.getDouble("ven_comision")));
-                        lbComC1.setText(String.valueOf(rs.getDouble("ven_comision"))+"%");
-                        rs.close();
-                    } catch (SQLException ex) {
-                        Mensajes.error("Error al querer obtener valor del chofer: " + ex.getMessage());
-                    }
+                String idm = txtIdMovil.getText();
+                String sql1 = "SELECT ven_codigo,ven_nombre, ven_comision FROM v_vendedores WHERE idmovil=" + idm + " AND idfuncion=1";
+                try (Connection con = dss.getDataSource().getConnection(); Statement st = con.createStatement(); ResultSet rs = st.executeQuery(sql1)) {
+                    rs.last();
+                    lbInfoChofer.setText(" Chofer: " + rs.getString("ven_nombre"));
+                    txtIdChofer.setText(rs.getString("ven_codigo"));
+                    txtChofer.setText(rs.getString("ven_nombre"));
+                    lbComC.setText(String.valueOf(rs.getDouble("ven_comision")));
+                    lbComC1.setText(String.valueOf(rs.getDouble("ven_comision")) + "%");
+                    rs.close();
+                    st.close();
+                    con.close();
                 } catch (Exception pr) {
+                    Mensajes.error("Error al querer obtener valor del chofer: " + pr.getMessage());
                 }
-
-                try {
-                    String idm;
-                    idm = txtIdMovil.getText();
-                    try {
-                        rs = sentencia.executeQuery("SELECT SUM(ga_importe) AS total FROM gastos WHERE ga_idmovil=" + idm + " AND caja_ca_id=" + txtCaja.getText().trim() + " AND ga_indicador='S' AND tipo='A'");
-                        rs.last();
-                        if (rs.getString("total") == null) {
-                            txtGastosTotal.setText("0");
-                        } else {
-                            DecimalFormat df = new DecimalFormat("#,###");
-                            txtGastosTotal.setText(df.format(Integer.parseInt(String.valueOf(rs.getString("total")).replace(".", "").replace(",", ""))));
-                        }
-                        rs.close();
-                    } catch (SQLException ex) {
-                        Mensajes.error("Error al querer obtener valor del gasto: " + ex.getMessage());
+                String sql2 = "SELECT SUM(ga_importe) AS total FROM gastos WHERE ga_idmovil=" + idm + " AND caja_ca_id=" + txtCaja.getText().trim() + " AND ga_indicador='S' AND tipo='A'";
+                try (Connection con = dss.getDataSource().getConnection(); Statement st = con.createStatement(); ResultSet rs = st.executeQuery(sql2)) {
+                    rs.last();
+                    if (rs.getString("total") == null) {
+                        txtGastosTotal.setText("0");
+                    } else {
+                        DecimalFormat df = new DecimalFormat("#,###");
+                        txtGastosTotal.setText(df.format(Integer.parseInt(String.valueOf(rs.getString("total")).replace(".", "").replace(",", ""))));
                     }
+                    rs.close();
+                    st.close();
+                    con.close();
                 } catch (Exception pr) {
+                    Mensajes.error("Error al querer obtener valor del gasto: " + pr.getMessage());
                 }
             }
         }
@@ -2871,7 +2823,7 @@ public class dlgGestRepartos extends javax.swing.JDialog {
         cboResponsable.requestFocus();
         //cboResponsable.setPopupVisible(true);
         opcion = "N";
-        System.out.println(UsuarioL = Login.getUsuarioLogueado());
+        System.out.println(Login.getUsuarioLogueado());
         cant();
         calcularCajas();
     }//GEN-LAST:event_btnNuevoActionPerformed
@@ -2888,29 +2840,27 @@ public class dlgGestRepartos extends javax.swing.JDialog {
             Mensajes.informacion("El reparto no puede guardarse vacío.\nFavor cargue los productos que estaran disponibles para la venta");
             btnCargarRA.requestFocus();
         } else {
-            try {
+            try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement()){
                 int resp = JOptionPane.showConfirmDialog(this, "¿Seguro que desea insertar el registro?", "Insertar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                 if (resp == JOptionPane.YES_OPTION) {
-                    try {
-                        String usuario = UsuarioL = Login.getUsuarioLogueado();
-                        prepararBD();
-                        conMovil.setAutoCommit(false);
+                    try  {
+                        cn.setAutoCommit(false);
                         int totalCo = Integer.parseInt(txtComisionR.getText().replace(".", "").replace(",", "")) + Integer.parseInt(txtComisionC.getText().replace(".", "").replace(",", ""));
                         String sql = "insert into reparto values(" + txtIdReparto.getText() + "," + txtCaja.getText() + "," + txtIdResponsable.getText() + "," + lbComR.getText().trim()
                                 + "," + txtIdMovil.getText().trim() + ",'" + txtMovil.getText() + "'," + txtIdChofer.getText().trim() + ", '" + txtChofer.getText() + "'," + lbComC.getText().trim()
                                 + ",'" + txtFechaIF.getText() + "','" + txtHoraI.getText() + "'," + txtValorRA.getText() + "," + txtValorCompra.getText() + "," + txtValorTransferencia.getText() + "," + txtTotalL.getText()
                                 + "," + txtRecambioL.getText() + "," + txtDevueltosL.getText() + "," + txtTotalVentasL.getText() + "," + txtPresentadoL.getText()
-                                + "," + txtDiferenciaL.getText() +","+ txtCAnterior.getText() + "," + txtCdif.getText() +","+ txtCdifACA.getText() + "," + txtContenedorI.getText() + "," +txtContenedorT.getText()+ "," + txtContenedorF.getText()+ "," + txtContenedorV.getText() + "," + txtContenedorD.getText() +","+ txtContenedorDA.getText() +"," + txtGastosTotal.getText().trim().replace(".", "").replace(",", "") + "," + totalCo + "," + txtKmAnterior.getText() + "," + txtKmActual.getText() + "," + txtKmRecorrido.getText()
-                                + ",'S','N','" + usuario + "')";
+                                + "," + txtDiferenciaL.getText() + "," + txtCAnterior.getText() + "," + txtCdif.getText() + "," + txtCdifACA.getText() + "," + txtContenedorI.getText() + "," + txtContenedorT.getText() + "," + txtContenedorF.getText() + "," + txtContenedorV.getText() + "," + txtContenedorD.getText() + "," + txtContenedorDA.getText() + "," + txtGastosTotal.getText().trim().replace(".", "").replace(",", "") + "," + totalCo + "," + txtKmAnterior.getText() + "," + txtKmActual.getText() + "," + txtKmRecorrido.getText()
+                                + ",'S','N','" + Login.getUsuarioLogueado() + "')";
                         String sql2 = "INSERT INTO comisiones (idreparto,idcaja,idvendedor,fecha,monto,comision,totalComision,usuario,estado)"
                                 + "VALUES(" + txtIdReparto.getText() + "," + txtCaja.getText() + "," + txtIdResponsable.getText() + ",'" + txtFechaIF.getText() + "'," + txtPresentadoL.getText()
-                                + "," + lbComR.getText() + "," + txtComisionR.getText().replace(".", "").replace(",", "") + ",'" + usuario + "','S'" + ")";
+                                + "," + lbComR.getText() + "," + txtComisionR.getText().replace(".", "").replace(",", "") + ",'" + Login.getUsuarioLogueado() + "','S'" + ")";
                         String sql3 = "INSERT INTO comisiones (idreparto,idcaja,idvendedor,fecha,monto,comision,totalComision,usuario,estado)"
                                 + "VALUES(" + txtIdReparto.getText() + "," + txtCaja.getText() + "," + txtIdChofer.getText() + ",'" + txtFechaIF.getText() + "'," + txtPresentadoL.getText()
-                                + "," + lbComC.getText() + "," + txtComisionC.getText().replace(".", "").replace(",", "") + ",'" + usuario + "','S'" + ")";
-                        stTransaccionMovil.executeUpdate(sql);
-                        stTransaccionMovil.executeUpdate(sql2);
-                        stTransaccionMovil.executeUpdate(sql3);
+                                + "," + lbComC.getText() + "," + txtComisionC.getText().replace(".", "").replace(",", "") + ",'" + Login.getUsuarioLogueado() + "','S'" + ")";
+                        st.executeUpdate(sql);
+                        st.executeUpdate(sql2);
+                        st.executeUpdate(sql3);
                         int fila = tbDetalleReparto.getRowCount();
                         for (int j = 0; j < fila; j++) {
                             String filas[] = {
@@ -2932,16 +2882,18 @@ public class dlgGestRepartos extends javax.swing.JDialog {
                             sql = "insert into detalle_reparto values(" + txtIdReparto.getText() + "," + filas[0] + "," + filas[1]
                                     + "," + filas[2] + "," + filas[3] + "," + filas[4] + "," + filas[5] + "," + filas[6] + "," + filas[7]
                                     + "," + filas[8] + "," + filas[9] + "," + filas[10] + "," + filas[11] + "," + filas[12] + ")";
-                            stTransaccionMovil.executeUpdate(sql);
+                            st.executeUpdate(sql);
 
                         }
-                        conMovil.commit();
-                        stTransaccionMovil.close();
+                        cn.commit();
+                        st.close();
                         Mensajes.informacion("El reparto ha sido regitrada exitosamente");
+                        cn.close();
                     } catch (SQLException e) {
                         try {
-                            con.rollback();
+                            cn.rollback();
                             Mensajes.error("TRANSACCION FALLIDA. LOS DATOS NO FUERON GUARDADOS EN LA BD." + e.getMessage().toUpperCase());
+                            cn.close();
                         } catch (SQLException se) {
                             Mensajes.error(se.getMessage());
                         }
@@ -2964,29 +2916,27 @@ public class dlgGestRepartos extends javax.swing.JDialog {
         } else {
             cerrado = "N";
         }
-        try {
+        try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement()){
             int resp = JOptionPane.showConfirmDialog(this, "¿Seguro que desea aplicar cambios al contenido de este reparto?", "Modificar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
             if (resp == JOptionPane.YES_OPTION) {
                 try {
-                    String usuario = UsuarioL = Login.getUsuarioLogueado();
-                    prepararBD();
-                    conMovil.setAutoCommit(false);
+                    cn.setAutoCommit(false);
                     int totalCo = Integer.parseInt(txtComisionR.getText().replace(".", "").replace(",", "")) + Integer.parseInt(txtComisionC.getText().replace(".", "").replace(",", ""));
                     String sql = "UPDATE reparto SET valor_ra=" + txtValorRA.getText() + ", valor_c=" + txtValorCompra.getText() + ", valor_t=" + txtValorTransferencia.getText() + ", valor_total=" + txtTotalL.getText()
                             + ", valor_recambio=" + txtRecambioL.getText() + ", valor_devuelto=" + txtDevueltosL.getText() + ", efectivo_entregar=" + txtTotalVentasL.getText() + ", efectivo_entregado=" + txtPresentadoL.getText()
                             + ", diferencia=" + txtDiferenciaL.getText() + ", recolector_inicio=" + txtContenedorI.getText() + ", recolector_total=" + txtContenedorT.getText() + ", recolector_fin=" + txtContenedorF.getText()
-                            + ", recolector_vacios=" + txtContenedorV.getText()+ ", recolector_dif=" + txtContenedorD.getText() + ", recolector_dacum="+txtContenedorDA.getText() + ", gasto_reparto=" + txtGastosTotal.getText().replace(".", "").replace(",", "") + ", comision_reparto=" + totalCo
-                            + ", km_anterior=" + txtKmAnterior.getText() + ", km_actual=" + txtKmActual.getText() + ", km_recorrido=" + txtKmRecorrido.getText() + ", cerrado='" + cerrado + "', usuario='" + usuario + "' "
+                            + ", recolector_vacios=" + txtContenedorV.getText() + ", recolector_dif=" + txtContenedorD.getText() + ", recolector_dacum=" + txtContenedorDA.getText() + ", gasto_reparto=" + txtGastosTotal.getText().replace(".", "").replace(",", "") + ", comision_reparto=" + totalCo
+                            + ", km_anterior=" + txtKmAnterior.getText() + ", km_actual=" + txtKmActual.getText() + ", km_recorrido=" + txtKmRecorrido.getText() + ", cerrado='" + cerrado + "', usuario='" + Login.getUsuarioLogueado() + "' "
                             + "WHERE id_reparto=" + cod;
 
-                    String sql2 = "UPDATE comisiones SET monto=" + txtPresentadoL.getText() + ",comision=" + lbComR.getText() + ",totalcomision=" + txtComisionR.getText().replace(".", "").replace(",", "") + ",usuario='" + usuario + "'"
+                    String sql2 = "UPDATE comisiones SET monto=" + txtPresentadoL.getText() + ",comision=" + lbComR.getText() + ",totalcomision=" + txtComisionR.getText().replace(".", "").replace(",", "") + ",usuario='" + Login.getUsuarioLogueado() + "'"
                             + " WHERE idreparto=" + txtIdReparto.getText() + " AND idvendedor=" + txtIdResponsable.getText();
 
-                    String sql3 = "UPDATE comisiones SET monto=" + txtPresentadoL.getText() + ",comision=" + lbComC.getText() + ",totalcomision=" + txtComisionC.getText().replace(".", "").replace(",", "") + ",usuario='" + usuario + "'"
+                    String sql3 = "UPDATE comisiones SET monto=" + txtPresentadoL.getText() + ",comision=" + lbComC.getText() + ",totalcomision=" + txtComisionC.getText().replace(".", "").replace(",", "") + ",usuario='" + Login.getUsuarioLogueado() + "'"
                             + " WHERE idreparto=" + txtIdReparto.getText() + " AND idvendedor=" + txtIdChofer.getText();
-                    stTransaccionMovil.executeUpdate(sql);
-                    stTransaccionMovil.executeUpdate(sql2);
-                    stTransaccionMovil.executeUpdate(sql3);
+                    st.executeUpdate(sql);
+                    st.executeUpdate(sql2);
+                    st.executeUpdate(sql3);
 
                     int fila = tbDetalleReparto.getRowCount();
                     for (int j = 0; j < fila; j++) {
@@ -3010,25 +2960,27 @@ public class dlgGestRepartos extends javax.swing.JDialog {
                             sql = "insert into detalle_reparto values(" + txtIdReparto.getText() + "," + filas[0] + "," + filas[1]
                                     + "," + filas[2] + "," + filas[3] + "," + filas[4] + "," + filas[5] + "," + filas[6] + "," + filas[7]
                                     + "," + filas[8] + "," + filas[9] + "," + filas[10] + "," + filas[11] + "," + filas[12] + ")";
-                            stTransaccionMovil.executeUpdate(sql);
+                            st.executeUpdate(sql);
                         } else if (tbDetalleReparto.getValueAt(j, 16).toString().equals("V")) {
                             sql = "UPDATE detalle_reparto SET c=" + filas[2] + ", t=" + filas[3] + ", carga_total=" + filas[4] + ", monto_carga_total=" + filas[5]
                                     + ", recambio=" + filas[6] + ", monto_recambio=" + filas[7] + ", venta=" + filas[8] + ", monto_venta=" + filas[9]
                                     + ", monto_costo=" + filas[10] + ", devuelve=" + filas[11] + ", monto_devuelve=" + filas[12] + " WHERE idreparto=" + cod + " AND idproducto=" + filas[0];
-                            stTransaccionMovil.executeUpdate(sql);
+                            st.executeUpdate(sql);
                         }
 
                     }
-                    conMovil.commit();
-                    stTransaccionMovil.close();
+                    cn.commit();
+                    st.close();
                     Mensajes.informacion("Las modificaciones fueron aplicadas exitosamente");
+                    cn.close();
                     if (cerrado.equals("S")) {
                         txtEstado.setText("REPARTO CERRADO");
                     }
                 } catch (SQLException e) {
                     try {
-                        con.rollback();
+                        cn.rollback();
                         Mensajes.error("TRANSACCION FALLIDA. LOS DATOS NO FUERON GUARDADOS EN LA BD." + e.getMessage().toUpperCase());
+                        cn.close();
                     } catch (SQLException se) {
                         Mensajes.error(se.getMessage());
                     }
@@ -3122,7 +3074,7 @@ public class dlgGestRepartos extends javax.swing.JDialog {
 
     private void btnCancelarCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarCActionPerformed
         // TODO add your handling code here:
-       
+
     }//GEN-LAST:event_btnCancelarCActionPerformed
 
     private void btnSalirCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirCActionPerformed
@@ -3148,7 +3100,7 @@ public class dlgGestRepartos extends javax.swing.JDialog {
 
     private void txtContenedorVKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtContenedorVKeyReleased
         // TODO add your handling code here:
-            calcularCajas();        
+        calcularCajas();
     }//GEN-LAST:event_txtContenedorVKeyReleased
 
     private void txtContenedorDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtContenedorDActionPerformed

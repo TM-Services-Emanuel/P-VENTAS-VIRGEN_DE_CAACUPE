@@ -1,6 +1,6 @@
 package IU;
 
-import Componentes.ConexionBD;
+import Componentes.DataSourceService;
 import Componentes.DecimalFormatRenderer;
 import Componentes.Fecha;
 import Componentes.Login;
@@ -21,13 +21,13 @@ import java.awt.event.KeyEvent;
 import org.mariadb.jdbc.MariaDbConnection;
 import org.mariadb.jdbc.MariaDbStatement;
 import java.sql.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public final class dlgCompras extends javax.swing.JDialog {
 
     CabecerasTablas cabe = new CabecerasTablas();
 
-    public static MariaDbConnection con;
-    public static MariaDbStatement stTransaccion;
     public static int PrecioVenta;
     public static double costoiva;
     public static int descuento;
@@ -35,29 +35,29 @@ public final class dlgCompras extends javax.swing.JDialog {
     public static Articulo ar;
     public static int Pcosto;
     public Reporte jasper;
-    static String UsuarioL = "";
+    static DataSourceService dss = new DataSourceService();
 
-    public dlgCompras(java.awt.Frame parent, boolean modal) {
+    public dlgCompras(java.awt.Frame parent, boolean modal) throws SQLException {
         super(parent, modal);
         initComponents();
         titulo();
-        jasper= new Reporte();
-        cabe.compras(tbDetalle);
+        jasper = new Reporte();
+        CabecerasTablas.compras(tbDetalle);
         Cancelar();
         pintarCondicion();
         Renders();
         Invisible();
-        
+
     }
-    
-    final void titulo(){
-        if(Software.getSoftware().equals("null")){
+
+    final void titulo() {
+        if (Software.getSoftware().equals("null")) {
             this.setTitle("Registrar compras de proveedores");
-        }else{
-            this.setTitle(Software.getSoftware()+" - Registrar compras de proveedores");
+        } else {
+            this.setTitle(Software.getSoftware() + " - Registrar compras de proveedores");
         }
     }
-    
+
     public void Cancelar() {
         limpiarCampos();
         dcFecha.setEnabled(false);
@@ -83,20 +83,7 @@ public final class dlgCompras extends javax.swing.JDialog {
         cant();
     }
 
-    public static void prepararBD() {
-        try {
-            con = (MariaDbConnection) new ConexionBD().getConexion();
-            if (con == null) {
-                System.out.println("No hay Conexion con la Base de Datos");
-            } else {
-                stTransaccion = (MariaDbStatement) con.createStatement();
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-    
-    public void Renders(){
+    public void Renders() {
         //dlgCompras.tbDetalle.getColumnModel().getColumn(3).setCellRenderer(new DecimalFormatRenderer());
         dlgCompras.tbDetalle.getColumnModel().getColumn(5).setCellRenderer(new DecimalFormatRenderer());
         dlgCompras.tbDetalle.getColumnModel().getColumn(8).setCellRenderer(new DecimalFormatRenderer());
@@ -104,7 +91,8 @@ public final class dlgCompras extends javax.swing.JDialog {
         dlgCompras.tbDetalle.getColumnModel().getColumn(12).setCellRenderer(new DecimalFormatRenderer());
         dlgCompras.tbDetalle.getColumnModel().getColumn(14).setCellRenderer(new DecimalFormatRenderer());
     }
-    public void Invisible(){
+
+    public void Invisible() {
         btnAdd.setVisible(false);
         btnRestar.setVisible(false);
         lbCond.setVisible(false);
@@ -166,7 +154,7 @@ public final class dlgCompras extends javax.swing.JDialog {
         controlCompra.array.vaciar();
         cabe.compras(tbDetalle);
         CabecerasTablas.limpiarTablas(tbDetalle);
-        
+
     }
 
     public static void habilitarCANTCOSTO() {
@@ -180,7 +168,7 @@ public final class dlgCompras extends javax.swing.JDialog {
             btnHistorial.setEnabled(true);
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -1146,7 +1134,7 @@ public final class dlgCompras extends javax.swing.JDialog {
         lbtotal.setText("");
         habilitarCANTCOSTO();
         btnBuscarArticuloActionPerformed(null);
-        
+
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnRestarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRestarActionPerformed
@@ -1168,8 +1156,8 @@ public final class dlgCompras extends javax.swing.JDialog {
         String cod = GestionarCompra.getCodigo();
         txtCod.setText(cod);
         try {
-            String FechaI=String.valueOf(Fecha.fechaCorrecta());
-            txtCaja.setText(generarCodigos.ObtenerCodigo("SELECT ca_id from caja WHERE ca_fechainicio='"+FechaI+"' and ca_indicador='S'"));
+            String FechaI = String.valueOf(Fecha.fechaCorrecta());
+            txtCaja.setText(generarCodigos.ObtenerCodigo("SELECT ca_id from caja WHERE ca_fechainicio='" + FechaI + "' and ca_indicador='S'"));
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -1222,21 +1210,20 @@ public final class dlgCompras extends javax.swing.JDialog {
             Mensajes.error("El detalle de la compra esta vacia");
             btnBuscarArticulo.doClick();
         } else {
-            try {
+            try (Connection con = dss.getDataSource().getConnection(); Statement stTransaccion = con.createStatement()) {
                 int resp = JOptionPane.showConfirmDialog(this, "¿Seguro que desea insertar el registro?", "Insertar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                 if (resp == JOptionPane.YES_OPTION) {
                     try {
-                        String usuario = UsuarioL = Login.getUsuarioLogueado();
-                        prepararBD();
+                        String usuario = Login.getUsuarioLogueado();
                         con.setAutoCommit(false);
                         String sql = "insert into compra values(" + txtCod.getText() + "," + txtCaja.getText() + "," + txtCodProv.getText() + ",'" + lbCond.getText() + "','" + txtFactura.getText() + "','"
-                                + txtFecha.getText() + "','" + Fecha.darHora() + "'," + txtTotalL.getText() + "," + txtExentaL.getText() + "," + txt5L.getText() + "," + txt10L.getText() + ",'S','"+usuario+"')";
+                                + txtFecha.getText() + "','" + Fecha.darHora() + "'," + txtTotalL.getText() + "," + txtExentaL.getText() + "," + txt5L.getText() + "," + txt10L.getText() + ",'S','" + usuario + "')";
                         stTransaccion.executeUpdate(sql);
                         int fila = tbDetalle.getRowCount();
                         for (int j = 0; j < fila; j++) {
                             String filas[] = {tbDetalle.getValueAt(j, 0).toString(), tbDetalle.getValueAt(j, 4).toString(), tbDetalle.getValueAt(j, 6).toString(), tbDetalle.getValueAt(j, 15).toString(), tbDetalle.getValueAt(j, 16).toString(), tbDetalle.getValueAt(j, 17).toString(), tbDetalle.getValueAt(j, 18).toString(), tbDetalle.getValueAt(j, 7).toString()};
                             sql = "insert into detalle_compra values(" + txtCod.getText() + "," + filas[0] + "," + filas[1] + "," + filas[2] + "," + filas[3] + "," + filas[7] + ")";
-                            String sql2 = "UPDATE articulo SET art_costo="+filas[2]+", art_costoiva="+filas[4]+", art_stock=art_stock+"+filas[1]+", art_ganancia="+filas[5]+", art_descuento="+filas[6]+" WHERE  art_codigo="+filas[0];
+                            String sql2 = "UPDATE articulo SET art_costo=" + filas[2] + ", art_costoiva=" + filas[4] + ", art_stock=art_stock+" + filas[1] + ", art_ganancia=" + filas[5] + ", art_descuento=" + filas[6] + " WHERE  art_codigo=" + filas[0];
                             stTransaccion.executeUpdate(sql);
                             stTransaccion.executeUpdate(sql2);
                         }
@@ -1332,21 +1319,21 @@ public final class dlgCompras extends javax.swing.JDialog {
 
     private void txtCostoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCostoActionPerformed
         // TODO add your handling code here:
-        if(txtCosto.getText().isEmpty()){
+        if (txtCosto.getText().isEmpty()) {
             txtCosto.requestFocus();
-        }else if (txtCosto.getText().equals("0")) {
-                txtCosto.requestFocus();
+        } else if (txtCosto.getText().equals("0")) {
+            txtCosto.requestFocus();
         } else {
-                /*DecimalFormat df = new DecimalFormat("#0");
+            /*DecimalFormat df = new DecimalFormat("#0");
                 txtCostoL.setText(df.format(Integer.valueOf(txtCosto.getText().trim().replace(".", "").replace(",", ""))));*/
-                float cant=Float.parseFloat(txtCant.getText());
-                int costo=Integer.parseInt(txtCostoL.getText());
-                String total =String.valueOf((int)(cant*costo));
-                DecimalFormat df = new DecimalFormat("#,###");
-                lbtotal.setText("Total: "+df.format(Integer.parseInt(total.trim().replace(".", "").replace(",", ""))));
-                lbtotal.requestFocus();
-                //btnAddActionPerformed(null);
-            }
+            float cant = Float.parseFloat(txtCant.getText());
+            int costo = Integer.parseInt(txtCostoL.getText());
+            String total = String.valueOf((int) (cant * costo));
+            DecimalFormat df = new DecimalFormat("#,###");
+            lbtotal.setText("Total: " + df.format(Integer.parseInt(total.trim().replace(".", "").replace(",", ""))));
+            lbtotal.requestFocus();
+            //btnAddActionPerformed(null);
+        }
     }//GEN-LAST:event_txtCostoActionPerformed
 
     private void itemNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemNuevoActionPerformed
@@ -1381,19 +1368,19 @@ public final class dlgCompras extends javax.swing.JDialog {
 
     private void txtCantActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCantActionPerformed
         // TODO add your handling code here:
-        if(txtCant.getText().isEmpty()){
+        if (txtCant.getText().isEmpty()) {
             txtCant.requestFocus();
-        }else if(txtCant.getText().equals("0")){
+        } else if (txtCant.getText().equals("0")) {
             txtCant.requestFocus();
-        }else{
-            float cant=Float.parseFloat(txtCant.getText());
-            int costo=Integer.parseInt(txtCostoL.getText());
-            String total =String.valueOf((int)(cant*costo));
+        } else {
+            float cant = Float.parseFloat(txtCant.getText());
+            int costo = Integer.parseInt(txtCostoL.getText());
+            String total = String.valueOf((int) (cant * costo));
             DecimalFormat df = new DecimalFormat("#,###");
-            lbtotal.setText("Total: "+df.format(Integer.parseInt(total.trim().replace(".", "").replace(",", ""))));
+            lbtotal.setText("Total: " + df.format(Integer.parseInt(total.trim().replace(".", "").replace(",", ""))));
             txtCosto.requestFocus();
         }
-        
+
 
     }//GEN-LAST:event_txtCantActionPerformed
 
@@ -1404,15 +1391,17 @@ public final class dlgCompras extends javax.swing.JDialog {
 
     private void txtCostoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCostoKeyReleased
         // TODO add your handling code here:
-        try{
+        try {
             DecimalFormat df = new DecimalFormat("#,###");
-            txtCosto.setText(df.format(Integer.valueOf(txtCosto.getText().trim().replace(".", "").replace(",", "")))); 
-        }catch(Exception e){/*Mensajes.error("Error al formatear costo: "+e.getMessage());*/}
-        try{
+            txtCosto.setText(df.format(Integer.valueOf(txtCosto.getText().trim().replace(".", "").replace(",", ""))));
+        } catch (NumberFormatException e) {/*Mensajes.error("Error al formatear costo: "+e.getMessage());*/
+        }
+        try {
             DecimalFormat df = new DecimalFormat("#0");
             txtCostoL.setText(df.format(Integer.valueOf(txtCosto.getText().trim().replace(".", "").replace(",", ""))));
-        }catch(Exception e){}
-        
+        } catch (NumberFormatException e) {
+        }
+
     }//GEN-LAST:event_txtCostoKeyReleased
 
     private void txtArtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtArtActionPerformed
@@ -1449,16 +1438,15 @@ public final class dlgCompras extends javax.swing.JDialog {
             txtFactura.requestFocus();
             txtFactura.selectAll();
         } else {
-            try{
-                prepararBD();
-                String sql="SELECT * FROM compra WHERE com_factura='"+txtFactura.getText()+"' AND proveedor_pro_codigo="+txtCodProv.getText()+" AND com_indicador='S'";
-                ResultSet rss=stTransaccion.executeQuery(sql);
-                if(rss.next()){
+            String sql = "SELECT * FROM compra WHERE com_factura='" + txtFactura.getText() + "' AND proveedor_pro_codigo=" + txtCodProv.getText() + " AND com_indicador='S'";
+            try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
+                if (rs.next()) {
                     Mensajes.informacion("Esta compra ya fue registrada");
-                }else{ 
+                } else {
                     btnBuscarArticulo.doClick();
                 }
-            }catch(SQLException e){}
+            } catch (SQLException e) {
+            }
         }
     }//GEN-LAST:event_txtFacturaActionPerformed
 
@@ -1485,7 +1473,7 @@ public final class dlgCompras extends javax.swing.JDialog {
 
     private void txtCantMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtCantMouseClicked
         // TODO add your handling code here:
-       txtCant.selectAll();
+        txtCant.selectAll();
     }//GEN-LAST:event_txtCantMouseClicked
 
     private void txtCostoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtCostoMouseClicked
@@ -1497,20 +1485,20 @@ public final class dlgCompras extends javax.swing.JDialog {
         // TODO add your handling code here:
         if (!txtCodA.getText().isEmpty()) {
             int cod = Integer.parseInt(txtCodA.getText());
-            try{
+            try {
                 jasper.Historial_de_compras("\\Reports\\compras\\comprasxart.jasper", "art", cod);
                 txtCosto.requestFocus();
-            }catch(Exception e){
+            } catch (Exception e) {
                 Mensajes.informacion("Artículo sin Historial de Compras");
                 txtCosto.requestFocus();
-            }  
+            }
         }
-        
+
     }//GEN-LAST:event_btnHistorialActionPerformed
 
     private void lbtotalKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_lbtotalKeyPressed
         // TODO add your handling code here:
-        if (evt.getKeyChar() == KeyEvent.VK_ENTER){
+        if (evt.getKeyChar() == KeyEvent.VK_ENTER) {
             btnAddActionPerformed(null);
         }
     }//GEN-LAST:event_lbtotalKeyPressed
@@ -1551,25 +1539,25 @@ public final class dlgCompras extends javax.swing.JDialog {
 
     private void tbDetalleMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbDetalleMouseClicked
         // TODO add your handling code here:
-        if(evt.getButton() == 1){
-            if(evt.getClickCount() == 2){
+        if (evt.getButton() == 1) {
+            if (evt.getClickCount() == 2) {
                 menuEmergente.show(tbDetalle, evt.getX(), evt.getY());
             }
-            
+
         }
     }//GEN-LAST:event_tbDetalleMouseClicked
 
     private void itmHistorialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itmHistorialActionPerformed
         // TODO add your handling code here:
-            int fila = tbDetalle.getSelectedRow();
-            int cod = Integer.parseInt(tbDetalle.getValueAt(fila, 0).toString());
-            //int cod = Integer.parseInt(txtCodA.getText());
-            try{
-                jasper.Historial_de_compras("\\Reports\\compras\\comprasxart.jasper", "art", cod);
-            }catch(Exception e){
-                Mensajes.informacion("Artículo sin Historial de Compras");
-                txtCosto.requestFocus();
-            }  
+        int fila = tbDetalle.getSelectedRow();
+        int cod = Integer.parseInt(tbDetalle.getValueAt(fila, 0).toString());
+        //int cod = Integer.parseInt(txtCodA.getText());
+        try {
+            jasper.Historial_de_compras("\\Reports\\compras\\comprasxart.jasper", "art", cod);
+        } catch (Exception e) {
+            Mensajes.informacion("Artículo sin Historial de Compras");
+            txtCosto.requestFocus();
+        }
     }//GEN-LAST:event_itmHistorialActionPerformed
 
     private void txtFacturaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtFacturaKeyReleased
@@ -1605,19 +1593,22 @@ public final class dlgCompras extends javax.swing.JDialog {
             java.util.logging.Logger.getLogger(dlgCompras.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-        
-        //</editor-fold>
 
+        //</editor-fold>
         java.awt.EventQueue.invokeLater(() -> {
-            dlgCompras dialog = new dlgCompras(new javax.swing.JFrame(), true);
-            dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                
-                @Override
-                public void windowClosing(java.awt.event.WindowEvent e) {
-                    System.exit(0);
-                }
-            });
-            dialog.setVisible(true);
+            try {
+                dlgCompras dialog = new dlgCompras(new javax.swing.JFrame(), true);
+                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                    
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        System.exit(0);
+                    }
+                });
+                dialog.setVisible(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(dlgCompras.class.getName()).log(Level.SEVERE, null, ex);
+            }
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables

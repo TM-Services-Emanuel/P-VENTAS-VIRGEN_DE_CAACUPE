@@ -1,6 +1,5 @@
 package IU;
 
-import Componentes.ConexionBD;
 import Componentes.Mensajes;
 import Componentes.Redondeo;
 import Componentes.Software;
@@ -29,7 +28,7 @@ public class dlgGestArticulos extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         titulo();
-        prepararBD();
+        //prepararBD();
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/Iconos/logo1.png")));
         Invisible();
     }
@@ -2417,7 +2416,7 @@ public class dlgGestArticulos extends javax.swing.JDialog {
         dlgArticulos.tbProductos.clearSelection();
     }
 
-    public static void prepararBD() {
+   /* public static void prepararBD() {
         try {
             con = (MariaDbConnection) new ConexionBD().getConexion();
             if (con == null) {
@@ -2428,7 +2427,7 @@ public class dlgGestArticulos extends javax.swing.JDialog {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-    }
+    }*/
 
     public void modcbLaboratorio() {
         DefaultComboBoxModel ml = new DefaultComboBoxModel();

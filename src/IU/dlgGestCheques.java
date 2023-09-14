@@ -1,6 +1,6 @@
 package IU;
 
-import Componentes.ConexionBD;
+import Componentes.DataSourceService;
 import Componentes.Fecha;
 import Componentes.Mensajes;
 import Componentes.cargarComboBox;
@@ -12,124 +12,89 @@ import Datos.GestionarCheques;
 import java.awt.HeadlessException;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.text.DecimalFormat;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
-import org.mariadb.jdbc.MariaDbConnection;
-import org.mariadb.jdbc.MariaDbStatement;
 
 public final class dlgGestCheques extends javax.swing.JDialog {
 
-    public static ResultSet rs;
-    public static MariaDbStatement sentencia;
-    public static MariaDbConnection con;
-    public static MariaDbStatement sentenciaM;
-    public static MariaDbConnection conM;
+    static DataSourceService dss = new DataSourceService();
 
     public dlgGestCheques(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         cargarIcono();
-        prepararBD();
         txtidBanco.setVisible(false);
         txtidTipo.setVisible(false);
         txtidMovil.setVisible(false);
     }
-    
-    public void Nuevo(){
+
+    public void Nuevo() {
         btnNuevoActionPerformed(null);
-    }
-
-    public static void prepararBD() {
-        try {
-            con = (MariaDbConnection) new ConexionBD().getConexion();
-            if (con == null) {
-                System.out.println("No hay Conexion con la Base de Datos");
-            } else {
-                sentencia = (MariaDbStatement) con.createStatement();
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-
-        try {
-            conM = (MariaDbConnection) new ConexionBD().getConexionMovil();
-            if (conM == null) {
-                System.out.println("No hay Conexion con la Base de Datos Móvil");
-            } else {
-                sentenciaM = (MariaDbStatement) conM.createStatement();
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
     }
 
     public void modCbRecibido() {
         DefaultComboBoxModel ml = new DefaultComboBoxModel();
-        String codMovil = txtidMovil.getText();
-        try {
-            rs = sentencia.executeQuery("SELECT * FROM movil_reparto WHERE estado='S'");
+        String sql = "SELECT * FROM movil_reparto WHERE estado='S'";
+        String sql2 = "SELECT * FROM movil_reparto WHERE idmovil=" + txtidMovil.getText();
+        try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql); ResultSet rss = st.executeQuery(sql2)) {
             ml.addElement("SELEC. UNA OPCIÓN");
             while (rs.next()) {
                 ml.addElement(rs.getString("descripcion"));
-
             }
-            
-            ResultSet rss = sentencia.executeQuery("SELECT * FROM movil_reparto WHERE idmovil=" + codMovil);
             rss.first();
             Object descripcion = (Object) rss.getString("descripcion");
             dlgGestCheques.cbReparto.setModel(ml);
             dlgGestCheques.cbReparto.setSelectedItem(descripcion);
             rs.close();
-            rss.close();                
+            rss.close();
+            st.close();
+            cn.close();
         } catch (SQLException ew) {
             //Mensajes.error("TIENES UN ERROR AL CARGAR LOS LABORATORIOS: "+ew.getMessage().toUpperCase());
         }
     }
-    
+
     public void modCbBanco() {
         DefaultComboBoxModel mB = new DefaultComboBoxModel();
-        String idBanco = txtidBanco.getText();
-        try {
-            rs = sentenciaM.executeQuery("SELECT * FROM bancos WHERE estado='S'");
+        String sql = "SELECT * FROM bancos WHERE estado='S'";
+        String sql2 = "SELECT * FROM bancos WHERE idbancos=" + txtidBanco.getText();
+        try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql); ResultSet rss = st.executeQuery(sql2)) {
             mB.addElement("SELEC. UNA OPCIÓN");
             while (rs.next()) {
                 mB.addElement(rs.getString("descripcion"));
-
             }
-            
-            ResultSet rss = sentenciaM.executeQuery("SELECT * FROM bancos WHERE idbancos=" + idBanco);
             rss.first();
             Object descripcion = (Object) rss.getString("descripcion");
             dlgGestCheques.cbBanco.setModel(mB);
             dlgGestCheques.cbBanco.setSelectedItem(descripcion);
-            rss.close();
             rs.close();
+            rss.close();
+            st.close();
+            cn.close();
         } catch (SQLException ew) {
             //Mensajes.error("TIENES UN ERROR AL CARGAR LOS LABORATORIOS: "+ew.getMessage().toUpperCase());
         }
     }
-    
+
     public void modCbTipo() {
         DefaultComboBoxModel mB = new DefaultComboBoxModel();
-        String idTipo = txtidTipo.getText();
-        try {
-            rs = sentenciaM.executeQuery("SELECT * FROM tipo_cheques WHERE estado='S'");
+        String sql = "SELECT * FROM tipo_cheques WHERE estado='S'";
+        String sql2 = "SELECT * FROM tipo_cheques WHERE idtipos=" + txtidTipo.getText();
+        try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql); ResultSet rss = st.executeQuery(sql2)) {
             mB.addElement("SELEC. UNA OPCIÓN");
             while (rs.next()) {
                 mB.addElement(rs.getString("descripcion"));
-
             }
-            
-            ResultSet rss = sentenciaM.executeQuery("SELECT * FROM tipo_cheques WHERE idtipos=" + idTipo);
             rss.first();
             Object descripcion = (Object) rss.getString("descripcion");
             dlgGestCheques.cbTipo.setModel(mB);
             dlgGestCheques.cbTipo.setSelectedItem(descripcion);
-            rss.close();
             rs.close();
+            rss.close();
+            st.close();
+            cn.close();
         } catch (SQLException ew) {
             //Mensajes.error("TIENES UN ERROR AL CARGAR LOS LABORATORIOS: "+ew.getMessage().toUpperCase());
         }
@@ -137,24 +102,24 @@ public final class dlgGestCheques extends javax.swing.JDialog {
 
     private void Cancelar() {
         limpiarCampos();
-            btnNuevo.setEnabled(true);
-            itemNuevo.setEnabled(true);
-            btnModificar.setEnabled(false);
-            itemModificar.setEnabled(false);
-            btnGuardar.setEnabled(false);
-            itemGuardar.setEnabled(false);
-            btnCancelar.setEnabled(false);
-            itemCancelar.setEnabled(false);
-            btnSalir.setEnabled(true);
-            itemSalir.setEnabled(true);
-            txtObservación.setEnabled(false);
-            txtMonto.setEnabled(false);
-            cbReparto.setEnabled(false);
-            cbTipo.setEnabled(false);
-            cbBanco.setEnabled(false);
-            btnNuevo.requestFocus();
-            actualizartablaCheques();
-            this.dispose();
+        btnNuevo.setEnabled(true);
+        itemNuevo.setEnabled(true);
+        btnModificar.setEnabled(false);
+        itemModificar.setEnabled(false);
+        btnGuardar.setEnabled(false);
+        itemGuardar.setEnabled(false);
+        btnCancelar.setEnabled(false);
+        itemCancelar.setEnabled(false);
+        btnSalir.setEnabled(true);
+        itemSalir.setEnabled(true);
+        txtObservación.setEnabled(false);
+        txtMonto.setEnabled(false);
+        cbReparto.setEnabled(false);
+        cbTipo.setEnabled(false);
+        cbBanco.setEnabled(false);
+        btnNuevo.requestFocus();
+        actualizartablaCheques();
+        this.dispose();
     }
 
     @SuppressWarnings("unchecked")
@@ -889,25 +854,25 @@ public final class dlgGestCheques extends javax.swing.JDialog {
     private void btnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoActionPerformed
         // TODO add your handling code here:
         limpiarCampos();
-        try{
+        try {
             cargarComboBoxMovil.cargar(cbTipo, "SELECT * FROM tipo_cheques WHERE estado='S'");
-        }catch(Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
-         }
-        
-        try{
-           cargarComboBoxMovil.cargar(cbBanco, "SELECT * FROM bancos WHERE estado='S'"); 
-        }catch(Exception e){
+        }
+
+        try {
+            cargarComboBoxMovil.cargar(cbBanco, "SELECT * FROM bancos WHERE estado='S'");
+        } catch (Exception e) {
             System.out.println(e.getMessage());
-         }
-        try{
-           cargarComboBox.cargar(cbReparto, "SELECT * FROM movil_reparto WHERE estado='S'"); 
-        }catch(Exception e){
+        }
+        try {
+            cargarComboBox.cargar(cbReparto, "SELECT * FROM movil_reparto WHERE estado='S'");
+        } catch (Exception e) {
             System.out.println(e.getMessage());
-         }
-      
+        }
+
         String cod = GestionarCheques.getCodigo();
-        
+
         txtidCheque.setText(cod);
         txtFecha.setText(Fecha.fechaCorrectaFachada());
         btnNuevo.setEnabled(false);
@@ -927,37 +892,37 @@ public final class dlgGestCheques extends javax.swing.JDialog {
 
     private void btnModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarActionPerformed
         // TODO add your handling code here:
-        if(cbTipo.getSelectedIndex()== 0){
+        if (cbTipo.getSelectedIndex() == 0) {
             Mensajes.Alerta("Seleccione el Tipo de Cheque.");
             cbTipo.requestFocus();
             cbTipo.setPopupVisible(true);
-        }else if(cbBanco.getSelectedIndex() == 0){
+        } else if (cbBanco.getSelectedIndex() == 0) {
             Mensajes.Alerta("Seleccione el Banco en el que están depositados los fondos.");
             cbBanco.requestFocus();
             cbBanco.setPopupVisible(true);
-        }else if(txtRZ.getText().isEmpty()){
+        } else if (txtRZ.getText().isEmpty()) {
             Mensajes.Alerta("Falta cargar: Nombre y Apellido o Razón Social del Librador.");
             txtRZ.requestFocus();
-        }else if(txtRuc.getText().isEmpty()){
+        } else if (txtRuc.getText().isEmpty()) {
             Mensajes.Alerta("Falta cargar: C.I. o R.U.C. N°.");
             txtRuc.requestFocus();
-        }else if(txtEmision.getText().isEmpty()){
+        } else if (txtEmision.getText().isEmpty()) {
             Mensajes.Alerta("Cargue la Fecha de Emisión del Cheque.");
             txtEmision.requestFocus();
-        }else if(txtCuenta.getText().isEmpty()){
+        } else if (txtCuenta.getText().isEmpty()) {
             Mensajes.Alerta("Especifique la Cuenta Corriente Bancaria.");
             txtCuenta.requestFocus();
-        }else if(txtCheque.getText().isEmpty()){
+        } else if (txtCheque.getText().isEmpty()) {
             Mensajes.Alerta("Especifique la Serie - Número del Cheque.");
             txtCheque.requestFocus();
-        }else if(txtMonto.getText().isEmpty()){
+        } else if (txtMonto.getText().isEmpty()) {
             Mensajes.Alerta("Especifique el Monto del cheque.");
             txtMonto.requestFocus();
-        }else if(cbReparto.getSelectedIndex()==0){
+        } else if (cbReparto.getSelectedIndex() == 0) {
             Mensajes.Alerta("Seleccione el Lugar en donde fue recibido el Cheque.");
             cbReparto.requestFocus();
             cbReparto.setPopupVisible(true);
-        }else {
+        } else {
             try {
                 int resp = JOptionPane.showConfirmDialog(this, "¿Seguro que desea modificar el registro?", "Modificar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                 if (resp == JOptionPane.YES_OPTION) {
@@ -973,37 +938,37 @@ public final class dlgGestCheques extends javax.swing.JDialog {
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
         // TODO add your handling code here:
-        if(cbTipo.getSelectedIndex()== 0){
+        if (cbTipo.getSelectedIndex() == 0) {
             Mensajes.Alerta("Seleccione el Tipo de Cheque.");
             cbTipo.requestFocus();
             cbTipo.setPopupVisible(true);
-        }else if(cbBanco.getSelectedIndex() == 0){
+        } else if (cbBanco.getSelectedIndex() == 0) {
             Mensajes.Alerta("Seleccione el Banco en el que están depositados los fondos.");
             cbBanco.requestFocus();
             cbBanco.setPopupVisible(true);
-        }else if(txtRZ.getText().isEmpty()){
+        } else if (txtRZ.getText().isEmpty()) {
             Mensajes.Alerta("Falta cargar: Nombre y Apellido o Razón Social del Librador.");
             txtRZ.requestFocus();
-        }else if(txtRuc.getText().isEmpty()){
+        } else if (txtRuc.getText().isEmpty()) {
             Mensajes.Alerta("Falta cargar: C.I. o R.U.C. N°.");
             txtRuc.requestFocus();
-        }else if(txtEmision.getText().isEmpty()){
+        } else if (txtEmision.getText().isEmpty()) {
             Mensajes.Alerta("Cargue la Fecha de Emisión del Cheque.");
             txtEmision.requestFocus();
-        }else if(txtCuenta.getText().isEmpty()){
+        } else if (txtCuenta.getText().isEmpty()) {
             Mensajes.Alerta("Especifique la Cuenta Corriente Bancaria.");
             txtCuenta.requestFocus();
-        }else if(txtCheque.getText().isEmpty()){
+        } else if (txtCheque.getText().isEmpty()) {
             Mensajes.Alerta("Especifique la Serie - Número del Cheque.");
             txtCheque.requestFocus();
-        }else if(txtMonto.getText().isEmpty()){
+        } else if (txtMonto.getText().isEmpty()) {
             Mensajes.Alerta("Especifique el Monto del cheque.");
             txtMonto.requestFocus();
-        }else if(cbReparto.getSelectedIndex()==0){
+        } else if (cbReparto.getSelectedIndex() == 0) {
             Mensajes.Alerta("Seleccione el Lugar en donde fue recibido el Cheque.");
             cbReparto.requestFocus();
             cbReparto.setPopupVisible(true);
-        }else {
+        } else {
             try {
                 int resp = JOptionPane.showConfirmDialog(this, "¿Seguro que desea insertar el registro?", "Insertar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                 if (resp == JOptionPane.YES_OPTION) {
@@ -1183,7 +1148,7 @@ public final class dlgGestCheques extends javax.swing.JDialog {
         if (evt.getKeyCode() != KeyEvent.VK_BACK_SPACE) {
             if (txtEmision.getText().length() == 2) {
                 txtEmision.setText(txtEmision.getText().concat("/"));
-            }else if (txtEmision.getText().length() == 5) {
+            } else if (txtEmision.getText().length() == 5) {
                 txtEmision.setText(txtEmision.getText().concat("/"));
             }
         }
@@ -1209,7 +1174,7 @@ public final class dlgGestCheques extends javax.swing.JDialog {
         if (evt.getKeyCode() != KeyEvent.VK_BACK_SPACE) {
             if (txtPago.getText().length() == 2) {
                 txtPago.setText(txtPago.getText().concat("/"));
-            }else if (txtPago.getText().length() == 5) {
+            } else if (txtPago.getText().length() == 5) {
                 txtPago.setText(txtPago.getText().concat("/"));
             }
         }
@@ -1262,7 +1227,7 @@ public final class dlgGestCheques extends javax.swing.JDialog {
 
     private void cbBancoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbBancoItemStateChanged
         // TODO add your handling code here:
-            txtRZ.requestFocus();
+        txtRZ.requestFocus();
     }//GEN-LAST:event_cbBancoItemStateChanged
 
     private void cbRepartoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbRepartoItemStateChanged
@@ -1292,7 +1257,7 @@ public final class dlgGestCheques extends javax.swing.JDialog {
         CabecerasTablas.Cheques(dlgCheques.tbCheques);
         CabecerasTablas.limpiarTablasCheques(dlgCheques.tbCheques);
         ControlCheques.listarCheques(dlgCheques.tbCheques);
-        
+
         dlgCheques.Renders();
 
     }

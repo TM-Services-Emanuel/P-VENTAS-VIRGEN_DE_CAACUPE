@@ -25,7 +25,7 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
     clsExportarExcel Export;
     public Reporte jasper;
 
-    public dlgArticulosMovil(java.awt.Frame parent, boolean modal) {
+    public dlgArticulosMovil(java.awt.Frame parent, boolean modal) throws SQLException {
         super(parent, modal);
         initComponents();
         titulo();
@@ -1066,15 +1066,19 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
         //</editor-fold>
         //</editor-fold>
         java.awt.EventQueue.invokeLater(() -> {
-            dlgArticulosMovil dialog = new dlgArticulosMovil(new javax.swing.JFrame(), true);
-            dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-
-                @Override
-                public void windowClosing(java.awt.event.WindowEvent e) {
-                    System.exit(0);
-                }
-            });
-            dialog.setVisible(true);
+            try {
+                dlgArticulosMovil dialog = new dlgArticulosMovil(new javax.swing.JFrame(), true);
+                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                    
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        System.exit(0);
+                    }
+                });
+                dialog.setVisible(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(dlgArticulosMovil.class.getName()).log(Level.SEVERE, null, ex);
+            }
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables

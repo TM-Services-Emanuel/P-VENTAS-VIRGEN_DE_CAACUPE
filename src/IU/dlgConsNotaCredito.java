@@ -4,6 +4,7 @@ import Componentes.Reporte;
 import Componentes.Mensajes;
 import Controladores.CabecerasTablas;
 import Controladores.controlNotaCredito;
+import java.sql.SQLException;
 import javax.swing.JOptionPane;
 
 public class dlgConsNotaCredito extends javax.swing.JDialog {
@@ -389,7 +390,7 @@ public class dlgConsNotaCredito extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    public void llamarReporteNotaCredito() {
+    public void llamarReporteNotaCredito() throws SQLException {
             Reporte gr;
             gr = new Reporte();
             int codF = Integer.parseInt(txtCodNotaCred.getText());

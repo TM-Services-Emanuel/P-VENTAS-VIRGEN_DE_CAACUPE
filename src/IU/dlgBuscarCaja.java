@@ -1,47 +1,31 @@
 package IU;
 
-import Componentes.ConexionBD;
+import Componentes.DataSourceService;
 import Componentes.Fecha;
 import Componentes.Mensajes;
 import Componentes.Reporte;
 import java.awt.Toolkit;
-import org.mariadb.jdbc.MariaDbConnection;
-import org.mariadb.jdbc.MariaDbStatement;
 import java.sql.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class dlgBuscarCaja extends javax.swing.JDialog {
 
     public Reporte jasper;
-    public static ResultSet rs;
-    public static MariaDbStatement sentencia;
-    public static MariaDbConnection con;
+    static DataSourceService dss = new DataSourceService();
 
-    public dlgBuscarCaja(java.awt.Frame parent, boolean modal) {
+    public dlgBuscarCaja(java.awt.Frame parent, boolean modal) throws SQLException {
         super(parent, modal);
         initComponents();
         jasper = new Reporte();
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/Iconos/logo1.png")));
         invisible();
         rbCajaF.doClick();
-        //cargarComboBox.cargarCaja(cboCajaN, "SELECT * FROM caja WHERE ca_fechainicio='"+txtFDesdeR.getText()+"'");
     }
 
     private void invisible() {
         txtFDesdeR.setVisible(false);
         txtCaja.setVisible(false);
-    }
-
-    private static void prepararBD() {
-        try {
-            con = (MariaDbConnection) new ConexionBD().getConexion();
-            if (con == null) {
-                Mensajes.error("No hay Conexion con la Base de Datos");
-            } else {
-                sentencia = (MariaDbStatement) con.createStatement();
-            }
-        } catch (SQLException e) {
-            Mensajes.error("ERR_CON: " + e.getMessage());
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -206,9 +190,9 @@ public class dlgBuscarCaja extends javax.swing.JDialog {
         if (rbCajaF.isSelected()) {
             if (txtFDesde.getText().trim().isEmpty()) {
                 Mensajes.informacion("Fije una fecha para levantar los valores del Movimiento diario.");
-            } else if(txtCaja.getText().isEmpty()){
+            } else if (txtCaja.getText().isEmpty()) {
                 Mensajes.Alerta("La Fecha seleccionada no posee Movimiento de Caja.\nPor ende, no se registraron movimientos de entrada y salida.");
-            }else {
+            } else {
                 try {
                     dlgCajaDia1 baf = new dlgCajaDia1(null, true);
                     baf.setLocationRelativeTo(null);
@@ -237,17 +221,16 @@ public class dlgBuscarCaja extends javax.swing.JDialog {
 
     private void txtFDesdeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFDesdeActionPerformed
         // TODO add your handling code here:   
-        try {
-            prepararBD();
-            ResultSet rss = sentencia.executeQuery("SELECT * FROM caja WHERE ca_fechainicio='" + txtFDesdeR.getText() + "'");
-            rss.last();
+        String sql = "SELECT * FROM caja WHERE ca_fechainicio='" + txtFDesdeR.getText() + "'";
+        try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
+            rs.last();
             do {
-                lbMensaje.setText("LA CAJA DEL DÍA ES EL: " + rss.getString("ca_id"));
-                txtCaja.setText(rss.getString("ca_id"));
-            } while (rss.next());
-            rss.close();
-            sentencia.close();
-            con.close();
+                lbMensaje.setText("LA CAJA DEL DÍA ES EL: " + rs.getString("ca_id"));
+                txtCaja.setText(rs.getString("ca_id"));
+            } while (rs.next());
+            rs.close();
+            st.close();
+            cn.close();
         } catch (SQLException e) {
             lbMensaje.setText("CAJA NO ENCONTRADA PARA ESTA FECHA");
             txtCaja.setText("");
@@ -409,8 +392,8 @@ public class dlgBuscarCaja extends javax.swing.JDialog {
         //</editor-fold>
 
         /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
+        java.awt.EventQueue.invokeLater(() -> {
+            try {
                 dlgBuscarCaja dialog = new dlgBuscarCaja(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
@@ -419,6 +402,8 @@ public class dlgBuscarCaja extends javax.swing.JDialog {
                     }
                 });
                 dialog.setVisible(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(dlgBuscarCaja.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
     }

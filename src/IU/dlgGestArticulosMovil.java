@@ -1,6 +1,6 @@
 package IU;
 
-import Componentes.ConexionBD;
+import Componentes.DataSourceService1;
 import Componentes.Mensajes;
 import Componentes.Software;
 import Componentes.cargarComboBoxMovil;
@@ -15,41 +15,36 @@ import java.sql.*;
 import java.text.DecimalFormat;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
-import org.mariadb.jdbc.MariaDbConnection;
-import org.mariadb.jdbc.MariaDbStatement;
 
 public class dlgGestArticulosMovil extends javax.swing.JDialog {
 
-    public static MariaDbStatement sentencia;
-    public static MariaDbConnection con;
     public static int id;
+    static DataSourceService1 dss1 = new DataSourceService1();
 
     public dlgGestArticulosMovil(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         titulo();
-        //prepararBD();
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/Iconos/logo1.png")));
         Invisible();
         dependencia();
-        //calcularGanancia();
     }
-    
-    private void dependencia(){
-        if(ckDependencia.isSelected()){
+
+    private void dependencia() {
+        if (ckDependencia.isSelected()) {
             btnBuscarDependencia.setEnabled(true);
-        }else if(!ckDependencia.isSelected()){
+        } else if (!ckDependencia.isSelected()) {
             btnBuscarDependencia.setEnabled(false);
         }
     }
-    
-    private void promocion(){
-        if(ckPromocion.isSelected()){
+
+    private void promocion() {
+        if (ckPromocion.isSelected()) {
             txtCantPromocion.setEnabled(true);
             txtCantPromocion.requestFocus();
             txtPrecioPromocion.setEnabled(true);
             txtPorcPromocion.setEnabled(true);
-        }else if(!ckPromocion.isSelected()){
+        } else if (!ckPromocion.isSelected()) {
             txtCantPromocion.setEnabled(false);
             txtCantPromocion.setText("0");
             txtPrecioPromocion.setEnabled(true);
@@ -58,12 +53,12 @@ public class dlgGestArticulosMovil extends javax.swing.JDialog {
             txtPorcPromocion.setText("0");
         }
     }
-    
-    final void titulo(){
-        if(Software.getSoftware().equals("null")){
+
+    final void titulo() {
+        if (Software.getSoftware().equals("null")) {
             this.setTitle("Crear o modificar Productos");
-        }else{
-            this.setTitle(Software.getSoftware()+" - Crear o modificar Productos");
+        } else {
+            this.setTitle(Software.getSoftware() + " - Crear o modificar Productos");
         }
     }
 
@@ -128,21 +123,22 @@ public class dlgGestArticulosMovil extends javax.swing.JDialog {
         Volver();
         this.dispose();
     }
-    
-    private void calcularGanancia(){
+
+    private void calcularGanancia() {
         DecimalFormat df = new DecimalFormat("#,###");
         int costo, ganancia, venta;
-        venta=Integer.parseInt(txtPrecioVentaL.getText());
-        costo=Integer.parseInt(txtPrecioCostoL.getText());
-        ganancia=venta-costo;
+        venta = Integer.parseInt(txtPrecioVentaL.getText());
+        costo = Integer.parseInt(txtPrecioCostoL.getText());
+        ganancia = venta - costo;
         txtGanancia.setText(String.valueOf(df.format(ganancia)));
     }
-    private void calcularGananciaMinorista(){
+
+    private void calcularGananciaMinorista() {
         DecimalFormat df = new DecimalFormat("#,###");
         int costo, ganancia, venta;
-        venta=Integer.parseInt(txtPrecioVentaMinorista.getText().trim().replace(",", "").replace(".", ""));
-        costo=Integer.parseInt(txtCosto.getText().trim().replace(",", "").replace(".", ""));
-        ganancia=venta-costo;
+        venta = Integer.parseInt(txtPrecioVentaMinorista.getText().trim().replace(",", "").replace(".", ""));
+        costo = Integer.parseInt(txtCosto.getText().trim().replace(",", "").replace(".", ""));
+        ganancia = venta - costo;
         txtGananciaMinorista.setText(String.valueOf(df.format(ganancia)));
     }
 
@@ -1165,7 +1161,7 @@ public class dlgGestArticulosMovil extends javax.swing.JDialog {
 
     private void cboImpuestoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboImpuestoActionPerformed
         // TODO add your handling code here:
-       /* if (cboImpuesto.getSelectedIndex() == 0) {
+        /* if (cboImpuesto.getSelectedIndex() == 0) {
             txtGanancia.setText("0");
         } else {
             String item = String.valueOf(cboImpuesto.getSelectedItem());
@@ -1195,9 +1191,9 @@ public class dlgGestArticulosMovil extends javax.swing.JDialog {
         } else if (cboImpuesto.getSelectedIndex() == 0) {
             Mensajes.Alerta("Seleccione un Impuesto");
             cboImpuesto.requestFocus();
-        }else if(ckDependencia.isSelected() && Integer.parseInt(txtidDependencia.getText())<=0){
+        } else if (ckDependencia.isSelected() && Integer.parseInt(txtidDependencia.getText()) <= 0) {
             Mensajes.Alerta("Dependencia de Producto habilitado!\nBusque y Seleccione el Producto al cual vincular.");
-        }else if (validarCampos.estaVacio(txtDescripcion) && validarCampos.estaVacio(txtPrecioVentaL)
+        } else if (validarCampos.estaVacio(txtDescripcion) && validarCampos.estaVacio(txtPrecioVentaL)
                 && validarCampos.estaVacio(txtStock)) {
             try {
                 int resp = JOptionPane.showConfirmDialog(this, "¿Seguro que desea modificar el registro?", "Modificar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
@@ -1237,9 +1233,9 @@ public class dlgGestArticulosMovil extends javax.swing.JDialog {
         } else if (cboImpuesto.getSelectedIndex() == 0) {
             Mensajes.informacion("Seleccione un Impuesto");
             cboImpuesto.requestFocus();
-        }else if(ckDependencia.isSelected() && Integer.parseInt(txtidDependencia.getText())<=0){
+        } else if (ckDependencia.isSelected() && Integer.parseInt(txtidDependencia.getText()) <= 0) {
             Mensajes.Alerta("Dependencia de Producto habilitado!\nBusque y Seleccione el Producto al cual vincular.");
-        }else if (validarCampos.estaVacio(txtDescripcion) && validarCampos.estaVacio(txtPrecioVentaL)
+        } else if (validarCampos.estaVacio(txtDescripcion) && validarCampos.estaVacio(txtPrecioVentaL)
                 && validarCampos.estaVacio(txtStock)) {
             try {
                 int resp = JOptionPane.showConfirmDialog(this, "¿Seguro que desea insertar el registro?", "Insertar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
@@ -1252,7 +1248,7 @@ public class dlgGestArticulosMovil extends javax.swing.JDialog {
                     txtCodInterno.requestFocus();
                 }
             } catch (HeadlessException ee) {
-                System.out.println("FATAL ERROR: "+ee.getMessage());
+                System.out.println("FATAL ERROR: " + ee.getMessage());
             }
         } else {
             Mensajes.informacion("Verifique que todos los campos exigidos esten completados");
@@ -1560,7 +1556,7 @@ public class dlgGestArticulosMovil extends javax.swing.JDialog {
 
     private void txtStockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtStockActionPerformed
         // TODO add your handling code here:
-       ckHabilitar.requestFocus();
+        ckHabilitar.requestFocus();
     }//GEN-LAST:event_txtStockActionPerformed
 
     private void txtGananciaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtGananciaMouseClicked
@@ -1621,7 +1617,7 @@ public class dlgGestArticulosMovil extends javax.swing.JDialog {
         if (!txtPrecioVentaMinorista.getText().trim().isEmpty()) {
             validarCampos.soloNumeros(txtPrecioVentaMinorista);
         }
-        
+
     }//GEN-LAST:event_txtPrecioVentaMinoristaKeyPressed
 
     private void txtPrecioVentaMinoristaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPrecioVentaMinoristaKeyReleased
@@ -1633,7 +1629,7 @@ public class dlgGestArticulosMovil extends javax.swing.JDialog {
             } else {
                 txtPrecioVentaMinorista.setText("0");
             }
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             System.out.println(e.getMessage());
         }
         calcularGananciaMinorista();
@@ -1866,12 +1862,12 @@ public class dlgGestArticulosMovil extends javax.swing.JDialog {
     }
 
     void Volver() {
-        if(dlgArticulosMovil.ckStock.isSelected()){
+        if (dlgArticulosMovil.ckStock.isSelected()) {
             CabecerasTablas.ArticulosMovil(dlgArticulosMovil.tbProductos);
             CabecerasTablas.limpiarTablasArticuloM(dlgArticulosMovil.tbProductos);
             controlArticuloMovil.listArticuloconStock(dlgArticulosMovil.tbProductos, "idproducto");
             dlgArticulosMovil.Renders();
-        }else{
+        } else {
             CabecerasTablas.ArticulosMovil(dlgArticulosMovil.tbProductos);
             CabecerasTablas.limpiarTablasArticuloM(dlgArticulosMovil.tbProductos);
             controlArticuloMovil.listArticulo(dlgArticulosMovil.tbProductos, "idproducto");
@@ -1882,87 +1878,67 @@ public class dlgGestArticulosMovil extends javax.swing.JDialog {
         dlgArticulosMovil.tbProductos.clearSelection();
     }
 
-    public static void prepararBD() {
-        try {
-            con = (MariaDbConnection) new ConexionBD().getConexionMovil();
-            if (con == null) {
-                System.out.println("No hay Conexion con la Base de Datos");
-            } else {
-                sentencia = (MariaDbStatement) con.createStatement();
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
     public void modcboClasificacion() {
-        prepararBD();
         DefaultComboBoxModel ml = new DefaultComboBoxModel();
-        String codClasificacion = txtCodClasificacion.getText().trim();
-        try {
-            ResultSet rs = sentencia.executeQuery("SELECT * FROM division WHERE estado='S'");
+        String sql = "SELECT * FROM division WHERE estado='S'";
+        String sql2 = "SELECT * FROM division WHERE iddivision=" + txtCodClasificacion.getText().trim();
+        try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql); ResultSet rss = st.executeQuery(sql2)) {
             ml.addElement("SELEC. UNA OPCIÓN");
             while (rs.next()) {
                 ml.addElement(rs.getString("descripcion"));
-
             }
-            ResultSet rss = sentencia.executeQuery("SELECT * FROM division WHERE iddivision=" + codClasificacion);
             rss.first();
             Object descripcion = (Object) rss.getString("descripcion");
             dlgGestArticulosMovil.cboClasificacion.setModel(ml);
             dlgGestArticulosMovil.cboClasificacion.setSelectedItem(descripcion);
             rs.close();
             rss.close();
-            sentencia.close();
-            con.close();
+            st.close();
+            cn.close();
         } catch (SQLException ew) {
             //Mensajes.error("TIENES UN ERROR AL CARGAR LOS LABORATORIOS: "+ew.getMessage().toUpperCase());
         }
     }
 
     public void modcboUM() {
-        prepararBD();
         DefaultComboBoxModel pr = new DefaultComboBoxModel();
-        String codUM = txtCodUM.getText().trim();
-        try {
-            ResultSet rs = sentencia.executeQuery("SELECT * FROM unidad_medida WHERE estado='S'");
+        String sql = "SELECT * FROM unidad_medida WHERE estado='S'";
+        String sql2 = "SELECT * FROM unidad_medida WHERE idunidad=" + txtCodUM.getText().trim();
+        try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql); ResultSet rss = st.executeQuery(sql2)) {
             pr.addElement("SELEC. UNA OPCIÓN");
             while (rs.next()) {
                 pr.addElement(rs.getString("unidadmedida"));
             }
-            ResultSet rss = sentencia.executeQuery("SELECT * FROM unidad_medida WHERE idunidad=" + codUM);
             rss.first();
             Object descripcion = (Object) rss.getString("unidadmedida");
             dlgGestArticulosMovil.cboUM.setModel(pr);
             dlgGestArticulosMovil.cboUM.setSelectedItem(descripcion);
             rs.close();
             rss.close();
-            sentencia.close();
-            con.close();
+            st.close();
+            cn.close();
         } catch (SQLException ew) {
             //Mensajes.error("TIENES UN ERROR AL CARGAR LOS PROVEEDORES: "+ew.getMessage().toUpperCase());
         }
     }
 
     public void modcboImpuesto() {
-        prepararBD();
         DefaultComboBoxModel fm = new DefaultComboBoxModel();
-        String codImpuesto = txtCodImpuesto.getText().trim();
-        try {
-            ResultSet rs = sentencia.executeQuery("SELECT * FROM iva WHERE estado='S'");
+        String sql = "SELECT * FROM iva WHERE estado='S'";
+        String sql2 = "SELECT * FROM iva WHERE idiva=" + txtCodImpuesto.getText().trim();
+        try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql); ResultSet rss = st.executeQuery(sql2)) {
             fm.addElement("SELEC. UNA OPCIÓN");
             while (rs.next()) {
                 fm.addElement(rs.getString("descripcion"));
             }
-            ResultSet rss = sentencia.executeQuery("SELECT * FROM iva WHERE idiva=" + codImpuesto);
             rss.first();
             Object descripcion = (Object) rss.getString("descripcion");
             dlgGestArticulosMovil.cboImpuesto.setModel(fm);
             dlgGestArticulosMovil.cboImpuesto.setSelectedItem(descripcion);
             rs.close();
             rss.close();
-            sentencia.close();
-            con.close();
+            st.close();
+            cn.close();
         } catch (SQLException ew) {
             //Mensajes.error("TIENES UN ERROR AL CARGAR LAS FAMILIAS: "+ew.getMessage().toUpperCase());
         }

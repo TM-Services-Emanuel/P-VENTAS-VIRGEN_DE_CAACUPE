@@ -1,6 +1,6 @@
 package IU;
 
-import Componentes.ConexionBD;
+import Componentes.DataSourceService;
 import Componentes.Login;
 import Componentes.Reporte;
 import Componentes.Mensajes;
@@ -10,44 +10,36 @@ import Componentes.Software;
 import Componentes.cargarComboBox;
 import Controladores.CabecerasTablas;
 import Controladores.controlFactura;
-import org.mariadb.jdbc.MariaDbConnection;
-import org.mariadb.jdbc.MariaDbStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class dlgConsultarCreditos extends javax.swing.JDialog {
 
     CabecerasTablas cabe = new CabecerasTablas();
-    public static MariaDbConnection con;
-    public static MariaDbStatement st;
-    public static ResultSet rss;
-
-    public static String UsuarioL = "";
     public Reporte jasper;
-    static String emp;
-    static String dir;
-    static String cel;
+    static DataSourceService dss = new DataSourceService();
 
-    public dlgConsultarCreditos(java.awt.Frame parent, boolean modal) {
+    public dlgConsultarCreditos(java.awt.Frame parent, boolean modal) throws SQLException {
         super(parent, modal);
         initComponents();
         titulo();
-        prepararBD();
-        jasper= new Reporte();
+        jasper = new Reporte();
         CargarCombos();
         cabe.consFacturas(tblFactura);
         Invisible();
     }
-    
-    final void titulo(){
-        if(Software.getSoftware().equals("null")){
+
+    final void titulo() {
+        if (Software.getSoftware().equals("null")) {
             this.setTitle("Extracto de cuentas - ventas crédito");
-        }else{
-            this.setTitle(Software.getSoftware()+" - Extracto de cuentas - ventas crédito");
+        } else {
+            this.setTitle(Software.getSoftware() + " - Extracto de cuentas - ventas crédito");
         }
     }
-    
+
     private void CargarCombos() {
         cargarComboBox.cargarCliente(cbClientes, "SELECT * FROM clientes WHERE cli_cred='SI' and cli_indicador='S'");
     }
@@ -55,68 +47,57 @@ public class dlgConsultarCreditos extends javax.swing.JDialog {
     public static void Renders() {
         dlgConsultarCreditos.tblFactura.getColumnModel().getColumn(9).setCellRenderer(new RenderDecimal());
     }
-    
-    public static void Invisible(){
+
+    public static void Invisible() {
         txtLimiteCreditoL.setVisible(false);
         txtDeudaTotalL.setVisible(false);
         lblCodDetalle.setVisible(false);
     }
 
-    
-    public static void prepararBD() {
-        try {
-            con = (MariaDbConnection) new ConexionBD().getConexion();
-            if (con == null) {
-                System.out.println("No hay Conexion con la Base de Datos");
-            } else {
-                st = (MariaDbStatement) con.createStatement();
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-    
-    public static void lineaCredito(String cod){
-        String sql="select cli_limitecuenta from clientes where cli_codigo="+cod;
-        try{
-            rss=st.executeQuery(sql);
+    public static void lineaCredito(String cod) {
+        String sql = "select cli_limitecuenta from clientes where cli_codigo=" + cod;
+        try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rss = st.executeQuery(sql)) {
             rss.first();
             txtLimiteCreditoL.setText(rss.getString(1));
             DecimalFormat df = new DecimalFormat("#,###");
             txtLimiteCredito.setText(df.format(Integer.valueOf(txtLimiteCreditoL.getText().trim().replace(".", "").replace(",", ""))));
             rss.close();
-        }catch(SQLException e){Mensajes.error("Error consultado línea de crédito del clinte: "+e.getMessage());}  
+        } catch (SQLException e) {
+            Mensajes.error("Error consultado línea de crédito del clinte: " + e.getMessage());
+        }
     }
-    
-    public static void sumarCuentas(String cod){
-        String sql="SELECT SUM(fac_totalfinal) FROM factura WHERE clientes_cli_codigo="+cod+" AND estado='PENDIENTE' AND fac_indicador='S'";
-        try{
-            rss=st.executeQuery(sql);
+
+    public static void sumarCuentas(String cod) {
+        String sql = "SELECT SUM(fac_totalfinal) FROM factura WHERE clientes_cli_codigo=" + cod + " AND estado='PENDIENTE' AND fac_indicador='S'";
+        try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rss = st.executeQuery(sql)) {
             rss.first();
             txtDeudaTotalL.setText(rss.getString(1));
             DecimalFormat df = new DecimalFormat("#,###");
             txtDeudaTotal.setText(df.format(Integer.valueOf(txtDeudaTotalL.getText().trim().replace(".", "").replace(",", ""))));
             rss.close();
-        }catch(SQLException e){Mensajes.error("Error calculando la deuda del clinte: "+e.getMessage());}
+        } catch (SQLException e) {
+            Mensajes.error("Error calculando la deuda del clinte: " + e.getMessage());
+        }
     }
-    
-    public static void calcularDiferencia(){
-        int credito=Integer.parseInt(txtLimiteCreditoL.getText());
-        int deuda=Integer.parseInt(txtDeudaTotalL.getText());
+
+    public static void calcularDiferencia() {
+        int credito = Integer.parseInt(txtLimiteCreditoL.getText());
+        int deuda = Integer.parseInt(txtDeudaTotalL.getText());
         DecimalFormat df = new DecimalFormat("#,###");
-        txtDisponible.setText(df.format(Integer.valueOf(String.valueOf(credito-deuda).trim().replace(".", "").replace(",", ""))));
+        txtDisponible.setText(df.format(Integer.valueOf(String.valueOf(credito - deuda).trim().replace(".", "").replace(",", ""))));
     }
-    
-    public static void Cant(){
-        int Cantidad= dlgConsultarCreditos.tblFactura.getRowCount();
-        lbCantidad.setText("Cantidad de registros filtrados: "+Cantidad);
+
+    public static void Cant() {
+        int Cantidad = dlgConsultarCreditos.tblFactura.getRowCount();
+        lbCantidad.setText("Cantidad de registros filtrados: " + Cantidad);
     }
-    
+
     public static void limpiarCampos() {
         txtLimiteCredito.setText("");
         txtDeudaTotal.setText("");
         txtDisponible.setText("");
     }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -449,12 +430,9 @@ public class dlgConsultarCreditos extends javax.swing.JDialog {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    public void llamarReporteFactura() {
+    public void llamarReporteFactura() throws SQLException {
         Reporte gr;
         gr = new Reporte();
-        //int codF = Integer.parseInt(txtCodFactura.getText());
-        //gr.MostrarReporteConParametro(System.getProperty("user.dir")+"/Reportes/Facturas/Factura.jasper", "Factura de Venta", codF,"Facturas/Fact-"+codF+".pdf");
-        //gr.cerrar();
     }
     private void btnImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImprimirActionPerformed
         // TODO add your handling code here:
@@ -479,13 +457,12 @@ public class dlgConsultarCreditos extends javax.swing.JDialog {
                         if (condicion.equals("CONTADO")) {
                             //imprimirTicket(fecha, hora, fact, caja, condicion, total);
                             try {
-                                UsuarioL = Login.getUsuarioLogueado();
                                 StringBuilder sql = new StringBuilder("INSERT INTO reimpresiones (re_fac_codigo, re_descripcion, re_tipo, fecha, usuario) VALUES (");
                                 sql.append(cod).append(", ");
                                 sql.append("'RE-IMPRESION DE TICKET','");
                                 sql.append(condicion).append("',");
                                 sql.append("now(),'");
-                                sql.append(UsuarioL).append("')");
+                                sql.append(Login.getUsuarioLogueado()).append("')");
                                 String msg = Operacion.exeOperacion(sql.toString());
                                 if (msg == null) {
                                     System.out.println("la re-impresion ha sido registrada");
@@ -497,15 +474,14 @@ public class dlgConsultarCreditos extends javax.swing.JDialog {
                             }
 
                         } else {
-                            jasper.BoletaCreditoRE("\\Reports\\ventas\\venta_credito_reimpresion.jasper", "cod", Integer.parseInt(cod));
+                            jasper.BoletaCreditoRE("\\Reports\\ventas\\venta_credito_reimpresion.jasper", "cod", Integer.valueOf(cod));
                             try {
-                                UsuarioL = Login.getUsuarioLogueado();
                                 StringBuilder sql = new StringBuilder("INSERT INTO reimpresiones (re_fac_codigo, re_descripcion, re_tipo, fecha, usuario) VALUES (");
                                 sql.append(cod).append(", ");
                                 sql.append("'RE-IMPRESION DE BOLETA CRÉDITO','");
                                 sql.append(condicion).append("',");
                                 sql.append("now(),'");
-                                sql.append(UsuarioL).append("')");
+                                sql.append(Login.getUsuarioLogueado()).append("')");
                                 String msg = Operacion.exeOperacion(sql.toString());
                                 if (msg == null) {
                                     System.out.println("la re-impresion ha sido registrada");
@@ -521,7 +497,7 @@ public class dlgConsultarCreditos extends javax.swing.JDialog {
                     }
                 }
             }
-        }        
+        }
     }//GEN-LAST:event_btnImprimirActionPerformed
 
     private void tblFacturaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblFacturaMouseClicked
@@ -578,35 +554,35 @@ public class dlgConsultarCreditos extends javax.swing.JDialog {
         if (cbClientes.getSelectedIndex() == 0) {
             Mensajes.error("Seleccione un Cliente");
         } else {
-            if(rPendiente.isSelected()){
-                if(rAnulado.isSelected()){
+            if (rPendiente.isSelected()) {
+                if (rAnulado.isSelected()) {
                     CabecerasTablas.limpiarTablas(tblFactura);
                     cabe.consFacturas(tblFactura);
                     controlFactura.listFacturasCreditoPendienteActivo(tblFactura, lblCodDetalle.getText());
                     Renders();
                     System.out.println("solo pendientes y anulados descartado");
-                }else{
+                } else {
                     CabecerasTablas.limpiarTablas(tblFactura);
                     cabe.consFacturas(tblFactura);
                     controlFactura.listFacturasCreditoPendiente(tblFactura, lblCodDetalle.getText());
                     Renders();
                     System.out.println("solo pendientes");
-                }               
-            }else if(rAnulado.isSelected()){
-                if(rPendiente.isSelected()){
+                }
+            } else if (rAnulado.isSelected()) {
+                if (rPendiente.isSelected()) {
                     CabecerasTablas.limpiarTablas(tblFactura);
                     cabe.consFacturas(tblFactura);
                     controlFactura.listFacturasCreditoPendienteActivo(tblFactura, lblCodDetalle.getText());
                     System.out.println("solo pendientes y anulados descartado");
                     Renders();
-                }else{
+                } else {
                     CabecerasTablas.limpiarTablas(tblFactura);
                     cabe.consFacturas(tblFactura);
                     controlFactura.listFacturasCreditoActivo(tblFactura, lblCodDetalle.getText());
                     System.out.println("anulados descartado");
                     Renders();
                 }
-            }else{
+            } else {
                 CabecerasTablas.limpiarTablas(tblFactura);
                 cabe.consFacturas(tblFactura);
                 controlFactura.listFacturasCredito(tblFactura, lblCodDetalle.getText());
@@ -618,7 +594,7 @@ public class dlgConsultarCreditos extends javax.swing.JDialog {
             calcularDiferencia();
             Cant();
         }
-        
+
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
@@ -666,15 +642,19 @@ public class dlgConsultarCreditos extends javax.swing.JDialog {
         //</editor-fold>
 
         java.awt.EventQueue.invokeLater(() -> {
-            dlgConsultarCreditos dialog = new dlgConsultarCreditos(new javax.swing.JFrame(), true);
-            dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                
-                @Override
-                public void windowClosing(java.awt.event.WindowEvent e) {
-                    System.exit(0);
-                }
-            });
-            dialog.setVisible(true);
+            try {
+                dlgConsultarCreditos dialog = new dlgConsultarCreditos(new javax.swing.JFrame(), true);
+                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                    
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        System.exit(0);
+                    }
+                });
+                dialog.setVisible(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(dlgConsultarCreditos.class.getName()).log(Level.SEVERE, null, ex);
+            }
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables

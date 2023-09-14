@@ -107,7 +107,7 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Component id="Oscuro" alignment="0" pref="508" max="32767" attributes="0"/>
+              <Component id="Oscuro" alignment="0" pref="522" max="32767" attributes="0"/>
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
@@ -134,7 +134,7 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="lbTotal" max="32767" attributes="0"/>
-                      <Component id="txtTotalC" pref="24" max="32767" attributes="0"/>
+                      <Component id="txtTotalC" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
@@ -286,7 +286,7 @@
                       </Group>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="btnFiltrar" pref="92" max="32767" attributes="0"/>
+                          <Component id="btnFiltrar" max="32767" attributes="0"/>
                           <Component id="txtIdVendedor" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>

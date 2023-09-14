@@ -4,6 +4,7 @@ import Componentes.Reporte;
 import Componentes.Mensajes;
 import Controladores.CabecerasTablas;
 import Controladores.controlPresupuesto;
+import java.sql.SQLException;
 import javax.swing.JOptionPane;
 
 public class dlgConsultarPresupuesto extends javax.swing.JDialog {
@@ -478,12 +479,10 @@ public class dlgConsultarPresupuesto extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    public void llamarReporteFactura() {
+    public void llamarReporteFactura() throws SQLException {
             Reporte gr;
             gr = new Reporte();
             int codF = Integer.parseInt(txtCodPresupuesto.getText());
-           // gr.MostrarReporteConParametro(System.getProperty("user.dir")+"/Reportes/Presupuesto/Presupuesto.jasper", "Presupuesto de Venta", codF,"Presupuestos/Pres-"+codF+".pdf");
-            //gr.cerrar();
     }
     
     /**
@@ -515,19 +514,16 @@ public class dlgConsultarPresupuesto extends javax.swing.JDialog {
         }
         //</editor-fold>
 
-        java.awt.EventQueue.invokeLater(new Runnable() {
-
-            public void run() {
-                dlgConsultarPresupuesto dialog = new dlgConsultarPresupuesto(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            dlgConsultarPresupuesto dialog = new dlgConsultarPresupuesto(new javax.swing.JFrame(), true);
+            dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                
+                @Override
+                public void windowClosing(java.awt.event.WindowEvent e) {
+                    System.exit(0);
+                }
+            });
+            dialog.setVisible(true);
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -10,19 +10,18 @@ import java.util.*;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.view.JasperViewer;
-
-import org.mariadb.jdbc.MariaDbConnection;
+import java.sql.Connection;
 
 /**
  *
  * @author Cris-Men
  */
 public class ReporteMovil {
+    static DataSourceService1 dss = new DataSourceService1();
+    Connection con;
     
-    MariaDbConnection con = (MariaDbConnection) new ConexionBD().getConexionMovil();
-    
-    public ReporteMovil(){
-        con = (MariaDbConnection) new ConexionBD().getConexionMovil();
+    public ReporteMovil() throws SQLException{
+        con = dss.getDataSource().getConnection();
         if (con == null) {
             System.out.println("No hay Conexion con la Base de Datos");
         }
@@ -57,7 +56,7 @@ public class ReporteMovil {
             //jviewer.setZoomRatio((float) 0.7);
             jviewer.setLocationRelativeTo(null);
             jviewer.setVisible(true);
-        }catch(Exception j){
+        }catch(JRException j){
             Mensajes.error("Error de Reporte:\n"+j.getMessage());
         }
     }

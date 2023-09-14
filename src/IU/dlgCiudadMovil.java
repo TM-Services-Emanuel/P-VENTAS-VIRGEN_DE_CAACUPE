@@ -1,6 +1,6 @@
 package IU;
 
-import Componentes.ConexionBD;
+import Componentes.DataSourceService1;
 import Componentes.Mensajes;
 import Componentes.Software;
 import Componentes.cargarComboBoxMovil;
@@ -9,19 +9,14 @@ import Controladores.CabecerasTablas;
 import Controladores.controlCiudadMovil;
 import Datos.GestionarCiudadMovil;
 import java.awt.event.KeyEvent;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
-import org.mariadb.jdbc.MariaDbConnection;
-import org.mariadb.jdbc.MariaDbStatement;
 
 public class dlgCiudadMovil extends javax.swing.JDialog {
 
     CabecerasTablas cabe = new CabecerasTablas();
-    public static ResultSet rs;
-    public static MariaDbStatement sentencia;
-    public static MariaDbConnection con;
+    static DataSourceService1 dss = new DataSourceService1();
     
     public dlgCiudadMovil(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -30,8 +25,6 @@ public class dlgCiudadMovil extends javax.swing.JDialog {
         cabe.ciudadMovil(tbCiudad);
         controlCiudadMovil.listCiudad(tbCiudad);
         CargarCombos();
-        //txtCodDepartamento.setVisible(false);
-        //prepararBD();
     }
     private void CargarCombos() {
         cargarComboBoxMovil.cargar(cboDepartamento, "SELECT * FROM departamento WHERE estado='S'");
@@ -46,38 +39,24 @@ public class dlgCiudadMovil extends javax.swing.JDialog {
             this.setTitle(Software.getSoftware()+" - Gestionar ciudades");
         }
     }
-    
-    public static void prepararBD() {
-        try {
-            con = (MariaDbConnection) new ConexionBD().getConexionMovil();
-            if (con == null) {
-                System.out.println("No hay Conexion con la Base de Datos");
-            } else {
-                sentencia = (MariaDbStatement) con.createStatement();
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
 
     public void modcboDepartamento(int iddepartamento) {
-        prepararBD();
         DefaultComboBoxModel ml = new DefaultComboBoxModel();
-        try {
-            rs = sentencia.executeQuery("SELECT * FROM departamento WHERE estado='S'");
+        String sql = "SELECT * FROM departamento WHERE estado='S'";
+        String sql2 = "SELECT * FROM departamento WHERE iddepartamento=" + iddepartamento;
+        try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql); ResultSet rss = st.executeQuery(sql2)){
             ml.addElement("SELEC. UNA OPCIÓN");
             while (rs.next()) {
                 ml.addElement(rs.getString("departamento"));
-
             }
-            ResultSet rss = sentencia.executeQuery("SELECT * FROM departamento WHERE iddepartamento=" + iddepartamento);
             rss.first();
             Object descripcion = (Object) rss.getString("departamento");
             cboDepartamento.setModel(ml);
             cboDepartamento.setSelectedItem(descripcion);
             rs.close();
             rss.close();
-            con.close();
+            st.close();
+            cn.close();
         } catch (SQLException ew) {
             //Mensajes.error("TIENES UN ERROR AL CARGAR LOS LABORATORIOS: "+ew.getMessage().toUpperCase());
         }

@@ -1,6 +1,7 @@
 package IU;
 
-import Componentes.ConexionBD;
+import Componentes.DataSourceService;
+import Componentes.DataSourceService1;
 import Componentes.Fecha;
 import Componentes.Login;
 import Componentes.Mensajes;
@@ -13,24 +14,19 @@ import Componentes.generarCodigos;
 import Componentes.validarCampos;
 import Controladores.CabecerasTablas;
 import Controladores.controlArticuloMovil;
-//import Controladores.controlCompra;
 import Controladores.controlCompra1;
 import Datos.GestionarCompra;
-import java.sql.SQLException;
 import java.text.DecimalFormat;
 import javax.swing.JOptionPane;
 import Modelo.Articulo;
+import java.awt.HeadlessException;
 import java.awt.event.KeyEvent;
-import org.mariadb.jdbc.MariaDbConnection;
-import org.mariadb.jdbc.MariaDbStatement;
 import java.sql.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public final class dlgCompras1 extends javax.swing.JDialog {
 
-    public static MariaDbConnection con;
-    public static MariaDbStatement stTransaccion;
-    public static MariaDbConnection conMovil;
-    public static MariaDbStatement stTransaccionMovil;
     public static int PrecioVenta;
     public static double costoiva;
     public static int descuento;
@@ -39,7 +35,10 @@ public final class dlgCompras1 extends javax.swing.JDialog {
     public static int Pcosto;
     public Reporte jasper;
 
-    public dlgCompras1(java.awt.Frame parent, boolean modal) {
+    static DataSourceService dss = new DataSourceService();
+    static DataSourceService1 dss1 = new DataSourceService1();
+
+    public dlgCompras1(java.awt.Frame parent, boolean modal) throws SQLException {
         super(parent, modal);
         initComponents();
         titulo();
@@ -47,7 +46,6 @@ public final class dlgCompras1 extends javax.swing.JDialog {
         CabecerasTablas.compras(tbDetalle);
         Cancelar();
         pintarCondicion();
-        //Renders();
         Invisible();
         cargarComboBox.cargar(cbAsignación, "SELECT * FROM movil_reparto WHERE estado='S'");
 
@@ -63,13 +61,10 @@ public final class dlgCompras1 extends javax.swing.JDialog {
 
     public void Cancelar() {
         limpiarCampos();
-        //dcFecha.setEnabled(false);
         txtFactura.setEnabled(false);
         btnProveedor.setEnabled(false);
         rContado.setEnabled(false);
         rCredito.setEnabled(false);
-        //rbLocal.setEnabled(false);
-        //rbReparto.setEnabled(false);
         btnBuscarArticulo.setEnabled(false);
         txtCosto.setEnabled(false);
         txtCant.setEnabled(false);
@@ -86,25 +81,6 @@ public final class dlgCompras1 extends javax.swing.JDialog {
         cant();
     }
 
-    public static void prepararBD() {
-        try {
-            con = (MariaDbConnection) new ConexionBD().getConexion();
-            conMovil = (MariaDbConnection) new ConexionBD().getConexionMovil();
-            if (con == null) {
-                System.out.println("No hay Conexion con la Base de Datos");
-            } else {
-                stTransaccion = (MariaDbStatement) con.createStatement();
-            }
-            if (conMovil == null) {
-                System.out.println("No hay Conexion con la Base de Datos Movil");
-            } else {
-                stTransaccionMovil = (MariaDbStatement) conMovil.createStatement();
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
     public void Renders() {
         dlgCompras1.tbDetalle.getColumnModel().getColumn(3).setCellRenderer(new RenderDecimalconPuntos());
         dlgCompras1.tbDetalle.getColumnModel().getColumn(5).setCellRenderer(new RenderDecimal1());
@@ -115,12 +91,9 @@ public final class dlgCompras1 extends javax.swing.JDialog {
     }
 
     public void BuscarCoincidenciaFacturaCompra() {
-        try {
-            prepararBD();
-            String sql = "SELECT * FROM compra WHERE com_factura='" + txtFactura.getText() + "' AND proveedor_pro_codigo=" + txtCodProv.getText() + " AND com_indicador='S'";
-            ResultSet rss = stTransaccion.executeQuery(sql);
-            if (rss.next()) {
-                //Mensajes.informacion("Esta compra ya fue registrada");
+        String sql = "SELECT * FROM compra WHERE com_factura='" + txtFactura.getText() + "' AND proveedor_pro_codigo=" + txtCodProv.getText() + " AND com_indicador='S'";
+        try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
+            if (rs.next()) {
                 Mensajes.informacion("Una compra ya fue registrada con los siguientes parámetros:\n"
                         + "PROVEEDOR: " + txtRuc.getText() + "-" + txtRazonS.getText() + "\n"
                         + "FACTURA N°: " + txtFactura.getText() + "\n"
@@ -129,9 +102,9 @@ public final class dlgCompras1 extends javax.swing.JDialog {
             } else {
                 cbAsignación.requestFocus();
             }
-            rss.close();
-            con.close();
-            conMovil.close();
+            rs.close();
+            st.close();
+            cn.close();
         } catch (SQLException e) {
         }
     }
@@ -1240,12 +1213,12 @@ public final class dlgCompras1 extends javax.swing.JDialog {
         try {
             DecimalFormat df = new DecimalFormat("#,###");
             txtCosto.setText(df.format(Integer.valueOf(txtCosto.getText().trim().replace(".", "").replace(",", ""))));
-        } catch (Exception e) {/*Mensajes.error("Error al formatear costo: "+e.getMessage());*/
+        } catch (NumberFormatException e) {/*Mensajes.error("Error al formatear costo: "+e.getMessage());*/
         }
         try {
             DecimalFormat df = new DecimalFormat("#0");
             txtCostoL.setText(df.format(Integer.valueOf(txtCosto.getText().trim().replace(".", "").replace(",", ""))));
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
         }
 
     }//GEN-LAST:event_txtCostoKeyReleased
@@ -1467,14 +1440,14 @@ public final class dlgCompras1 extends javax.swing.JDialog {
             Mensajes.informacion("Aún no haz añadido ningún producto al detalle.");
             btnBuscarArticulo.doClick();
         } else {
-            try {
+            try (Connection con = dss.getDataSource().getConnection(); Connection conMovil = dss1.getDataSource().getConnection(); Statement stTransaccion = con.createStatement(); Statement stTransaccionMovil = conMovil.createStatement()) {
                 int resp = JOptionPane.showConfirmDialog(this, "¿Seguro que deseas registrar esta Compra al sistema?", "CONFIRMACIÓN DE COMPRA", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                 if (resp == JOptionPane.YES_OPTION) {
                     if (rbLocal.isSelected()) {
                         try {
                             String usuario = Login.getUsuarioLogueado();
-                            prepararBD();
                             con.setAutoCommit(false);
+                            conMovil.setAutoCommit(false);
                             String sql = "insert into compra values(" + txtCod.getText() + "," + txtCaja.getText() + "," + txtCodProv.getText() + ", 'L','" + lbCond.getText() + "','" + txtFactura.getText() + "','"
                                     + txtFecha.getText() + "','" + Fecha.darHora() + "'," + txtTotalL.getText() + "," + txtExentaL.getText() + "," + txt5L.getText() + "," + txt10L.getText() + ",'S','" + cbAsignación.getSelectedItem().toString() + "','" + usuario + "')";
                             stTransaccion.executeUpdate(sql);
@@ -1482,11 +1455,12 @@ public final class dlgCompras1 extends javax.swing.JDialog {
                             for (int j = 0; j < fila; j++) {
                                 String filas[] = {tbDetalle.getValueAt(j, 0).toString(), tbDetalle.getValueAt(j, 4).toString(), tbDetalle.getValueAt(j, 6).toString(), tbDetalle.getValueAt(j, 15).toString(), tbDetalle.getValueAt(j, 16).toString(), tbDetalle.getValueAt(j, 7).toString()};
                                 sql = "insert into detalle_compra values(" + txtCod.getText() + "," + filas[0] + "," + filas[1] + "," + filas[2] + "," + filas[3] + "," + filas[5] + ")";
-                                String sql2 = "UPDATE productos SET precio_costo=" + filas[2] + ", ganancia=" + filas[4] + ", stock=stock+" + filas[1]+", users='"+usuario + "' WHERE  idproducto=" + filas[0];
+                                String sql2 = "UPDATE productos SET precio_costo=" + filas[2] + ", ganancia=" + filas[4] + ", stock=stock+" + filas[1] + ", users='" + usuario + "' WHERE  idproducto=" + filas[0];
                                 stTransaccion.executeUpdate(sql);
                                 stTransaccionMovil.executeUpdate(sql2);
                             }
                             con.commit();
+                            conMovil.commit();
                             stTransaccion.close();
                             stTransaccionMovil.close();
                             con.close();
@@ -1495,6 +1469,7 @@ public final class dlgCompras1 extends javax.swing.JDialog {
                         } catch (SQLException e) {
                             try {
                                 con.rollback();
+                                conMovil.rollback();
                                 Mensajes.error("TRANSACCIÓN FALLIDA: La compra no fue registrada en el sistema.\nError:ADD_C: " + e.getMessage().toUpperCase());
                                 stTransaccion.close();
                                 stTransaccionMovil.close();
@@ -1508,8 +1483,8 @@ public final class dlgCompras1 extends javax.swing.JDialog {
                     } else {
                         try {
                             String usuario = Login.getUsuarioLogueado();
-                            prepararBD();
                             con.setAutoCommit(false);
+                            conMovil.setAutoCommit(false);
                             String sql = "insert into compra values(" + txtCod.getText() + "," + txtCaja.getText() + "," + txtCodProv.getText() + ", 'R','" + lbCond.getText() + "','" + txtFactura.getText() + "','"
                                     + txtFecha.getText() + "','" + Fecha.darHora() + "'," + txtTotalL.getText() + "," + txtExentaL.getText() + "," + txt5L.getText() + "," + txt10L.getText() + ",'S','" + cbAsignación.getSelectedItem().toString() + "','" + usuario + "')";
                             stTransaccion.executeUpdate(sql);
@@ -1517,11 +1492,12 @@ public final class dlgCompras1 extends javax.swing.JDialog {
                             for (int j = 0; j < fila; j++) {
                                 String filas[] = {tbDetalle.getValueAt(j, 0).toString(), tbDetalle.getValueAt(j, 4).toString(), tbDetalle.getValueAt(j, 6).toString(), tbDetalle.getValueAt(j, 15).toString(), tbDetalle.getValueAt(j, 16).toString(), tbDetalle.getValueAt(j, 7).toString()};
                                 sql = "insert into detalle_compra values(" + txtCod.getText() + "," + filas[0] + "," + filas[1] + "," + filas[2] + "," + filas[3] + "," + filas[5] + ")";
-                                String sql2 = "UPDATE productos SET precio_costo=" + filas[2] + ", ganancia=" + filas[4] +", users='"+ usuario +"' WHERE  idproducto=" + filas[0];
+                                String sql2 = "UPDATE productos SET precio_costo=" + filas[2] + ", ganancia=" + filas[4] + ", users='" + usuario + "' WHERE  idproducto=" + filas[0];
                                 stTransaccion.executeUpdate(sql);
                                 stTransaccionMovil.executeUpdate(sql2);
                             }
                             con.commit();
+                            conMovil.commit();
                             stTransaccion.close();
                             stTransaccionMovil.close();
                             con.close();
@@ -1530,6 +1506,7 @@ public final class dlgCompras1 extends javax.swing.JDialog {
                         } catch (SQLException e) {
                             try {
                                 con.rollback();
+                                conMovil.rollback();
                                 Mensajes.error("TRANSACCION FALLIDA. LOS DATOS NO FUERON GUARDADOS EN LA BD." + e.getMessage().toUpperCase());
                                 stTransaccion.close();
                                 stTransaccionMovil.close();
@@ -1620,15 +1597,19 @@ public final class dlgCompras1 extends javax.swing.JDialog {
 
         //</editor-fold>
         java.awt.EventQueue.invokeLater(() -> {
-            dlgCompras1 dialog = new dlgCompras1(new javax.swing.JFrame(), true);
-            dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+            try {
+                dlgCompras1 dialog = new dlgCompras1(new javax.swing.JFrame(), true);
+                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
 
-                @Override
-                public void windowClosing(java.awt.event.WindowEvent e) {
-                    System.exit(0);
-                }
-            });
-            dialog.setVisible(true);
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        System.exit(0);
+                    }
+                });
+                dialog.setVisible(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(dlgCompras1.class.getName()).log(Level.SEVERE, null, ex);
+            }
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables

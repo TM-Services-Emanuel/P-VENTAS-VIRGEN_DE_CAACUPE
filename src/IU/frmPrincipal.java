@@ -1,6 +1,6 @@
 package IU;
 
-import Componentes.ConexionBD;
+import Componentes.DataSourceService;
 import Componentes.Fecha;
 import Componentes.ReporteMovil;
 import Componentes.Mensajes;
@@ -12,54 +12,30 @@ import Controladores.ControlLogeo;
 import Datos.GestionarImagen;
 import Modelo.Imagen;
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
-import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.swing.JRViewer;
-import org.mariadb.jdbc.MariaDbConnection;
-import org.mariadb.jdbc.MariaDbStatement;
 
 public final class frmPrincipal extends javax.swing.JFrame {
 
     public ReporteMovil jasper;
-
-    public MariaDbStatement sentencia;
-    public MariaDbConnection con;
-    private ResultSet rs;
-
-    public MariaDbStatement sentenciaMovil;
-    public MariaDbConnection conMovil;
-    private ResultSet rsMovil;
-    private Dimension dim;
+    static DataSourceService dss = new DataSourceService();
 
     public frmPrincipal() {
 
         initComponents();
-        //dim=super.getToolkit().getScreenSize();
-        //super.setSize(dim);
         this.setExtendedState(MAXIMIZED_BOTH);
-
-        /*Toolkit tk = Toolkit.getDefaultToolkit();
-        Dimension d = tk.getScreenSize();
-        int ancho = (int)d.getWidth();
-        int alto = (int)d.getHeight();
-        this.setSize(ancho, alto);
-        panelImage1.setSize(ancho, alto);*/
         try {
             lbIp.setText("DIRECCIÓN IP : " + traerIP.getIP());
         } catch (Exception e) {
         }
         titulo();
-        prepararBD();
         Iniciar();
         cargarIcono();
         cargarTapiz();
@@ -67,7 +43,6 @@ public final class frmPrincipal extends javax.swing.JFrame {
         mnNCProveedor.setVisible(false);
         mnPagoProveedor.setVisible(false);
         lbversion.setText("Versión del Software: " + Software.getVersion());
-        jasper = new ReporteMovil();
         mnMD1.setVisible(false);
         mnGeI.setVisible(false);
         jSeparator26.setVisible(false);
@@ -121,39 +96,16 @@ public final class frmPrincipal extends javax.swing.JFrame {
             ((JPanelConFondo) panelFondo).setImagen(nombre);
         } catch (Exception e) {
             Mensajes.informacion("Error al cargar Fondo del Sistema.");
-        }
-    }
-
-    void prepararBD() {
-        try {
-            con = (MariaDbConnection) new ConexionBD().getConexion();
-            if (con == null) {
-                System.out.println("No hay Conexion con la Base de Datos");
-            } else {
-                sentencia = (MariaDbStatement) con.createStatement();
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-        try {
-            conMovil = (MariaDbConnection) new ConexionBD().getConexionMovil();
-            if (conMovil == null) {
-                System.out.println("No hay Conexion con la Base de Datos Movil");
-            } else {
-                sentenciaMovil = (MariaDbStatement) conMovil.createStatement();
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Error al cargar Fondo del Sistema: "+e.getMessage());
         }
     }
 
     public void informacionGral() {
-        try {
-            rs = sentencia.executeQuery("select * from v_sucursal where suc_indicador='S'");
+        String sql = "select * from v_sucursal where suc_indicador='S'";
+        try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
             rs.first();
             try {
                 if (rs.getRow() != 0) {
-                    //txtCod.setText(rs.getString(1));
                     lbSucursal.setText(rs.getString(5));
                     lbEmpresa.setText(rs.getString(3));
                     lbRUC.setText(rs.getString(4));
@@ -164,6 +116,8 @@ public final class frmPrincipal extends javax.swing.JFrame {
                 System.out.println(ee.getMessage());
             }
             rs.close();
+            st.close();
+            cn.close();
 
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
@@ -2019,7 +1973,7 @@ public final class frmPrincipal extends javax.swing.JFrame {
             dlgConsultarFacturas cf = new dlgConsultarFacturas(this, true);
             cf.setLocationRelativeTo(null);
             cf.setVisible(true);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             Mensajes.informacion("No hay conexión con el servidor");
         }
         //Mensajes.informacion("ESTA FUNCION ESTARA DISPONIBLE EN LA SIGUIENTE ACTUALIZACION");
@@ -2069,7 +2023,7 @@ public final class frmPrincipal extends javax.swing.JFrame {
             dlgVentas factura = new dlgVentas(this, true);
             factura.setLocationRelativeTo(this);
             factura.setVisible(true);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             Mensajes.informacion("Servidor no esta activo");
         }
 
@@ -2080,7 +2034,7 @@ public final class frmPrincipal extends javax.swing.JFrame {
             dlgCompras1 compras = new dlgCompras1(this, true);
             compras.setLocationRelativeTo(null);
             compras.setVisible(true);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             Mensajes.informacion("Servidor no esta activo");
         }
 
@@ -2264,8 +2218,13 @@ public final class frmPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_itemFondoActionPerformed
 
     private void mnInventarioCompletoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnInventarioCompletoActionPerformed
-        // TODO add your handling code here:
-        jasper.ListaProductosMovilesH("\\Reports\\articulos\\Inventario_Productos.jasper");
+        try {
+            // TODO add your handling code here:
+            jasper = new ReporteMovil();
+            jasper.ListaProductosMovilesH("\\Reports\\articulos\\Inventario_Productos.jasper");
+        } catch (SQLException ex) {
+            System.out.println("Error levantando inventario de productos: " + ex.getMessage());
+        }
     }//GEN-LAST:event_mnInventarioCompletoActionPerformed
 
     private void itemEmpresaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemEmpresaActionPerformed
@@ -2456,12 +2415,22 @@ public final class frmPrincipal extends javax.swing.JFrame {
 
     private void mnGProductosM1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnGProductosM1ActionPerformed
         // TODO add your handling code here:
-        jasper.ListaProductosMovilesV("\\Reports\\articulos\\ListaProductos_simple.jasper");
+        try {
+            jasper = new ReporteMovil();
+            jasper.ListaProductosMovilesV("\\Reports\\articulos\\ListaProductos_simple.jasper");
+        } catch (SQLException e) {
+            System.out.println("Error levantando lista de productos simples: " + e.getMessage());
+        }
     }//GEN-LAST:event_mnGProductosM1ActionPerformed
 
     private void mnGProductosM2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnGProductosM2ActionPerformed
         // TODO add your handling code here:
-        jasper.ListaClientesMoviles("\\Reports\\clientes\\ListaClientes.jasper");
+        try {
+            jasper = new ReporteMovil();
+            jasper.ListaClientesMoviles("\\Reports\\clientes\\ListaClientes.jasper");
+        } catch (SQLException ex) {
+            System.out.println("Error levantando lista de clientes: " + ex.getMessage());
+        }
     }//GEN-LAST:event_mnGProductosM2ActionPerformed
 
     private void mnGPuntoEmisionMActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnGPuntoEmisionMActionPerformed
@@ -2515,7 +2484,7 @@ public final class frmPrincipal extends javax.swing.JFrame {
             dlgReporteResumenCaja rsc = new dlgReporteResumenCaja(this, false);
             rsc.setLocationRelativeTo(null);
             rsc.setVisible(true);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             Mensajes.informacion("No hay conexión con el servidor");
         }
     }//GEN-LAST:event_itemTVentasv1ActionPerformed
@@ -2547,7 +2516,7 @@ public final class frmPrincipal extends javax.swing.JFrame {
             dlgConsultarFacturas cf = new dlgConsultarFacturas(this, true);
             cf.setLocationRelativeTo(null);
             cf.setVisible(true);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             Mensajes.informacion("No hay conexión con el servidor");
         }
     }//GEN-LAST:event_btnGestionarVentasActionPerformed
@@ -2563,7 +2532,7 @@ public final class frmPrincipal extends javax.swing.JFrame {
                 cajaDia.setLocationRelativeTo(null);
                 cajaDia.setVisible(true);
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             Mensajes.informacion("Servidor no esta activo");
         }
     }//GEN-LAST:event_btnCMDActionPerformed
@@ -2682,12 +2651,23 @@ public final class frmPrincipal extends javax.swing.JFrame {
 
     private void mnInventarioStock_mayorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnInventarioStock_mayorActionPerformed
         // TODO add your handling code here:
-        jasper.ListaProductosMovilesH("\\Reports\\articulos\\Inventario_Productos_con_stock.jasper");
+        try {
+            jasper = new ReporteMovil();
+            jasper.ListaProductosMovilesH("\\Reports\\articulos\\Inventario_Productos_con_stock.jasper");
+        } catch (SQLException ex) {
+            System.out.println("Error levantando inventario de productos con stock: " + ex.getMessage());
+        }
     }//GEN-LAST:event_mnInventarioStock_mayorActionPerformed
 
     private void jMenuItem38ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem38ActionPerformed
         // TODO add your handling code here:
-        jasper.ListaProductosMovilesH("\\Reports\\articulos\\StockValorizadoCompleto.jasper");
+        try {
+            jasper = new ReporteMovil();
+            jasper.ListaProductosMovilesH("\\Reports\\articulos\\StockValorizadoCompleto.jasper");
+        } catch (SQLException ex) {
+            System.out.println("Error levantando stock valorizado completo: " + ex.getMessage());
+        }
+
     }//GEN-LAST:event_jMenuItem38ActionPerformed
 
     private void mnGVM1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnGVM1ActionPerformed
@@ -2739,7 +2719,7 @@ public final class frmPrincipal extends javax.swing.JFrame {
             dlgReporteComisiones ReCom = new dlgReporteComisiones(this, true);
             ReCom.setLocationRelativeTo(this);
             ReCom.setVisible(true);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             Mensajes.informacion("Servidor no esta activo");
         }
     }//GEN-LAST:event_MitemRDCActionPerformed
@@ -2805,7 +2785,7 @@ public final class frmPrincipal extends javax.swing.JFrame {
     private void MitemRDC1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MitemRDC1ActionPerformed
         // TODO add your handling code here:
         VisorReportes vr = new VisorReportes(null, true);
-        try {
+        try (Connection cn = dss.getDataSource().getConnection()) {
             //archivo jasper
             //URL  jasperUrl = this.getClass().getResource("\\Reports\\repartos\\movimiento_reparto_E.jasper");
             String jasperUrl = System.getProperty("user.dir").concat("\\Reports\\repartos\\ControlSTlimpio.jasper");
@@ -2817,7 +2797,7 @@ public final class frmPrincipal extends javax.swing.JFrame {
             //parametros.put("vendedor", cboResponsable.getSelectedItem());
             //parametros.put("fecha", txtFechaI.getText());
             //agregamos los parametros y la conexion a la base de datos
-            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametros, con);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametros, cn);
             //se crea el visor con el reporte
             JRViewer jRViewer = new JRViewer(jasperPrint);
             //se elimina elementos del contenedor JPanel
@@ -2829,7 +2809,8 @@ public final class frmPrincipal extends javax.swing.JFrame {
             jRViewer.setVisible(true);
             VisorReportes.jpContainer.repaint();
             VisorReportes.jpContainer.revalidate();
-        } catch (JRException ex) {
+            cn.close();
+        } catch (Exception ex) {
             System.err.println(ex.getMessage());
         }
         vr.setLocationRelativeTo(this);
@@ -2853,7 +2834,7 @@ public final class frmPrincipal extends javax.swing.JFrame {
             dlgReporteRankingFecha rsc = new dlgReporteRankingFecha(this, true);
             rsc.setLocationRelativeTo(null);
             rsc.setVisible(true);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             Mensajes.informacion("No hay conexión con el servidor");
         }
     }//GEN-LAST:event_jMenuItem45ActionPerformed
@@ -2869,7 +2850,7 @@ public final class frmPrincipal extends javax.swing.JFrame {
             dlgBuscarCaja bscCj = new dlgBuscarCaja(this, true);
             bscCj.setLocationRelativeTo(null);
             bscCj.setVisible(true);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             Mensajes.informacion("Servidor no esta activo");
         }
     }//GEN-LAST:event_mnBuscarCajaActionPerformed

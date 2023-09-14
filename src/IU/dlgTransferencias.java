@@ -5,7 +5,7 @@
  */
 package IU;
 
-import Componentes.ConexionBD;
+import Componentes.DataSourceService1;
 import Componentes.Fecha;
 import Componentes.Mensajes;
 import Componentes.RenderDecimal1;
@@ -14,17 +14,14 @@ import Componentes.Software;
 import Controladores.CabecerasTablas;
 import Controladores.controlTransferencias;
 import java.awt.BorderLayout;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import net.sf.jasperreports.engine.JRException;
+import java.sql.*;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.swing.JRViewer;
-import org.mariadb.jdbc.MariaDbConnection;
-import org.mariadb.jdbc.MariaDbStatement;
 
 /**
  *
@@ -32,10 +29,7 @@ import org.mariadb.jdbc.MariaDbStatement;
  */
 public class dlgTransferencias extends javax.swing.JDialog {
     
-    public static MariaDbStatement sentencia;
-    public static MariaDbConnection con;
-    public static MariaDbStatement sentenciaM;
-    public static MariaDbConnection conM;
+    static DataSourceService1 dss1 = new DataSourceService1();
     
     public dlgTransferencias(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -44,36 +38,7 @@ public class dlgTransferencias extends javax.swing.JDialog {
         txtFechaFinal.setText(Fecha.formatoFecha(dcFecha.getText()));
         btnActualizarActionPerformed(null);
         txtFechaFinal.setVisible(false);
-        prepararBD();
-        // CabecerasTablas.todosReparto(tbDetalle);
-        // txtFechaFinal.setText(Fecha.formatoFecha(dcFecha.getText()));
-        // controlReparto.listRepartos(tbDetalle, "id_reparto",txtFechaFinal.getText().trim());
 
-    }
-    
-    public static void prepararBD() {
-        {
-            try {
-                con = (MariaDbConnection) new ConexionBD().getConexion();
-                if (con == null) {
-                    System.out.println("No hay Conexion con la Base de Datos");
-                } else {
-                    sentencia = (MariaDbStatement) con.createStatement();
-                }
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
-            try {
-                conM = (MariaDbConnection) new ConexionBD().getConexionMovil();
-                if (con == null) {
-                    System.out.println("No hay Conexion con la Base de Datos Móvil");
-                } else {
-                    sentenciaM = (MariaDbStatement) conM.createStatement();
-                }
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
-        }
     }
 
     public static void Renders() {
@@ -86,10 +51,7 @@ public class dlgTransferencias extends javax.swing.JDialog {
     
     private void LevantarReporte(String Dir, int id){
         VisorReportes vr = new VisorReportes(null, true);
-        try {
-            //prepararBD();
-            //archivo jasper
-            //URL  jasperUrl = this.getClass().getResource("\\Reports\\repartos\\movimiento_reparto_E.jasper");
+        try (Connection cn = dss1.getDataSource().getConnection()){
             String jasperUrl = System.getProperty("user.dir").concat(Dir);
             JasperReport report = (JasperReport) JRLoader.loadObjectFromFile(jasperUrl);
             //para los parametro
@@ -98,7 +60,7 @@ public class dlgTransferencias extends javax.swing.JDialog {
             //Nuestro parametro se llama "pLastName"
             parametros.put("id", id);
             //agregamos los parametros y la conexion a la base de datos
-            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametros, conM);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametros, cn);
             //se crea el visor con el reporte
             JRViewer jRViewer = new JRViewer(jasperPrint);
             //se elimina elementos del contenedor JPanel
@@ -110,7 +72,8 @@ public class dlgTransferencias extends javax.swing.JDialog {
             jRViewer.setVisible(true);
             VisorReportes.jpContainer.repaint();
             VisorReportes.jpContainer.revalidate();
-        } catch (JRException ex) {
+            cn.close();
+        } catch (Exception ex) {
             System.err.println(ex.getMessage());
         }
         vr.setLocationRelativeTo(this);
@@ -527,7 +490,7 @@ public class dlgTransferencias extends javax.swing.JDialog {
             try{
                 int ID = Integer.parseInt(tbDetalle.getValueAt(x, 0).toString());
                 LevantarReporte("\\Reports\\transferencias\\DocumentoTransferencia.jasper", ID);
-            }catch(Exception e){
+            }catch(NumberFormatException e){
                 System.out.println(e.getMessage());
             }
         }

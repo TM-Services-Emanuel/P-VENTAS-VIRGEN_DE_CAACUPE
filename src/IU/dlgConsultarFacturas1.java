@@ -1,6 +1,6 @@
 package IU;
 
-import Componentes.ConexionBD;
+import Componentes.DataSourceService1;
 import Componentes.Fecha;
 import Componentes.Reporte;
 import Componentes.Mensajes;
@@ -11,35 +11,23 @@ import Componentes.RenderDecimal1;
 import Componentes.RenderDecimal2;
 import Componentes.RenderDecimalconPuntos;
 import Componentes.Software;
-import Componentes.cargarComboBox;
 import Controladores.CabecerasTablas;
 import Controladores.controlFactura;
-import javax.swing.JOptionPane;
-import org.mariadb.jdbc.MariaDbConnection;
-import org.mariadb.jdbc.MariaDbStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.text.DecimalFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 
 public class dlgConsultarFacturas1 extends javax.swing.JDialog {
 
     CabecerasTablas cabe = new CabecerasTablas();
-    public static MariaDbConnection con;
-    public static MariaDbStatement st;
-    //public static ResultSet rss;
-    public static MariaDbConnection conM;
-    public static MariaDbStatement stM;
-
-    public static String UsuarioL = "";
     public Reporte jasper;
-    static String emp;
-    static String dir;
-    static String cel;
+    static DataSourceService1 dss1 = new DataSourceService1();
 
     static public Numero_a_Letra d;
 
-    public dlgConsultarFacturas1(java.awt.Frame parent, boolean modal) {
+    public dlgConsultarFacturas1(java.awt.Frame parent, boolean modal) throws SQLException {
         super(parent, modal);
         initComponents();
         txtDesde.setVisible(false);
@@ -60,13 +48,13 @@ public class dlgConsultarFacturas1 extends javax.swing.JDialog {
         CalcularValores();
 
     }
-    
-    private void CalcularValores(){
+
+    private void CalcularValores() {
         String facturado = String.valueOf(controlFactura.getTotalFacturado());
         String anulado = String.valueOf(controlFactura.getTotalFacturadoAnulado());
         DecimalFormat df = new DecimalFormat("#,###");
-        lbTotal.setText("FACTURADO: "+df.format(Integer.valueOf(facturado.replace(".", "").replace(",", ""))));
-        lbAnulados.setText("ANULADO: "+df.format(Integer.valueOf(anulado.replace(".", "").replace(",", ""))));
+        lbTotal.setText("FACTURADO: " + df.format(Integer.valueOf(facturado.replace(".", "").replace(",", ""))));
+        lbAnulados.setText("ANULADO: " + df.format(Integer.valueOf(anulado.replace(".", "").replace(",", ""))));
     }
 
     private void visible() {
@@ -101,30 +89,6 @@ public class dlgConsultarFacturas1 extends javax.swing.JDialog {
         dlgConsultarFacturas1.tblDetalle.getColumnModel().getColumn(7).setCellRenderer(new RenderDecimal2());
     }
 
-    public static void prepararBD() {
-        try {
-            con = (MariaDbConnection) new ConexionBD().getConexion();
-            if (con == null) {
-                System.out.println("No hay Conexion con la Base de Datos");
-            } else {
-                st = (MariaDbStatement) con.createStatement();
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-
-        try {
-            conM = (MariaDbConnection) new ConexionBD().getConexionMovil();
-            if (conM == null) {
-                System.out.println("No hay Conexion con la Base de Datos");
-            } else {
-                stM = (MariaDbStatement) conM.createStatement();
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
     public static int getExcetas() {
         int total = 0;
         DefaultTableModel tb = (DefaultTableModel) tblDetalle.getModel();
@@ -155,10 +119,9 @@ public class dlgConsultarFacturas1 extends javax.swing.JDialog {
         return Redondeo.redondearI(total);
     }
 
-    public static void llamarReporteHoja3(int cod, String Letra) {
+    public static void llamarReporteHoja3(int cod, String Letra) throws SQLException {
         Reporte gr;
         gr = new Reporte();
-        //int codF = Integer.parseInt(txtCodFactura.getText());
         gr.FacturaLegal("\\Reports\\ventas\\Hoja3.jasper", "ID", cod, "LETRA", Letra);
         gr.cerrar();
     }
@@ -177,9 +140,8 @@ public class dlgConsultarFacturas1 extends javax.swing.JDialog {
     public static void imprimirTicket(int idEmision, int total, String Condicion, String Numeracion, String Fecha, String Hora, String Vendedor, String RazonSocial, String RUC) {
         //Impresora matricial tmu-220
         String ImpresoraPred = null;
-        try {
-            prepararBD();
-            ResultSet res = stM.executeQuery("SELECT * FROM v_puntoemision4 WHERE idemision=" + idEmision);
+        String sql = "SELECT * FROM v_puntoemision4 WHERE idemision=" + idEmision;
+        try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet res = st.executeQuery(sql)) {
             res.last();
             do {
                 ImpresoraPred = res.getString("impresora").trim();
@@ -188,11 +150,9 @@ public class dlgConsultarFacturas1 extends javax.swing.JDialog {
             } while (res.next());
             res.close();
             st.close();
-            stM.close();
-            con.close();
-            conM.close();
-
+            cn.close();
         } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
         if (ImpresoraPred == null) {
             Mensajes.Alerta("No se encuentra instalada la impresora predeterminada para este punto de impresión");
@@ -211,9 +171,8 @@ public class dlgConsultarFacturas1 extends javax.swing.JDialog {
             int filas = tblDetalle.getRowCount();
             DecimalFormat formateador = new DecimalFormat("#,###");
             String tot = formateador.format(total);
-            try {
-                prepararBD();
-                ResultSet rs = stM.executeQuery("SELECT * FROM empresa WHERE estado='S'");
+            String sql1 = "SELECT * FROM empresa WHERE estado='S'";
+            try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql1)) {
                 rs.last();
                 empresa = rs.getString("razon_social");
                 ruc = rs.getString("ruc");
@@ -221,9 +180,7 @@ public class dlgConsultarFacturas1 extends javax.swing.JDialog {
                 direccion = rs.getString("direccion");
                 rs.close();
                 st.close();
-                stM.close();
-                con.close();
-                conM.close();
+                cn.close();
             } catch (SQLException ex) {
                 Mensajes.error("Error obteniendo datos de la empresa para la impresion de factura.");
             }
@@ -305,9 +262,8 @@ public class dlgConsultarFacturas1 extends javax.swing.JDialog {
             String Fecha, String Hora, String Vendedor, String Cliente, String Ruc, String Exenta, String Cinco, String Diez, int iv5, int iv10) {
         //Impresora matricial tmu-220
         String ImpresoraPred = null;
-        try {
-            prepararBD();
-            ResultSet res = stM.executeQuery("SELECT * FROM v_puntoemision4 WHERE idemision=" + idEmision);
+        String sql = "SELECT * FROM v_puntoemision4 WHERE idemision=" + idEmision;
+        try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet res = st.executeQuery(sql)) {
             res.last();
             do {
                 ImpresoraPred = res.getString("impresora").trim();
@@ -316,10 +272,7 @@ public class dlgConsultarFacturas1 extends javax.swing.JDialog {
             } while (res.next());
             res.close();
             st.close();
-            stM.close();
-            con.close();
-            conM.close();
-
+            cn.close();
         } catch (Exception e) {
         }
         if (ImpresoraPred == null) {
@@ -339,19 +292,16 @@ public class dlgConsultarFacturas1 extends javax.swing.JDialog {
             int filas = tblDetalle.getRowCount();
             DecimalFormat formateador = new DecimalFormat("#,###");
             String tot = formateador.format(Total);
-            try {
-                prepararBD();
-                ResultSet res = stM.executeQuery("SELECT * FROM empresa WHERE estado='S'");
-                res.last();
-                empresa = res.getString("razon_social");
-                ruc = res.getString("ruc");
-                celular = res.getString("telefono")/* + "-" + rs.getString("em_celular")*/;
-                direccion = res.getString("direccion");
-                res.close();
+            String sql1 = "SELECT * FROM empresa WHERE estado='S'";
+            try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql1)) {
+                rs.last();
+                empresa = rs.getString("razon_social");
+                ruc = rs.getString("ruc");
+                celular = rs.getString("telefono")/* + "-" + rs.getString("em_celular")*/;
+                direccion = rs.getString("direccion");
+                rs.close();
                 st.close();
-                stM.close();
-                con.close();
-                conM.close();
+                cn.close();
             } catch (SQLException ex) {
                 Mensajes.error("Error obteniendo datos de la empresa para la impresion de factura.");
             }
@@ -448,14 +398,13 @@ public class dlgConsultarFacturas1 extends javax.swing.JDialog {
             }
         }
     }
-    
+
     public static void imprimirFacturaDuplicado(String estado, int idEmision, int Total, String Timbrado, String Desde, String Hasta, String Condicion, String NroFactura,
             String Fecha, String Hora, String Vendedor, String Cliente, String Ruc, String Exenta, String Cinco, String Diez, int iv5, int iv10) {
         //Impresora matricial tmu-220
         String ImpresoraPred = null;
-        try {
-            prepararBD();
-            ResultSet res = stM.executeQuery("SELECT * FROM v_puntoemision4 WHERE idemision=" + idEmision);
+        String sql = "SELECT * FROM v_puntoemision4 WHERE idemision=" + idEmision;
+        try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet res = st.executeQuery(sql)) {
             res.last();
             do {
                 ImpresoraPred = res.getString("impresora").trim();
@@ -464,10 +413,7 @@ public class dlgConsultarFacturas1 extends javax.swing.JDialog {
             } while (res.next());
             res.close();
             st.close();
-            stM.close();
-            con.close();
-            conM.close();
-
+            cn.close();
         } catch (Exception e) {
         }
         if (ImpresoraPred == null) {
@@ -487,19 +433,16 @@ public class dlgConsultarFacturas1 extends javax.swing.JDialog {
             int filas = tblDetalle.getRowCount();
             DecimalFormat formateador = new DecimalFormat("#,###");
             String tot = formateador.format(Total);
-            try {
-                prepararBD();
-                ResultSet res = stM.executeQuery("SELECT * FROM empresa WHERE estado='S'");
-                res.last();
-                empresa = res.getString("razon_social");
-                ruc = res.getString("ruc");
-                celular = res.getString("telefono")/* + "-" + rs.getString("em_celular")*/;
-                direccion = res.getString("direccion");
-                res.close();
+            String sql1 = "SELECT * FROM empresa WHERE estado='S'";
+            try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql1)) {
+                rs.last();
+                empresa = rs.getString("razon_social");
+                ruc = rs.getString("ruc");
+                celular = rs.getString("telefono")/* + "-" + rs.getString("em_celular")*/;
+                direccion = rs.getString("direccion");
+                rs.close();
                 st.close();
-                stM.close();
-                con.close();
-                conM.close();
+                cn.close();
             } catch (SQLException ex) {
                 Mensajes.error("Error obteniendo datos de la empresa para la impresion de factura.");
             }
@@ -1029,12 +972,9 @@ dcHasta.addCommitListener(new datechooser.events.CommitListener() {
 
     pack();
     }// </editor-fold>//GEN-END:initComponents
-    public void llamarReporteFactura() {
+    public void llamarReporteFactura() throws SQLException {
         Reporte gr;
         gr = new Reporte();
-        //int codF = Integer.parseInt(txtCodFactura.getText());
-        //gr.MostrarReporteConParametro(System.getProperty("user.dir")+"/Reportes/Facturas/Factura.jasper", "Factura de Venta", codF,"Facturas/Fact-"+codF+".pdf");
-        //gr.cerrar();
     }
     private void tblFacturaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblFacturaMouseClicked
         // TODO add your handling code here:
@@ -1091,11 +1031,11 @@ dcHasta.addCommitListener(new datechooser.events.CommitListener() {
             String tipo = dlgConsultarFacturas1.tblFactura.getValueAt(x, 7).toString();
             String Total = dlgConsultarFacturas1.tblFactura.getValueAt(x, 11).toString().replace(".", "").replace(",", "");
             String estado;
-            
-            if(dlgConsultarFacturas1.tblFactura.getValueAt(x, 13).toString().equals("ANULADO")){
-                estado="  ** ANULADO **";
-            }else{
-                estado="";
+
+            if (dlgConsultarFacturas1.tblFactura.getValueAt(x, 13).toString().equals("ANULADO")) {
+                estado = "  ** ANULADO **";
+            } else {
+                estado = "";
             }
             String EXENTA = txtE.getText();
             String CINCO = txt5.getText();
@@ -1106,26 +1046,26 @@ dcHasta.addCommitListener(new datechooser.events.CommitListener() {
             //if (estado.equals("ANULADO")) {
             //    Mensajes.informacion("No se posible Re-Imprimir esta Venta.\nMotivo: Esta venta ya fue anulada");
             //} else {
-                int rpta = Mensajes.confirmar("¿Seguro que desea Re-Imprimir esta Venta?");
-                if (rpta == 0) {
-                    if (tipo.equals("FACTURA LEGAL")) {
-                        try {
-                            //prepararBD();
-                            //String Letra = d.Convertir(Total, true);
-                            //llamarReporteHoja3(Cod, Letra);
-                            //con.close();
-                            //conM.close();
-                            imprimirFacturaOriginal(estado, idEmision, Integer.parseInt(Total), Timbrado, Desde, Hasta, Condicion, Numeracion, Fecha, Hora, Vendedor, RazonSocial, RUC, EXENTA, CINCO, DIEZ, iv5, iv10);
-                            imprimirFacturaDuplicado(estado, idEmision, Integer.parseInt(Total), Timbrado, Desde, Hasta, Condicion, Numeracion, Fecha, Hora, Vendedor, RazonSocial, RUC, EXENTA, CINCO, DIEZ, iv5, iv10);
-                        } catch (NumberFormatException e) {
-                        }
-                    } else if (tipo.equals("TICKET")) {
-                        imprimirTicket(idEmision, Integer.parseInt(Total), Condicion, Numeracion, Fecha, Hora, Vendedor, RazonSocial, RUC);
+            int rpta = Mensajes.confirmar("¿Seguro que desea Re-Imprimir esta Venta?");
+            if (rpta == 0) {
+                if (tipo.equals("FACTURA LEGAL")) {
+                    try {
+                        //prepararBD();
+                        //String Letra = d.Convertir(Total, true);
+                        //llamarReporteHoja3(Cod, Letra);
+                        //con.close();
+                        //conM.close();
+                        imprimirFacturaOriginal(estado, idEmision, Integer.parseInt(Total), Timbrado, Desde, Hasta, Condicion, Numeracion, Fecha, Hora, Vendedor, RazonSocial, RUC, EXENTA, CINCO, DIEZ, iv5, iv10);
+                        imprimirFacturaDuplicado(estado, idEmision, Integer.parseInt(Total), Timbrado, Desde, Hasta, Condicion, Numeracion, Fecha, Hora, Vendedor, RazonSocial, RUC, EXENTA, CINCO, DIEZ, iv5, iv10);
+                    } catch (NumberFormatException e) {
                     }
+                } else if (tipo.equals("TICKET")) {
+                    imprimirTicket(idEmision, Integer.parseInt(Total), Condicion, Numeracion, Fecha, Hora, Vendedor, RazonSocial, RUC);
                 }
             }
+        }
 
-       // }
+        // }
     }//GEN-LAST:event_btnImprimirActionPerformed
 
     private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
@@ -1200,18 +1140,19 @@ dcHasta.addCommitListener(new datechooser.events.CommitListener() {
         //</editor-fold>
         //</editor-fold>
 
-        java.awt.EventQueue.invokeLater(new Runnable() {
-
-            public void run() {
+        java.awt.EventQueue.invokeLater(() -> {
+            try {
                 dlgConsultarFacturas1 dialog = new dlgConsultarFacturas1(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-
+                    
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
                         System.exit(0);
                     }
                 });
                 dialog.setVisible(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(dlgConsultarFacturas1.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
     }

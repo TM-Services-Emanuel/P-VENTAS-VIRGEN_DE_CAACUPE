@@ -5,7 +5,8 @@
  */
 package IU;
 
-import Componentes.ConexionBD;
+import Componentes.DataSourceService;
+import Componentes.DataSourceService1;
 import Componentes.Fecha;
 import Componentes.Login;
 import Componentes.Mensajes;
@@ -21,11 +22,8 @@ import Datos.GestionarArticulosMovil;
 import Datos.GestionarTransferencia;
 import Modelo.ArticuloMovil;
 import java.awt.event.KeyEvent;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import javax.swing.JOptionPane;
-import org.mariadb.jdbc.MariaDbConnection;
-import org.mariadb.jdbc.MariaDbStatement;
 
 /**
  *
@@ -35,14 +33,12 @@ public class dlgGestTransferencias extends javax.swing.JDialog {
 
     /**
      * Creates new form dlgGestTransferencias
+     *
+     * @param parent
+     * @param modal
      */
-    public static ResultSet rs;
-    public static MariaDbConnection con;
-    public static MariaDbStatement sentencia;
-    public static MariaDbConnection conMovil;
-    public static MariaDbStatement sentenciaMovil;
-    public static MariaDbStatement stTransaccionMovil;
-    static String UsuarioL = "";
+    static DataSourceService1 dss1 = new DataSourceService1();
+    static DataSourceService dss = new DataSourceService();
 
     public dlgGestTransferencias(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -51,7 +47,7 @@ public class dlgGestTransferencias extends javax.swing.JDialog {
         titulo();
         CabecerasTablas.Transferencia(tbDetalle);
         Cancelar();
-        
+
         //LevantarDatos();
         cargarComboBox.cargarResponsable(cboOrigen, "SELECT * FROM v_vendedores WHERE idfuncion=2 AND ven_indicador='S'");
         cargarComboBox.cargarResponsable(cboDestino, "SELECT * FROM v_vendedores WHERE idfuncion=2 AND ven_indicador='S'");
@@ -83,7 +79,7 @@ public class dlgGestTransferencias extends javax.swing.JDialog {
             cboOrigen.setEnabled(true);
         }
     }
-    
+
     final void titulo() {
         if (Software.getSoftware().equals("null")) {
             this.setTitle("Realizar Transferencia");
@@ -91,8 +87,8 @@ public class dlgGestTransferencias extends javax.swing.JDialog {
             this.setTitle(Software.getSoftware() + " - Realizar Transferencia");
         }
     }
-    
-    public static void NoVisible(){
+
+    public static void NoVisible() {
         txtIdMovilO.setVisible(false);
         txtIdMovilD.setVisible(false);
         txtFecha.setVisible(false);
@@ -121,26 +117,6 @@ public class dlgGestTransferencias extends javax.swing.JDialog {
                 lbInfoMovilD.setText("");
             }
         } catch (NumberFormatException e) {
-        }
-    }
-
-    public static void prepararBD() {
-        try {
-            con = (MariaDbConnection) new ConexionBD().getConexion();
-            conMovil = (MariaDbConnection) new ConexionBD().getConexionMovil();
-            if (con == null) {
-                System.out.println("No hay Conexion con la Base de Datos");
-            } else {
-                sentencia = (MariaDbStatement) con.createStatement();
-            }
-            if (conMovil == null) {
-                System.out.println("No hay Conexion con la Base de Datos Movil");
-            } else {
-                sentenciaMovil = (MariaDbStatement) conMovil.createStatement();
-                stTransaccionMovil = (MariaDbStatement) conMovil.createStatement();
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
         }
     }
 
@@ -881,23 +857,20 @@ public class dlgGestTransferencias extends javax.swing.JDialog {
             btnBuscarArticulo.setEnabled(false);
             itemBuscarArticulo.setEnabled(false);
         } else {
-            prepararBD();
-            try {
-                String resp;
-                resp = cargarComboBox.getCodidgo(cboOrigen);
-                try {
-                    rs = sentencia.executeQuery("SELECT ven_codigo,idmovil, movil, ven_comision FROM v_vendedores WHERE ven_codigo=" + resp);
-                    rs.last();
-                    txtIdMovilO.setText(String.valueOf(rs.getInt("idmovil")));
-                    lbInfoMovilO.setText(" Referencia: " + rs.getString("movil"));
-                    rs.close();
-                    btnBuscarArticulo.setEnabled(true);
-                    itemBuscarArticulo.setEnabled(true);
-                } catch (SQLException ex) {
-                    Mensajes.error("Error al querer obtener ID del móvil: " + ex.getMessage());
-                }
+            String resp = cargarComboBox.getCodidgo(cboOrigen);
+            String sql = "SELECT ven_codigo,idmovil, movil, ven_comision FROM v_vendedores WHERE ven_codigo=" + resp;
+            try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
+                rs.last();
+                txtIdMovilO.setText(String.valueOf(rs.getInt("idmovil")));
+                lbInfoMovilO.setText(" Referencia: " + rs.getString("movil"));
 
+                btnBuscarArticulo.setEnabled(true);
+                itemBuscarArticulo.setEnabled(true);
+                rs.close();
+                st.close();
+                cn.close();
             } catch (Exception pr) {
+                Mensajes.error("Error al querer obtener ID del móvil: " + pr.getMessage());
             }
         }
         //Comparar();
@@ -909,20 +882,17 @@ public class dlgGestTransferencias extends javax.swing.JDialog {
             txtIdMovilD.setText("");
             lbOpcionDestino.setText("");
         } else {
-            prepararBD();
-            try {
-                String resp;
-                resp = cargarComboBox.getCodidgo(cboDestino);
-                try {
-                    rs = sentencia.executeQuery("SELECT ven_codigo,idmovil, movil, ven_comision FROM v_vendedores WHERE ven_codigo=" + resp);
-                    rs.last();
-                    txtIdMovilD.setText(String.valueOf(rs.getInt("idmovil")));
-                    lbInfoMovilD.setText(" Referencia: " + rs.getString("movil"));
-                    rs.close();
-                } catch (SQLException ex) {
-                    Mensajes.error("Error al querer obtener ID del móvil: " + ex.getMessage());
-                }
+            String resp = cargarComboBox.getCodidgo(cboDestino);
+            String sql = "SELECT ven_codigo,idmovil, movil, ven_comision FROM v_vendedores WHERE ven_codigo=" + resp;
+            try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
+                rs.last();
+                txtIdMovilD.setText(String.valueOf(rs.getInt("idmovil")));
+                lbInfoMovilD.setText(" Referencia: " + rs.getString("movil"));
+                rs.close();
+                st.close();
+                cn.close();
             } catch (Exception pr) {
+                Mensajes.error("Error al querer obtener ID del móvil: " + pr.getMessage());
             }
         }
         //Comparar();
@@ -1043,108 +1013,100 @@ public class dlgGestTransferencias extends javax.swing.JDialog {
         } else if (tbDetalle.getRowCount() == 0) {
             Mensajes.error("OBSERVACIÓN:\nAún no haz añadido ningún producto al detalle.");
         } else {
-            if (lbOpcionOrigen.getText().equals("L") && lbOpcionDestino.getText().equals("R")) {
-                int resp = JOptionPane.showConfirmDialog(this, "¿Seguro que desea insertar el registro?", "Insertar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                if (resp == JOptionPane.YES_OPTION) {
-                    try {
-                        String usuario = Login.getUsuarioLogueado();
-                        prepararBD();
-                        con.setAutoCommit(false);
-                        String sql = "INSERT INTO transferencia VALUES(" + txtIdTransf.getText() + "," + txtCaja.getText() + ",'" + txtFecha.getText() + "','" + txtHora.getText() + "','" + lbOpcionOrigen.getText()
-                                + "',0,'" + lbInfoMovilO.getText() + "','" + lbOpcionDestino.getText() + "'," + txtIdMovilD.getText() + ",'" + lbInfoMovilD.getText() + "'," + txtTotal.getText().replace(".", "").replace(",", "") + " ,'" + usuario + "','S')";
-                        stTransaccionMovil.executeUpdate(sql);
-                        int fila = tbDetalle.getRowCount();
-                        for (int j = 0; j < fila; j++) {
-                            String filas[] = {tbDetalle.getValueAt(j, 0).toString(),
-                                tbDetalle.getValueAt(j, 4).toString(),
-                                tbDetalle.getValueAt(j, 3).toString(),
-                                tbDetalle.getValueAt(j, 5).toString()};
-                            String sql1 = "INSERT INTO detalle_transferencia VALUES(" + txtIdTransf.getText() + "," + filas[0] + "," + filas[1] + "," + filas[2] + "," + filas[3] + ")";
-                            String sql2 = "UPDATE productos SET stock=stock-" + filas[1] + " WHERE  idproducto=" + filas[0];
-                            stTransaccionMovil.executeUpdate(sql1);
-                            stTransaccionMovil.executeUpdate(sql2);
-                        }
-                        con.commit();
-                        stTransaccionMovil.close();
-                        Mensajes.informacion("TRANSACCIÓN EXITOSA!\nLa Transferencia: Salón de venta a Reparto fue registrado satisfactoriamente");
-                    } catch (SQLException e) {
+            try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement()) {
+                if (lbOpcionOrigen.getText().equals("L") && lbOpcionDestino.getText().equals("R")) {
+                    int resp = JOptionPane.showConfirmDialog(this, "¿Seguro que desea insertar el registro?", "Insertar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                    if (resp == JOptionPane.YES_OPTION) {
                         try {
-                            con.rollback();
-                            Mensajes.error("TRANSACCION FALLIDA.\nLos datos no fueron guardados.\nMotivo: "+e.getMessage().toUpperCase());
-                        } catch (SQLException se) {
-                            Mensajes.error(se.getMessage());
+                            cn.setAutoCommit(false);
+                            String sql = "INSERT INTO transferencia VALUES(" + txtIdTransf.getText() + "," + txtCaja.getText() + ",'" + txtFecha.getText() + "','" + txtHora.getText() + "','" + lbOpcionOrigen.getText()
+                                    + "',0,'" + lbInfoMovilO.getText() + "','" + lbOpcionDestino.getText() + "'," + txtIdMovilD.getText() + ",'" + lbInfoMovilD.getText() + "'," + txtTotal.getText().replace(".", "").replace(",", "") + " ,'" + Login.getUsuarioLogueado() + "','S')";
+                            st.executeUpdate(sql);
+                            int fila = tbDetalle.getRowCount();
+                            for (int j = 0; j < fila; j++) {
+                                String filas[] = {tbDetalle.getValueAt(j, 0).toString(),
+                                    tbDetalle.getValueAt(j, 4).toString(),
+                                    tbDetalle.getValueAt(j, 3).toString(),
+                                    tbDetalle.getValueAt(j, 5).toString()};
+                                String sql1 = "INSERT INTO detalle_transferencia VALUES(" + txtIdTransf.getText() + "," + filas[0] + "," + filas[1] + "," + filas[2] + "," + filas[3] + ")";
+                                String sql2 = "UPDATE productos SET stock=stock-" + filas[1] + " WHERE  idproducto=" + filas[0];
+                                st.executeUpdate(sql1);
+                                st.executeUpdate(sql2);
+                            }
+                            cn.commit();
+                            st.close();
+                            Mensajes.informacion("TRANSACCIÓN EXITOSA!\nLa Transferencia: Salón de venta a Reparto fue registrado satisfactoriamente");
+                            cn.close();
+                        } catch (SQLException e) {
+                                cn.rollback();
+                                Mensajes.error("TRANSACCION FALLIDA.\nLos datos no fueron guardados.\nMotivo: " + e.getMessage().toUpperCase());
+                                cn.close();
                         }
+                        Cancelar();
                     }
-                    Cancelar();
-                }
-            } else if (lbOpcionOrigen.getText().equals("R") && lbOpcionDestino.getText().equals("L")) {
-                int resp = JOptionPane.showConfirmDialog(this, "¿Seguro que desea insertar el registro?", "Insertar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                if (resp == JOptionPane.YES_OPTION) {
-                    try {
-                        String usuario = Login.getUsuarioLogueado();
-                        prepararBD();
-                        con.setAutoCommit(false);
-                        String sql = "INSERT INTO transferencia VALUES(" + txtIdTransf.getText() + "," + txtCaja.getText() + ",'" + txtFecha.getText() + "','" + txtHora.getText() + "','" + lbOpcionOrigen.getText()
-                                + "',"+txtIdMovilO.getText()+",'" + lbInfoMovilO.getText() + "','" + lbOpcionDestino.getText() + "',0,'" + lbInfoMovilD.getText() + "'," + txtTotal.getText().replace(".", "").replace(",", "") + " ,'" + usuario + "','S')";
-                        stTransaccionMovil.executeUpdate(sql);
-                        int fila = tbDetalle.getRowCount();
-                        for (int j = 0; j < fila; j++) {
-                            String filas[] = {tbDetalle.getValueAt(j, 0).toString(),
-                                tbDetalle.getValueAt(j, 4).toString(),
-                                tbDetalle.getValueAt(j, 3).toString(),
-                                tbDetalle.getValueAt(j, 5).toString()};
-                            String sql1 = "INSERT INTO detalle_transferencia VALUES(" + txtIdTransf.getText() + "," + filas[0] + "," + filas[1] + "," + filas[2] + "," + filas[3] + ")";
-                            String sql2 = "UPDATE productos SET stock=stock+" + filas[1] + " WHERE  idproducto=" + filas[0];
-                            stTransaccionMovil.executeUpdate(sql1);
-                            stTransaccionMovil.executeUpdate(sql2);
-                        }
-                        con.commit();
-                        stTransaccionMovil.close();
-                        Mensajes.informacion("TRANSACCIÓN EXITOSA!\nLa Transferencia: Reparto a Salón de venta fue registrado satisfactoriamente");
-                    } catch (SQLException e) {
+                } else if (lbOpcionOrigen.getText().equals("R") && lbOpcionDestino.getText().equals("L")) {
+                    int resp = JOptionPane.showConfirmDialog(this, "¿Seguro que desea insertar el registro?", "Insertar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                    if (resp == JOptionPane.YES_OPTION) {
                         try {
-                            con.rollback();
-                            Mensajes.error("TRANSACCION FALLIDA.\nLos datos no fueron guardados.\nMotivo: "+e.getMessage().toUpperCase());
-                        } catch (SQLException se) {
-                            Mensajes.error(se.getMessage());
+                            cn.setAutoCommit(false);
+                            String sql = "INSERT INTO transferencia VALUES(" + txtIdTransf.getText() + "," + txtCaja.getText() + ",'" + txtFecha.getText() + "','" + txtHora.getText() + "','" + lbOpcionOrigen.getText()
+                                    + "'," + txtIdMovilO.getText() + ",'" + lbInfoMovilO.getText() + "','" + lbOpcionDestino.getText() + "',0,'" + lbInfoMovilD.getText() + "'," + txtTotal.getText().replace(".", "").replace(",", "") + " ,'" + Login.getUsuarioLogueado() + "','S')";
+                            st.executeUpdate(sql);
+                            int fila = tbDetalle.getRowCount();
+                            for (int j = 0; j < fila; j++) {
+                                String filas[] = {tbDetalle.getValueAt(j, 0).toString(),
+                                    tbDetalle.getValueAt(j, 4).toString(),
+                                    tbDetalle.getValueAt(j, 3).toString(),
+                                    tbDetalle.getValueAt(j, 5).toString()};
+                                String sql1 = "INSERT INTO detalle_transferencia VALUES(" + txtIdTransf.getText() + "," + filas[0] + "," + filas[1] + "," + filas[2] + "," + filas[3] + ")";
+                                String sql2 = "UPDATE productos SET stock=stock+" + filas[1] + " WHERE  idproducto=" + filas[0];
+                                st.executeUpdate(sql1);
+                                st.executeUpdate(sql2);
+                            }
+                            cn.commit();
+                            st.close();
+                            Mensajes.informacion("TRANSACCIÓN EXITOSA!\nLa Transferencia: Reparto a Salón de venta fue registrado satisfactoriamente");
+                            cn.close();
+                        } catch (SQLException e) {
+                                cn.rollback();
+                                Mensajes.error("TRANSACCION FALLIDA.\nLos datos no fueron guardados.\nMotivo: " + e.getMessage().toUpperCase());
+                                cn.close();
                         }
+                        Cancelar();
                     }
-                    Cancelar();
-                }
-            }else if(lbOpcionOrigen.getText().equals("R") && lbOpcionDestino.getText().equals("R")){
-                int resp = JOptionPane.showConfirmDialog(this, "¿Seguro que desea insertar el registro?", "Insertar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                if (resp == JOptionPane.YES_OPTION) {
-                    try {
-                        String usuario = Login.getUsuarioLogueado();
-                        prepararBD();
-                        con.setAutoCommit(false);
-                        String sql = "INSERT INTO transferencia VALUES(" + txtIdTransf.getText() + "," + txtCaja.getText() + ",'" + txtFecha.getText() + "','" + txtHora.getText() + "','" + lbOpcionOrigen.getText()
-                                + "',"+txtIdMovilO.getText()+",'" + lbInfoMovilO.getText() + "','" + lbOpcionDestino.getText() + "'," + txtIdMovilD.getText() + ",'" + lbInfoMovilD.getText() + "'," + txtTotal.getText().replace(".", "").replace(",", "") + " ,'" + usuario + "','S')";
-                        stTransaccionMovil.executeUpdate(sql);
-                        int fila = tbDetalle.getRowCount();
-                        for (int j = 0; j < fila; j++) {
-                            String filas[] = {tbDetalle.getValueAt(j, 0).toString(),
-                                tbDetalle.getValueAt(j, 4).toString(),
-                                tbDetalle.getValueAt(j, 3).toString(),
-                                tbDetalle.getValueAt(j, 5).toString()};
-                            String sql1 = "INSERT INTO detalle_transferencia VALUES(" + txtIdTransf.getText() + "," + filas[0] + "," + filas[1] + "," + filas[2] + "," + filas[3] + ")";
-                            //String sql2 = "UPDATE productos SET stock=stock+" + filas[1] + " WHERE  idproducto=" + filas[0];
-                            stTransaccionMovil.executeUpdate(sql1);
-                            //stTransaccionMovil.executeUpdate(sql2);
-                        }
-                        con.commit();
-                        stTransaccionMovil.close();
-                        Mensajes.informacion("TRANSACCIÓN EXITOSA!\nLa Transferencia: Reparto a Reparto fue registrado satisfactoriamente");
-                    } catch (SQLException e) {
+                } else if (lbOpcionOrigen.getText().equals("R") && lbOpcionDestino.getText().equals("R")) {
+                    int resp = JOptionPane.showConfirmDialog(this, "¿Seguro que desea insertar el registro?", "Insertar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                    if (resp == JOptionPane.YES_OPTION) {
                         try {
-                            con.rollback();
-                            Mensajes.error("TRANSACCION FALLIDA.\nLos datos no fueron guardados.\nMotivo: "+e.getMessage().toUpperCase());
-                        } catch (SQLException se) {
-                            Mensajes.error(se.getMessage());
+                            cn.setAutoCommit(false);
+                            String sql = "INSERT INTO transferencia VALUES(" + txtIdTransf.getText() + "," + txtCaja.getText() + ",'" + txtFecha.getText() + "','" + txtHora.getText() + "','" + lbOpcionOrigen.getText()
+                                    + "'," + txtIdMovilO.getText() + ",'" + lbInfoMovilO.getText() + "','" + lbOpcionDestino.getText() + "'," + txtIdMovilD.getText() + ",'" + lbInfoMovilD.getText() + "'," + txtTotal.getText().replace(".", "").replace(",", "") + " ,'" + Login.getUsuarioLogueado() + "','S')";
+                            st.executeUpdate(sql);
+                            int fila = tbDetalle.getRowCount();
+                            for (int j = 0; j < fila; j++) {
+                                String filas[] = {tbDetalle.getValueAt(j, 0).toString(),
+                                    tbDetalle.getValueAt(j, 4).toString(),
+                                    tbDetalle.getValueAt(j, 3).toString(),
+                                    tbDetalle.getValueAt(j, 5).toString()};
+                                String sql1 = "INSERT INTO detalle_transferencia VALUES(" + txtIdTransf.getText() + "," + filas[0] + "," + filas[1] + "," + filas[2] + "," + filas[3] + ")";
+                                //String sql2 = "UPDATE productos SET stock=stock+" + filas[1] + " WHERE  idproducto=" + filas[0];
+                                st.executeUpdate(sql1);
+                                //stTransaccionMovil.executeUpdate(sql2);
+                            }
+                            cn.commit();
+                            st.close();
+                            Mensajes.informacion("TRANSACCIÓN EXITOSA!\nLa Transferencia: Reparto a Reparto fue registrado satisfactoriamente");
+                            cn.close();
+                        } catch (SQLException e) {
+                                cn.rollback();
+                                Mensajes.error("TRANSACCION FALLIDA.\nLos datos no fueron guardados.\nMotivo: " + e.getMessage().toUpperCase());
+                                cn.close();
                         }
+                        Cancelar();
                     }
-                    Cancelar();
                 }
+            } catch (Exception e) {
+
             }
         }
     }//GEN-LAST:event_btnGuardarActionPerformed

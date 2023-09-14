@@ -1,6 +1,5 @@
 package IU;
 
-import Componentes.ConexionBD;
 import Componentes.Mensajes;
 import Componentes.Software;
 import Componentes.cargarComboBox;
@@ -28,7 +27,7 @@ public class dlgSucursal1 extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         titulo();
-        prepararBD();
+        //prepararBD();
         cargarComboBoxMovil.cargarList(listEmpresa, "SELECT * FROM empresa WHERE estado='S'");
         cabe.sucursal(tbSucursal);
         controlSucursal.listSucursal(tbSucursal);
@@ -370,7 +369,7 @@ public class dlgSucursal1 extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void prepararBD(){
+    /*private void prepararBD(){
     {
         try {
             con = (MariaDbConnection) new ConexionBD().getConexion();
@@ -384,7 +383,7 @@ public class dlgSucursal1 extends javax.swing.JDialog {
         }
 
     }
-}
+}*/
     public void informacionGral(){
         try {
             rs = sentencia.executeQuery("select * from v_sucursal where suc_indicador='S'");

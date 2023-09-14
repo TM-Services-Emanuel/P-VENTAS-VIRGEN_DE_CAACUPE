@@ -5,7 +5,7 @@
  */
 package IU;
 
-import Componentes.ConexionBD;
+import Componentes.DataSourceService1;
 import Componentes.Fecha;
 import Componentes.Mensajes;
 import Componentes.Numero_a_Letra;
@@ -19,22 +19,21 @@ import Controladores.controlReparto;
 import static Controladores.controlReparto.getTotalComision;
 import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.swing.JRViewer;
-import org.mariadb.jdbc.MariaDbConnection;
-import org.mariadb.jdbc.MariaDbStatement;
 
 /**
  *
@@ -42,32 +41,28 @@ import org.mariadb.jdbc.MariaDbStatement;
  */
 public class dlgReporteComisiones extends javax.swing.JDialog {
 
-    private static final CabecerasTablas cabe = new CabecerasTablas();
     public Reporte jasper;
     public Numero_a_Letra d;
-    public static ResultSet rs;
-    public static MariaDbStatement sentencia;
-    public static MariaDbConnection con;
-    public static MariaDbStatement sentenciaM;
-    public static MariaDbConnection conM;
-    
+    static DataSourceService1 dss1 = new DataSourceService1();
+
     /**
      * Creates new form dlgReporteComisiones
+     *
      * @param parent
      * @param modal
+     * @throws java.sql.SQLException
      */
-    public dlgReporteComisiones(java.awt.Frame parent, boolean modal) {
+    public dlgReporteComisiones(java.awt.Frame parent, boolean modal) throws SQLException {
         super(parent, modal);
         initComponents();
         titulo();
         CabecerasTablas.ReporteComision(tbDetalleComisiones);
         cargarComboBox.cargarFuncionarios(cboFuncionarios, "SELECT * FROM v_vendedores WHERE idfuncion>=1 AND idfuncion <=2 AND ven_indicador='S'");
         jasper = new Reporte();
-        d= new Numero_a_Letra();
+        d = new Numero_a_Letra();
         invisible();
-        prepararBD();
     }
-    
+
     final void titulo() {
         if (Software.getSoftware().equals("null")) {
             this.setTitle("Generar Recibo de Dinero - Pago de Comisiones");
@@ -75,47 +70,20 @@ public class dlgReporteComisiones extends javax.swing.JDialog {
             this.setTitle(Software.getSoftware() + " - Generar Recibo de Dinero - Pago de Comisiones");
         }
     }
-    public static void invisible(){
+
+    public static void invisible() {
         txtIdVendedor.setVisible(false);
         txtFD.setVisible(false);
         txtFH.setVisible(false);
     }
-    
+
     public static void Renders() {
         tbDetalleComisiones.getColumnModel().getColumn(3).setCellRenderer(new RenderDecimal2());
     }
-    
-    public static void prepararBD() {
-        {
-            try {
-                con = (MariaDbConnection) new ConexionBD().getConexion();
-                if (con == null) {
-                    System.out.println("No hay Conexion con la Base de Datos");
-                } else {
-                    sentencia = (MariaDbStatement) con.createStatement();
-                }
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
-            try {
-                conM = (MariaDbConnection) new ConexionBD().getConexionMovil();
-                if (con == null) {
-                    System.out.println("No hay Conexion con la Base de Datos Móvil");
-                } else {
-                    sentenciaM = (MariaDbStatement) conM.createStatement();
-                }
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
-        }
-    }
-    
-    private void LevantarReporte(String Dir,String Nombre1,Integer Valor1, String Nombre2, String Valor2, String Nombre3, String Valor3, String Nombre4, String Valor4, String Nombre5, int Valor5){
+
+    private void LevantarReporte(String Dir, String Nombre1, Integer Valor1, String Nombre2, String Valor2, String Nombre3, String Valor3, String Nombre4, String Valor4, String Nombre5, int Valor5) {
         VisorReportes vr = new VisorReportes(null, true);
-        try {
-            //prepararBD();
-            //archivo jasper
-            //URL  jasperUrl = this.getClass().getResource("\\Reports\\repartos\\movimiento_reparto_E.jasper");
+        try (Connection cn = dss1.getDataSource().getConnection()) {
             String jasperUrl = System.getProperty("user.dir").concat(Dir);
             JasperReport report = (JasperReport) JRLoader.loadObjectFromFile(jasperUrl);
             //para los parametro
@@ -128,7 +96,7 @@ public class dlgReporteComisiones extends javax.swing.JDialog {
             parametros.put(Nombre4, Valor4);
             parametros.put(Nombre5, Valor5);
             //agregamos los parametros y la conexion a la base de datos
-            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametros, conM);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametros, cn);
             //se crea el visor con el reporte
             JRViewer jRViewer = new JRViewer(jasperPrint);
             //se elimina elementos del contenedor JPanel
@@ -140,8 +108,8 @@ public class dlgReporteComisiones extends javax.swing.JDialog {
             jRViewer.setVisible(true);
             VisorReportes.jpContainer.repaint();
             VisorReportes.jpContainer.revalidate();
-        } catch (JRException ex) {
-            System.err.println(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
         }
         //vr.setSize(250, 50);
         vr.setResizable(false);
@@ -470,21 +438,21 @@ public class dlgReporteComisiones extends javax.swing.JDialog {
 
     private void btnGenerarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerarActionPerformed
         // TODO add your handling code here:
-        if(tbDetalleComisiones.getRowCount()==0){
+        if (tbDetalleComisiones.getRowCount() == 0) {
             Mensajes.error("No existe infomación para generar reporte");
-        }else{
-            String letras= d.Convertir(txtTotalC.getText().replace(".", "").replace(",", ""), true);
+        } else {
+            String letras = d.Convertir(txtTotalC.getText().replace(".", "").replace(",", ""), true);
             /*jasper.reporteCincoParametroVertical("\\Reports\\repartos\\reciboDineroF.jasper", 
                     "idvendedor", Integer.parseInt(txtIdVendedor.getText().trim()), 
                     "fechaD", (txtFD.getText().trim()), 
                     "fechaH", (txtFH.getText().trim()),
                     "Letras",letras,
                     "Total",Integer.parseInt(txtTotalC.getText().replace(".", "").replace(",", "")));*/
-            LevantarReporte("\\Reports\\repartos\\reciboDineroF.jasper", "idvendedor", Integer.parseInt(txtIdVendedor.getText().trim()), 
-                    "fechaD", (txtFD.getText().trim()), 
+            LevantarReporte("\\Reports\\repartos\\reciboDineroF.jasper", "idvendedor", Integer.valueOf(txtIdVendedor.getText().trim()),
+                    "fechaD", (txtFD.getText().trim()),
                     "fechaH", (txtFH.getText().trim()),
-                    "Letras",letras,
-                    "Total",Integer.parseInt(txtTotalC.getText().replace(".", "").replace(",", "")));
+                    "Letras", letras,
+                    "Total", Integer.parseInt(txtTotalC.getText().replace(".", "").replace(",", "")));
         }
     }//GEN-LAST:event_btnGenerarActionPerformed
 
@@ -498,9 +466,9 @@ public class dlgReporteComisiones extends javax.swing.JDialog {
 
     private void cboFuncionariosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboFuncionariosActionPerformed
         // TODO add your handling code here:
-        if(cboFuncionarios.getSelectedIndex()==0){
+        if (cboFuncionarios.getSelectedIndex() == 0) {
             txtIdVendedor.setText("");
-        }else{
+        } else {
             txtIdVendedor.setText(cargarComboBox.getCodidgo(cboFuncionarios));
             txtFDesde.requestFocus();
         }
@@ -564,7 +532,7 @@ public class dlgReporteComisiones extends javax.swing.JDialog {
             } catch (ParseException ex) {
                 Mensajes.error("Error comparando fechas");
             }
-        }                    
+        }
     }//GEN-LAST:event_btnFiltrarActionPerformed
 
     private void txtFDesdeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFDesdeActionPerformed
@@ -584,7 +552,7 @@ public class dlgReporteComisiones extends javax.swing.JDialog {
         if (evt.getKeyCode() != KeyEvent.VK_BACK_SPACE) {
             if (txtFDesde.getText().length() == 2) {
                 txtFDesde.setText(txtFDesde.getText().concat("/"));
-            }else if (txtFDesde.getText().length() == 5) {
+            } else if (txtFDesde.getText().length() == 5) {
                 txtFDesde.setText(txtFDesde.getText().concat("/"));
             }
         }
@@ -607,7 +575,7 @@ public class dlgReporteComisiones extends javax.swing.JDialog {
         if (evt.getKeyCode() != KeyEvent.VK_BACK_SPACE) {
             if (txtFHasta.getText().length() == 2) {
                 txtFHasta.setText(txtFHasta.getText().concat("/"));
-            }else if (txtFHasta.getText().length() == 5) {
+            } else if (txtFHasta.getText().length() == 5) {
                 txtFHasta.setText(txtFHasta.getText().concat("/"));
             }
         }
@@ -641,8 +609,8 @@ public class dlgReporteComisiones extends javax.swing.JDialog {
         //</editor-fold>
 
         /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
+        java.awt.EventQueue.invokeLater(() -> {
+            try {
                 dlgReporteComisiones dialog = new dlgReporteComisiones(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
@@ -651,6 +619,8 @@ public class dlgReporteComisiones extends javax.swing.JDialog {
                     }
                 });
                 dialog.setVisible(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(dlgReporteComisiones.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
     }

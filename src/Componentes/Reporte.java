@@ -4,29 +4,27 @@
  */
 package Componentes;
 
-import IU.dlgGestRepartos;
-import IU.dlgVentas;
-import java.awt.Component;
+
 import java.awt.Toolkit;
 import java.sql.SQLException;
 import java.util.*;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.view.JasperViewer;
-
-import org.mariadb.jdbc.MariaDbConnection;
+import java.sql.Connection;
 
 /**
  *
  * @author Cris-Men
  */
 public class Reporte{
+    static DataSourceService dss = new DataSourceService();
     
-    MariaDbConnection con = (MariaDbConnection) new ConexionBD().getConexion();
+    Connection con;
     
-    public Reporte(){
+    public Reporte() throws SQLException{
         
-        con = (MariaDbConnection) new ConexionBD().getConexion();
+        con = dss.getDataSource().getConnection();
         if (con == null) {
             System.out.println("No hay Conexion con la Base de Datos");
         }

@@ -1,33 +1,31 @@
 package Componentes;
 
-import org.mariadb.jdbc.MariaDbConnection;
-import org.mariadb.jdbc.MariaDbStatement;
-import java.sql.ResultSet;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JList;
+import java.sql.*;
 
 public class CargarJList {
     static DefaultComboBoxModel modeloCombo;
+    static DataSourceService dss = new DataSourceService();
     
     public static void cargar(JList cb, String sql)
     {
         try {
-            try (MariaDbConnection con = (MariaDbConnection) new ConexionBD().getConexion() //Nos conectamos
+            try (Connection con = dss.getDataSource().getConnection() //Nos conectamos
             ) {
-                MariaDbStatement st = (MariaDbStatement) con.createStatement();
+                Statement st = con.createStatement();
                 try (ResultSet rs = (ResultSet) st.executeQuery(sql)) {
                     modeloCombo = new DefaultComboBoxModel();
                     cb.setModel(modeloCombo);
                     while (rs.next()) {
-                        //recorremos la tabla
-                        //Agregamos al combo los valores
                         modeloCombo.addElement(new Combo(Integer.parseInt(rs.getString(1)), rs.getString(2)));
                     }
-                    //Cerramos el recorrido
-                    //Cerramos la conexion
+                    rs.close();
+                    st.close();
+                    con.close();
                 }
             }
-        } catch (Exception e) {
+        } catch (NumberFormatException | SQLException e) {
             //Excepcion en caso haya conexion
             System.out.println("Algunos formularios no estan activos, para actualizarse, o no hay conexión");
         }

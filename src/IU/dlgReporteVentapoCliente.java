@@ -1,17 +1,13 @@
 package IU;
 
-import Componentes.ConexionBD;
+import Componentes.DataSourceService1;
 import Componentes.Fecha;
 import Componentes.Mensajes;
-import Componentes.Reporte;
 import java.awt.BorderLayout;
 import java.awt.Toolkit;
-import org.mariadb.jdbc.MariaDbConnection;
-import org.mariadb.jdbc.MariaDbStatement;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
-import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
@@ -20,19 +16,11 @@ import net.sf.jasperreports.swing.JRViewer;
 
 public class dlgReporteVentapoCliente extends javax.swing.JDialog {
 
-    public Reporte jasper;
-    public static ResultSet rs;
-    public static MariaDbStatement sentencia;
-    public static MariaDbConnection con;
-    public static MariaDbStatement sentenciaM;
-    public static MariaDbConnection conM;
-    static String Fdesde;
-    static String Fhasta;
+    static DataSourceService1 dss1 = new DataSourceService1();
 
     public dlgReporteVentapoCliente(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        jasper = new Reporte();
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/Iconos/logo1.png")));
         CargarFecha();
         invisible();
@@ -51,38 +39,9 @@ public class dlgReporteVentapoCliente extends javax.swing.JDialog {
         txtCod.setVisible(false);
     }
 
-    public static void prepararBD() {
-        {
-            try {
-                con = (MariaDbConnection) new ConexionBD().getConexion();
-                if (con == null) {
-                    System.out.println("No hay Conexion con la Base de Datos");
-                } else {
-                    sentencia = (MariaDbStatement) con.createStatement();
-                }
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
-
-            try {
-                conM = (MariaDbConnection) new ConexionBD().getConexionMovil();
-                if (con == null) {
-                    System.out.println("No hay Conexion con la Base de Datos Móvil");
-                } else {
-                    sentenciaM = (MariaDbStatement) conM.createStatement();
-                }
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
-        }
-    }
-
     private void LevantarReporte(String Dir, String Nombre1, Date Valor1, String Nombre2, Date Valor2, String Nombre3, int Valor3) {
         VisorReportes vr = new VisorReportes(null, true);
-        try {
-            //prepararBD();
-            //archivo jasper
-            //URL  jasperUrl = this.getClass().getResource("\\Reports\\repartos\\movimiento_reparto_E.jasper");
+        try (Connection cn = dss1.getDataSource().getConnection()) {
             String jasperUrl = System.getProperty("user.dir").concat(Dir);
             JasperReport report = (JasperReport) JRLoader.loadObjectFromFile(jasperUrl);
             //para los parametro
@@ -94,7 +53,7 @@ public class dlgReporteVentapoCliente extends javax.swing.JDialog {
             parametros.put(Nombre2, Valor2);
 
             //agregamos los parametros y la conexion a la base de datos
-            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametros, conM);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametros, cn);
             //se crea el visor con el reporte
             JRViewer jRViewer = new JRViewer(jasperPrint);
             //se elimina elementos del contenedor JPanel
@@ -106,7 +65,8 @@ public class dlgReporteVentapoCliente extends javax.swing.JDialog {
             jRViewer.setVisible(true);
             VisorReportes.jpContainer.repaint();
             VisorReportes.jpContainer.revalidate();
-        } catch (JRException ex) {
+            cn.close();
+        } catch (Exception ex) {
             System.err.println(ex.getMessage());
         }
         //vr.setSize(250, 50);
@@ -537,7 +497,6 @@ public class dlgReporteVentapoCliente extends javax.swing.JDialog {
             if (txtCod.getText().isEmpty()) {
                 Mensajes.informacion("BUSQUE Y SELECCIONE UN CLIENTE PARA GENERAR EL REPORTE");
             } else {
-                prepararBD();
                 if (rbRankingA.isSelected()) {
                     LevantarReporte("\\Reports\\ventas\\VentasPorCliente.jasper", "desde", Date.valueOf(lbFechaActualR.getText().trim()), "hasta", Date.valueOf(lbFechaActualR.getText().trim()), "codcli", Integer.parseInt(txtCod.getText().trim()));
                     //jasper.reporteDosParametroHorizontal("\\Reports\\ventas\\DetalleVentasFR.jasper", "desde", Date.valueOf(lbFechaActualR.getText().trim()), "hasta", Date.valueOf(lbFechaActualR.getText().trim()));
@@ -552,8 +511,6 @@ public class dlgReporteVentapoCliente extends javax.swing.JDialog {
                         LevantarReporte("\\Reports\\ventas\\VentasPorCliente.jasper", "desde", Date.valueOf(txtFDesdeR.getText().trim()), "hasta", Date.valueOf(txtFHastaR.getText().trim()), "codcli", Integer.parseInt(txtCod.getText().trim()));
                     }
                 }
-                con.close();
-                conM.close();
             }
         } catch (Exception e) {
 

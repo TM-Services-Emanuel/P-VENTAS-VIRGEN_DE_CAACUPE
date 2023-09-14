@@ -9,6 +9,7 @@ import Controladores.controlArticulo;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ListSelectionModel;
@@ -20,7 +21,7 @@ public class dlgArticulos1 extends javax.swing.JDialog {
     clsExportarExcel Export;
     public Reporte jasper;
     
-    public dlgArticulos1(java.awt.Frame parent, boolean modal) {
+    public dlgArticulos1(java.awt.Frame parent, boolean modal) throws SQLException {
         super(parent, modal);
         initComponents();
         jasper= new Reporte();
@@ -910,19 +911,21 @@ public class dlgArticulos1 extends javax.swing.JDialog {
         //</editor-fold>
         //</editor-fold>
 
-        java.awt.EventQueue.invokeLater(new Runnable() {
-
-            public void run() {
-                dlgArticulos1 dialog = new dlgArticulos1(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
+        java.awt.EventQueue.invokeLater(() -> {
+            dlgArticulos1 dialog = null;
+            try {
+                dialog = new dlgArticulos1(new javax.swing.JFrame(), true);
+            } catch (SQLException ex) {
+                Logger.getLogger(dlgArticulos1.class.getName()).log(Level.SEVERE, null, ex);
             }
+            dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                
+                @Override
+                public void windowClosing(java.awt.event.WindowEvent e) {
+                    System.exit(0);
+                }
+            });
+            dialog.setVisible(true);
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
