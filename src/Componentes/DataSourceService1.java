@@ -20,7 +20,7 @@ public class DataSourceService1 {
             basicDataSource = new BasicDataSource();
             basicDataSource.setDriverClassName("org.mariadb.jdbc.Driver");
             basicDataSource.setUsername(user);
-            basicDataSource.setPassword("");
+            basicDataSource.setPassword(pass);
             basicDataSource.setUrl(url);
             basicDataSource.setMaxTotal(200);
             basicDataSource.setMinIdle(50);

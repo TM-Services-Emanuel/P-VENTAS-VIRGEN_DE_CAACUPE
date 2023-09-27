@@ -19,7 +19,6 @@ import Datos.GestionarCompra;
 import java.text.DecimalFormat;
 import javax.swing.JOptionPane;
 import Modelo.Articulo;
-import java.awt.HeadlessException;
 import java.awt.event.KeyEvent;
 import java.sql.*;
 import java.util.logging.Level;

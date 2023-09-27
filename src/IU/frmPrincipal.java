@@ -71,6 +71,17 @@ public final class frmPrincipal extends javax.swing.JFrame {
         Reloj hilo = new Reloj(lblFecha);
         hilo.start();
     }
+    
+    void abrirPagosProveedor() {
+        try {
+            dlgRegistrarPagosProveedor rpp = new dlgRegistrarPagosProveedor(this, true);
+            rpp.setLocationRelativeTo(null);
+            rpp.setVisible(true);
+        } catch (Exception e) {
+            Mensajes.informacion("Servidor no esta activo");
+        }
+
+    }
 
     private void abrirCambiodeContraseña() {
         try {
@@ -266,6 +277,10 @@ public final class frmPrincipal extends javax.swing.JFrame {
         jSeparator25 = new javax.swing.JPopupMenu.Separator();
         mnGVM1 = new javax.swing.JMenuItem();
         mnGVM = new javax.swing.JMenuItem();
+        mnAyuda2 = new javax.swing.JMenu();
+        mnPagoProveedor1 = new javax.swing.JMenuItem();
+        jSeparator10 = new javax.swing.JPopupMenu.Separator();
+        mnDetallePagoProveedor = new javax.swing.JMenuItem();
         mnTransferencias = new javax.swing.JMenu();
         itemGestionarTR = new javax.swing.JMenuItem();
         mnReparto = new javax.swing.JMenu();
@@ -1505,6 +1520,33 @@ public final class frmPrincipal extends javax.swing.JFrame {
         mnVentas.add(mnGVM);
 
         mbBarraMenu.add(mnVentas);
+
+        mnAyuda2.setText("Pagos");
+        mnAyuda2.setFont(new java.awt.Font("Calibri", 1, 12)); // NOI18N
+        mnAyuda2.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
+
+        mnPagoProveedor1.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        mnPagoProveedor1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/billete.png"))); // NOI18N
+        mnPagoProveedor1.setText("Registrar pagos a Proveedores");
+        mnPagoProveedor1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnPagoProveedor1ActionPerformed(evt);
+            }
+        });
+        mnAyuda2.add(mnPagoProveedor1);
+        mnAyuda2.add(jSeparator10);
+
+        mnDetallePagoProveedor.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        mnDetallePagoProveedor.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/billetera.png"))); // NOI18N
+        mnDetallePagoProveedor.setText("Gestionar todos los pagos realizados");
+        mnDetallePagoProveedor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnDetallePagoProveedorActionPerformed(evt);
+            }
+        });
+        mnAyuda2.add(mnDetallePagoProveedor);
+
+        mbBarraMenu.add(mnAyuda2);
 
         mnTransferencias.setText("Transferencias");
         mnTransferencias.setEnabled(false);
@@ -2864,6 +2906,27 @@ public final class frmPrincipal extends javax.swing.JFrame {
         // TODO add your handling code here:
         CerrarCesion();
     }//GEN-LAST:event_btnCSActionPerformed
+
+    private void mnPagoProveedor1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnPagoProveedor1ActionPerformed
+        // TODO add your handling code here:
+        String fe = generarCodigos.getFecha("SELECT ca_fechainicio FROM caja where ca_indicador='S' ORDER BY ca_id DESC LIMIT 1");
+        if (!fe.equals(Fecha.fechaCorrecta())) {
+            Mensajes.informacion("La caja del día aún no ha sido inicializada.\n\nPara poder comenzar a registrar las compras a proveedores sera necesario hacerlo.\nLa apertura puede realizarse con los perfiles ADMINISTRADOR y VENTAS.");
+        } else {
+            abrirPagosProveedor();
+        }
+    }//GEN-LAST:event_mnPagoProveedor1ActionPerformed
+
+    private void mnDetallePagoProveedorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnDetallePagoProveedorActionPerformed
+        // TODO add your handling code here:
+        try {
+            dlgConsultarPagosProveedor consPagos = new dlgConsultarPagosProveedor(this, true);
+            consPagos.setLocationRelativeTo(null);
+            consPagos.setVisible(true);
+        } catch (Exception e) {
+            Mensajes.informacion("Servidor no esta activo");
+        }
+    }//GEN-LAST:event_mnDetallePagoProveedorActionPerformed
     void abrirProveedor() {
         try {
             dlgProveedores proveedor = new dlgProveedores(this, true);
@@ -3023,6 +3086,7 @@ public final class frmPrincipal extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPopupMenu.Separator jSeparator1;
+    private javax.swing.JPopupMenu.Separator jSeparator10;
     private javax.swing.JPopupMenu.Separator jSeparator11;
     private javax.swing.JPopupMenu.Separator jSeparator12;
     private javax.swing.JPopupMenu.Separator jSeparator13;
@@ -3062,6 +3126,7 @@ public final class frmPrincipal extends javax.swing.JFrame {
     private javax.swing.JLabel lbversion;
     private javax.swing.JMenuBar mbBarraMenu;
     public static javax.swing.JMenu mnAyuda;
+    public static javax.swing.JMenu mnAyuda2;
     private javax.swing.JMenuItem mnBuscarCaja;
     public static javax.swing.JMenu mnCaja;
     private javax.swing.JMenuItem mnCerrarSistema;
@@ -3071,6 +3136,7 @@ public final class frmPrincipal extends javax.swing.JFrame {
     public static javax.swing.JMenuItem mnComision;
     public static javax.swing.JMenu mnCompras;
     public static javax.swing.JMenu mnConfiguracion;
+    public static javax.swing.JMenuItem mnDetallePagoProveedor;
     public static javax.swing.JMenu mnDeuda;
     public static javax.swing.JMenu mnEmpleados;
     private javax.swing.JMenuItem mnGC;
@@ -3101,6 +3167,7 @@ public final class frmPrincipal extends javax.swing.JFrame {
     public static javax.swing.JMenu mnMantenimiento;
     public static javax.swing.JMenuItem mnNCProveedor;
     public static javax.swing.JMenuItem mnPagoProveedor;
+    public static javax.swing.JMenuItem mnPagoProveedor1;
     public static javax.swing.JMenu mnProductos;
     public static javax.swing.JMenu mnProveedores;
     public static javax.swing.JMenu mnReparto;
