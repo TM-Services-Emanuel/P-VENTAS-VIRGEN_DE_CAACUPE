@@ -38,6 +38,7 @@ public class controlPerfil {
             frmPrincipal.rpTransferencias.setVisible(false);
             frmPrincipal.S9.setVisible(false);
             frmPrincipal.rpGanancias.setVisible(false);
+            frmPrincipal.mnPagos.setVisible(false);
             
         } else if (perf.equalsIgnoreCase("COMPRA"))
         {
@@ -76,6 +77,7 @@ public class controlPerfil {
             frmPrincipal.rpTransferencias.setVisible(false);
             frmPrincipal.S9.setVisible(false);
             frmPrincipal.rpGanancias.setVisible(false);
+            frmPrincipal.mnPagos.setVisible(false);
             
         } else if (perf.equalsIgnoreCase("VENTA"))
         {
@@ -131,7 +133,7 @@ public class controlPerfil {
             frmPrincipal.mnCheques.setVisible(false);
             frmPrincipal.mnDeuda.setVisible(false);
             frmPrincipal.S5.setVisible(false);
-            
+            frmPrincipal.mnPagos.setVisible(false);
             
         } else if (perf.equalsIgnoreCase("ADMINISTRADOR")) {
             frmPrincipal.btnIMD.setVisible(true);
@@ -150,6 +152,7 @@ public class controlPerfil {
             frmPrincipal.mnConfiguracion.setVisible(false);
             frmPrincipal.smModUsuariosD.setVisible(false);
             frmPrincipal.mnGsIn.setVisible(true);
+            frmPrincipal.mnPagos.setVisible(true);
         } else if (perf.equalsIgnoreCase("DESARROLLADOR")) {
             frmPrincipal.btnIMD.setVisible(true);
             //frmPrincipal.btnProveedores.setVisible(true);
@@ -164,6 +167,7 @@ public class controlPerfil {
             frmPrincipal.mnComision.setVisible(true);
             frmPrincipal.mnConfiguracion.setVisible(true);
             frmPrincipal.mnGsIn.setVisible(true);
+            frmPrincipal.mnPagos.setVisible(true);
         }else {
             frmPrincipal.btnIMD.setVisible(false);
             //frmPrincipal.btnProveedores.setVisible(false);
@@ -183,6 +187,7 @@ public class controlPerfil {
             frmPrincipal.mnGVM.setVisible(false);
             frmPrincipal.btnGestionarVentasMovil.setVisible(false);
             frmPrincipal.jSeparator25.setVisible(false);
+            frmPrincipal.mnPagos.setVisible(false);
         }
     }
 

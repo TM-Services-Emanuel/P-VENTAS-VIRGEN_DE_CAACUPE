@@ -14,7 +14,7 @@ import IU.dlgBuscarArticuloCompra;
 import IU.dlgBuscarFacturaCredito;
 import IU.dlgBuscarProveedor;
 import IU.dlgCompras;
-import IU.dlgConsultarCompras;
+import IU.dlgConsultarCompras11;
 import IU.dlgConsultarPagosProveedor;
 import IU.dlgRegistrarPagosProveedor;
 import Modelo.Articulo;
@@ -471,7 +471,7 @@ public class controlCompra {
     }*/
 
  /*------CONSULTADO LAS COMPRAS REALIZADAS*/
-    public static void listarCompras(JTable tabla) {
+    /*public static void listarCompras(JTable tabla) {
         List lista;
         lista = GestionarCompra.listarCompras();
         for (int i = 1; i < lista.size(); i++) {
@@ -497,28 +497,73 @@ public class controlCompra {
             fila[12].toString();
             tb.addRow(fila);
         }
+    }*/
+    public static void listarCompras(JTable tabla) {
+        List lista;
+        lista = GestionarCompra.listarCompras();
+        for (int i = 1; i < lista.size(); i++) {
+            DefaultTableModel tb = (DefaultTableModel) tabla.getModel();
+            Object[] fila = (Object[]) lista.get(i);
+            fila[0].toString();
+            fila[1].toString();
+            fila[2].toString();
+            fila[3].toString();
+            fila[4].toString();
+            fila[5].toString();
+            fila[6].toString();
+            fila[7].toString();
+            fila[8].toString();
+            fila[9].toString();
+            fila[10].toString();
+            //fila[10].toString();
+            if (fila[11].toString().equals("S")) {
+                fila[11] = "";
+            } else {
+                fila[11] = "ANULADO";
+            }
+            fila[12].toString();
+            //fila[13].toString();
+            switch (fila[13].toString()) {
+                case "PE":
+                    fila[13] = "PAGO PENDIENTE";
+                    break;
+                case "PA":
+                    fila[13] = "PAGO PARCIAL";
+                    break;
+                case "AB":
+                    fila[13] = "PAGO ABONADO";
+                    break;
+                case "AN":
+                    fila[13] = "";
+                    break;
+                default:
+                    break;
+            }
+            fila[14].toString();
+            tb.addRow(fila);
+        }
     }
 
     public static void listarDetalleCompras(JTable tabla) {
-        int x = dlgConsultarCompras.tbCompra.getSelectedRow();
-        String cod = dlgConsultarCompras.tbCompra.getValueAt(x, 0).toString();
-        if (dlgConsultarCompras.tbCompra.getValueAt(x, 2).toString().equals("L")) {
-            dlgConsultarCompras.lbInformacion.setText("COMPRA PARA VENTA LOCAL");
+        int x = dlgConsultarCompras11.tbCompra.getSelectedRow();
+        String cod = dlgConsultarCompras11.tbCompra.getValueAt(x, 0).toString();
+        if (dlgConsultarCompras11.tbCompra.getValueAt(x, 2).toString().equals("L")) {
+            dlgConsultarCompras11.lbInformacion.setText("COMPRA PARA VENTA LOCAL");
         } else {
-            dlgConsultarCompras.lbInformacion.setText("COMPRA PARA VENTA EN REPARTO");
+            dlgConsultarCompras11.lbInformacion.setText("COMPRA PARA VENTA EN REPARTO");
         }
-        String idcompra = dlgConsultarCompras.tbCompra.getValueAt(x, 0).toString();
-        String mov = dlgConsultarCompras.tbCompra.getValueAt(x, 1).toString();
-        String fecha = Fecha.formatoFechaDinver(dlgConsultarCompras.tbCompra.getValueAt(x, 3).toString()) + " " + dlgConsultarCompras.tbCompra.getValueAt(x, 4).toString();
-        String pro = dlgConsultarCompras.tbCompra.getValueAt(x, 5).toString() + " - " + dlgConsultarCompras.tbCompra.getValueAt(x, 6).toString();
-        String codPro = dlgConsultarCompras.tbCompra.getValueAt(x, 9).toString();
+        String idcompra = dlgConsultarCompras11.tbCompra.getValueAt(x, 0).toString();
+        String mov = dlgConsultarCompras11.tbCompra.getValueAt(x, 1).toString();
+        String fecha = Fecha.formatoFechaDinver(dlgConsultarCompras11.tbCompra.getValueAt(x, 3).toString()) + " " + dlgConsultarCompras11.tbCompra.getValueAt(x, 4).toString();
+        String pro = dlgConsultarCompras11.tbCompra.getValueAt(x, 5).toString() + " - " + dlgConsultarCompras11.tbCompra.getValueAt(x, 6).toString();
+        String codPro = dlgConsultarCompras11.tbCompra.getValueAt(x, 9).toString();
         DecimalFormat df = new DecimalFormat("#,###");
-        String total = dlgConsultarCompras.tbCompra.getValueAt(x, 10).toString();
-        dlgConsultarCompras.txtCodCompra.setText(idcompra);
-        dlgConsultarCompras.txtmov.setText(mov);
-        dlgConsultarCompras.txtFechaCompra.setText(fecha);
-        dlgConsultarCompras.txtProveedor.setText(pro);
-        dlgConsultarCompras.txtTotal.setText(df.format(Integer.parseInt(total.trim().replace(".", "").replace(",", ""))));
+        String total = dlgConsultarCompras11.tbCompra.getValueAt(x, 10).toString();
+        dlgConsultarCompras11.txtCodCompra.setText(idcompra);
+        dlgConsultarCompras11.txtmov.setText(mov);
+        dlgConsultarCompras11.txtFechaCompra.setText(fecha);
+        dlgConsultarCompras11.txtProveedor.setText(pro);
+        dlgConsultarCompras11.txtTotal.setText(df.format(Integer.parseInt(total.trim().replace(".", "").replace(",", ""))));
         List lista;
         lista = GestionarCompra.listarDetalleCompras(cod);
         for (int i = 1; i < lista.size(); i++) {
@@ -537,8 +582,8 @@ public class controlCompra {
 
     public static String anularCompra() {
         String msg;
-        int x = dlgConsultarCompras.tbCompra.getSelectedRow();
-        String cod = dlgConsultarCompras.tbCompra.getValueAt(x, 0).toString();
+        int x = dlgConsultarCompras11.tbCompra.getSelectedRow();
+        String cod = dlgConsultarCompras11.tbCompra.getValueAt(x, 0).toString();
         String usuario = Login.getUsuarioLogueado();
         msg = GestionarCompra.delCompra(cod, usuario);
         if (msg == null) {
@@ -552,8 +597,8 @@ public class controlCompra {
 
     public static String anularCompraReparto() {
         String msg;
-        int x = dlgConsultarCompras.tbCompra.getSelectedRow();
-        String cod = dlgConsultarCompras.tbCompra.getValueAt(x, 0).toString();
+        int x = dlgConsultarCompras11.tbCompra.getSelectedRow();
+        String cod = dlgConsultarCompras11.tbCompra.getValueAt(x, 0).toString();
         String usuario = Login.getUsuarioLogueado();
         msg = GestionarCompra.delCompra(cod, usuario);
         if (msg == null) {
@@ -566,10 +611,10 @@ public class controlCompra {
 
     public static String actStockEliminarCompra() {
         String msg = null;
-        int f = dlgConsultarCompras.tbDetalleCompra.getRowCount();
+        int f = dlgConsultarCompras11.tbDetalleCompra.getRowCount();
         for (int i = 0; i < f; i++) {
-            int coda = Integer.parseInt(dlgConsultarCompras.tbDetalleCompra.getValueAt(i, 1).toString());
-            double st = Double.parseDouble(dlgConsultarCompras.tbDetalleCompra.getValueAt(i, 4).toString());
+            int coda = Integer.parseInt(dlgConsultarCompras11.tbDetalleCompra.getValueAt(i, 1).toString());
+            double st = Double.parseDouble(dlgConsultarCompras11.tbDetalleCompra.getValueAt(i, 4).toString());
             String User = Login.getUsuarioLogueado();
             ArticuloMovil a = new ArticuloMovil(coda, st, User);
             msg = GestionarArticulosMovil.actStockMENOS(a);
@@ -581,6 +626,21 @@ public class controlCompra {
         }
         return msg;
     }
+    
+    /*public static String anularPagosProveedor() {
+        String msg;
+        int x = dlgConsultarPagosProveedor.tbPagosProveedor.getSelectedRow();
+        String cod = dlgConsultarPagosProveedor.tbPagosProveedor.getValueAt(x, 0).toString();
+        String usuario = Login.getUsuarioLogueado();
+        msg = GestionarCompra.delPagosProveedor(cod, usuario);
+        if (msg == null) {
+            Mensajes.informacion("Pago a proveedor Anulado");
+            controlCompra.actStockEliminarCompra();
+        } else {
+            Mensajes.error(msg);
+        }
+        return msg;
+    }*/
 
     public static void actCantidad(JTable tabla) {
         try {

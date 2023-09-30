@@ -1442,13 +1442,22 @@ public final class dlgCompras1 extends javax.swing.JDialog {
             try (Connection con = dss.getDataSource().getConnection(); Connection conMovil = dss1.getDataSource().getConnection(); Statement stTransaccion = con.createStatement(); Statement stTransaccionMovil = conMovil.createStatement()) {
                 int resp = JOptionPane.showConfirmDialog(this, "¿Seguro que deseas registrar esta Compra al sistema?", "CONFIRMACIÓN DE COMPRA", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                 if (resp == JOptionPane.YES_OPTION) {
+                    String estado = null;
+                    int saldo = 0;
+                    if (lbCond.getText().equals("CONTADO")) {
+                        estado = "AB";
+                        saldo = 0;
+                    } else if (lbCond.getText().equals("CREDITO")) {
+                        estado = "PE";
+                        saldo = Integer.parseInt(txtTotalL.getText());
+                    }
                     if (rbLocal.isSelected()) {
                         try {
                             String usuario = Login.getUsuarioLogueado();
                             con.setAutoCommit(false);
                             conMovil.setAutoCommit(false);
                             String sql = "insert into compra values(" + txtCod.getText() + "," + txtCaja.getText() + "," + txtCodProv.getText() + ", 'L','" + lbCond.getText() + "','" + txtFactura.getText() + "','"
-                                    + txtFecha.getText() + "','" + Fecha.darHora() + "'," + txtTotalL.getText() + "," + txtExentaL.getText() + "," + txt5L.getText() + "," + txt10L.getText() + ",'S','" + cbAsignación.getSelectedItem().toString() + "','" + usuario + "')";
+                                    + txtFecha.getText() + "','" + Fecha.darHora() + "'," + txtTotalL.getText() + "," + txtExentaL.getText() + "," + txt5L.getText() + "," + txt10L.getText() + ",'S','" + cbAsignación.getSelectedItem().toString() + "','" + usuario + "', '" + estado + "'," + saldo + ")";
                             stTransaccion.executeUpdate(sql);
                             int fila = tbDetalle.getRowCount();
                             for (int j = 0; j < fila; j++) {
@@ -1485,7 +1494,7 @@ public final class dlgCompras1 extends javax.swing.JDialog {
                             con.setAutoCommit(false);
                             conMovil.setAutoCommit(false);
                             String sql = "insert into compra values(" + txtCod.getText() + "," + txtCaja.getText() + "," + txtCodProv.getText() + ", 'R','" + lbCond.getText() + "','" + txtFactura.getText() + "','"
-                                    + txtFecha.getText() + "','" + Fecha.darHora() + "'," + txtTotalL.getText() + "," + txtExentaL.getText() + "," + txt5L.getText() + "," + txt10L.getText() + ",'S','" + cbAsignación.getSelectedItem().toString() + "','" + usuario + "')";
+                                    + txtFecha.getText() + "','" + Fecha.darHora() + "'," + txtTotalL.getText() + "," + txtExentaL.getText() + "," + txt5L.getText() + "," + txt10L.getText() + ",'S','" + cbAsignación.getSelectedItem().toString() + "','" + usuario + "', '" + estado + "'," + saldo + ")";
                             stTransaccion.executeUpdate(sql);
                             int fila = tbDetalle.getRowCount();
                             for (int j = 0; j < fila; j++) {

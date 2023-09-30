@@ -12,13 +12,10 @@ import Controladores.ControlGasto;
 import java.awt.HeadlessException;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
-import java.sql.*;
 import java.text.DecimalFormat;
 import javax.swing.JOptionPane;
 
 public class dlgGastos extends javax.swing.JDialog {
-
-    static DataSourceService dss = new DataSourceService();
 
     public dlgGastos(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -27,13 +24,16 @@ public class dlgGastos extends javax.swing.JDialog {
         setIconImage(icon);
         titulo();
         noVisible();
+        cbDetalleGastoActionPerformed(null);
         btnCancelarActionPerformed(null);
+
     }
 
     private void noVisible() {
-        txtIdMovil.setVisible(false);
-        lblCodDetalle.setVisible(false);
         txtImporteL.setVisible(false);
+        txtFuncionario.setVisible(false);
+        txtMotivo.setVisible(false);
+        txtOrigen.setVisible(false);
     }
 
     final void titulo() {
@@ -49,45 +49,39 @@ public class dlgGastos extends javax.swing.JDialog {
         txtImporte.setText("0");
         txtImporteL.setText("0");
         txtObservacion.setText("");
-        //cbDetalleGasto.setSelectedIndex(0);
-        lbInfoMovil.setText("");
-        txtIdMovil.setText("");
+        txtFuncionario.setText("");
+        txtMotivo.setText("");
+        txtOrigen.setText("");
+        cbDetalleGasto.setSelectedIndex(0);
+        cbGenerado.setSelectedIndex(0);
+        cboOtorgado.setSelectedIndex(0);
     }
 
-    public void nuevo() {
+    /*public void nuevo() {
         try {
             String FechaI = String.valueOf(Fecha.fechaCorrecta());
             txtCaja.setText(generarCodigos.ObtenerCodigo("SELECT ca_id from caja WHERE ca_fechainicio='" + FechaI + "' and ca_indicador='S'"));
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        cargarComboBox.cargar(cbDetalleGasto, "SELECT * FROM detallegasto WHERE dg_indicador='S'");
-        cargarComboBox.cargarResponsable(cboResponsable, "SELECT * FROM v_vendedores WHERE idfuncion>=2 AND idfuncion<=4 AND ven_indicador='S'");
 
         cbDetalleGasto.setEnabled(true);
         txtImporte.setEnabled(true);
         txtObservacion.setEnabled(true);
-        cboResponsable.setEnabled(true);
+        cboOtorgado.setEnabled(true);
         dcFecha.setEnabled(true);
         cbGenerado.setEnabled(true);
 
         btnNuevo.setEnabled(false);
-        itemNuevo.setEnabled(false);
-        btnModificar.setEnabled(false);
-        itemModificar.setEnabled(false);
         btnGuardar.setEnabled(true);
-        itemGuardar.setEnabled(true);
         btnCancelar.setEnabled(true);
-        itemCancelar.setEnabled(true);
-        btnDetalle.setEnabled(true);
 
         cbDetalleGasto.requestFocus();
         cbDetalleGasto.setPopupVisible(true);
-    }
+    }*/
 
     public void Volver() {
         dlgGestGastos.txtGL.setText("0");
-        dlgGestGastos.txtGR.setText("0");
         dlgGestGastos.txtGA.setText("0");
         CabecerasTablas.gestGastos(dlgGestGastos.tbGastos);
         CabecerasTablas.limpiarTablasGastos(dlgGestGastos.tbGastos);
@@ -102,149 +96,273 @@ public class dlgGastos extends javax.swing.JDialog {
 
         Blanco = new org.edisoncor.gui.panel.PanelImage();
         Oscuro = new org.edisoncor.gui.panel.PanelImage();
-        jPanel4 = new javax.swing.JPanel();
-        btnNuevo = new javax.swing.JButton();
-        btnModificar = new javax.swing.JButton();
-        btnGuardar = new javax.swing.JButton();
-        btnCancelar = new javax.swing.JButton();
-        btnSalir = new javax.swing.JButton();
+        btnSalir = new RSMaterialComponent.RSButtonIconOne();
+        jPanel2 = new javax.swing.JPanel();
+        PanelContenedor1 = new rojeru_san.rspanel.RSPanelImage();
+        btnNuevo = new RSMaterialComponent.RSButtonIconUno();
+        Separador1 = new javax.swing.JSeparator();
+        LabelTitulo1 = new javax.swing.JLabel();
+        PanelContenedor3 = new rojeru_san.rspanel.RSPanelImage();
+        btnGuardar = new RSMaterialComponent.RSButtonIconUno();
+        Separador3 = new javax.swing.JSeparator();
+        LabelTitulo3 = new javax.swing.JLabel();
+        PanelContenedor4 = new rojeru_san.rspanel.RSPanelImage();
+        btnCancelar = new RSMaterialComponent.RSButtonIconUno();
+        Separador4 = new javax.swing.JSeparator();
+        LabelTitulo4 = new javax.swing.JLabel();
+        txtMotivo = new javax.swing.JTextField();
+        txtOrigen = new javax.swing.JTextField();
+        txtFuncionario = new javax.swing.JTextField();
         jPanel1 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         txtCaja = new javax.swing.JTextField();
         dcFecha = new datechooser.beans.DateChooserCombo();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        cbDetalleGasto = new javax.swing.JComboBox();
-        btnDetalle = new javax.swing.JButton();
-        jLabel3 = new javax.swing.JLabel();
+        lbOtorgado = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         txtImporte = new javax.swing.JTextField();
         txtImporteL = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
         txtObservacion = new javax.swing.JTextField();
-        lblCodDetalle = new javax.swing.JLabel();
-        cboResponsable = new javax.swing.JComboBox<>();
-        lbInfoMovil = new javax.swing.JLabel();
-        txtIdMovil = new javax.swing.JTextField();
-        cbGenerado = new javax.swing.JComboBox<>();
-        barMenu = new javax.swing.JMenuBar();
-        menuOpciones = new javax.swing.JMenu();
-        itemNuevo = new javax.swing.JMenuItem();
-        itemModificar = new javax.swing.JMenuItem();
-        itemGuardar = new javax.swing.JMenuItem();
-        itemCancelar = new javax.swing.JMenuItem();
-        itemSalir = new javax.swing.JMenuItem();
+        cbDetalleGasto = new RSMaterialComponent.RSComboBox();
+        cboOtorgado = new RSMaterialComponent.RSComboBox();
+        cbGenerado = new RSMaterialComponent.RSComboBox();
+        jLabel3 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        setUndecorated(true);
         setResizable(false);
 
+        Blanco.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
         Blanco.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Recursos/fondoBlanco.jpg"))); // NOI18N
         Blanco.setPreferredSize(new java.awt.Dimension(690, 418));
+        Blanco.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        Oscuro.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Recursos/fondo.png"))); // NOI18N
+        Oscuro.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Recursos/0-102-102.png"))); // NOI18N
         Oscuro.setPreferredSize(new java.awt.Dimension(690, 418));
 
-        jPanel4.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jPanel4.setLayout(new java.awt.GridLayout(1, 0));
-
-        btnNuevo.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 9)); // NOI18N
-        btnNuevo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/document30.png"))); // NOI18N
-        btnNuevo.setText("Nuevo-F1");
-        btnNuevo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnNuevo.setMaximumSize(new java.awt.Dimension(85, 57));
-        btnNuevo.setMinimumSize(new java.awt.Dimension(85, 57));
-        btnNuevo.setPreferredSize(new java.awt.Dimension(90, 60));
-        btnNuevo.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnNuevo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnNuevoActionPerformed(evt);
-            }
-        });
-        jPanel4.add(btnNuevo);
-
-        btnModificar.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 9)); // NOI18N
-        btnModificar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/edit30.png"))); // NOI18N
-        btnModificar.setText("Modif-F5");
-        btnModificar.setEnabled(false);
-        btnModificar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnModificar.setMaximumSize(new java.awt.Dimension(63, 57));
-        btnModificar.setMinimumSize(new java.awt.Dimension(63, 57));
-        btnModificar.setPreferredSize(new java.awt.Dimension(90, 60));
-        btnModificar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnModificar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnModificarActionPerformed(evt);
-            }
-        });
-        jPanel4.add(btnModificar);
-
-        btnGuardar.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 9)); // NOI18N
-        btnGuardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/save30.png"))); // NOI18N
-        btnGuardar.setText("Guardar-F6");
-        btnGuardar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnGuardar.setMaximumSize(new java.awt.Dimension(71, 57));
-        btnGuardar.setMinimumSize(new java.awt.Dimension(71, 57));
-        btnGuardar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnGuardar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnGuardarActionPerformed(evt);
-            }
-        });
-        jPanel4.add(btnGuardar);
-
-        btnCancelar.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 9)); // NOI18N
-        btnCancelar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/cancel30.png"))); // NOI18N
-        btnCancelar.setText("Cancel-Esc");
-        btnCancelar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnCancelar.setMaximumSize(new java.awt.Dimension(75, 57));
-        btnCancelar.setMinimumSize(new java.awt.Dimension(75, 57));
-        btnCancelar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnCancelar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCancelarActionPerformed(evt);
-            }
-        });
-        jPanel4.add(btnCancelar);
-
-        btnSalir.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 9)); // NOI18N
-        btnSalir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/back30.png"))); // NOI18N
-        btnSalir.setText("Salir-Alt+F4");
-        btnSalir.setToolTipText("Salir");
-        btnSalir.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnSalir.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnSalir.setBackground(new java.awt.Color(0, 102, 102));
+        btnSalir.setToolTipText("ALT+F4");
+        btnSalir.setBackgroundHover(new java.awt.Color(255, 0, 0));
+        btnSalir.setIcons(rojeru_san.efectos.ValoresEnum.ICONS.CLOSE);
+        btnSalir.setOpaque(true);
+        btnSalir.setPreferredSize(new java.awt.Dimension(20, 20));
+        btnSalir.setRequestFocusEnabled(false);
         btnSalir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSalirActionPerformed(evt);
             }
         });
-        jPanel4.add(btnSalir);
+        btnSalir.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                btnSalirKeyPressed(evt);
+            }
+        });
+
+        jPanel2.setOpaque(false);
+        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        PanelContenedor1.setImagen(new javax.swing.ImageIcon(getClass().getResource("/Recursos/CONTENEDOR2.png"))); // NOI18N
+
+        btnNuevo.setBackground(new java.awt.Color(255, 255, 255));
+        btnNuevo.setBackgroundHover(new java.awt.Color(0, 153, 153));
+        btnNuevo.setForegroundText(new java.awt.Color(0, 153, 153));
+        btnNuevo.setIcons(rojeru_san.efectos.ValoresEnum.ICONS.ADD);
+        btnNuevo.setRippleColor(java.awt.Color.white);
+        btnNuevo.setTypeBorder(RSMaterialComponent.RSButtonIconUno.TYPEBORDER.CIRCLE);
+        btnNuevo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnNuevoActionPerformed(evt);
+            }
+        });
+
+        Separador1.setForeground(new java.awt.Color(204, 204, 204));
+
+        LabelTitulo1.setFont(new java.awt.Font("Roboto", 1, 11)); // NOI18N
+        LabelTitulo1.setForeground(new java.awt.Color(0, 102, 102));
+        LabelTitulo1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        LabelTitulo1.setText("NUEVO");
+
+        javax.swing.GroupLayout PanelContenedor1Layout = new javax.swing.GroupLayout(PanelContenedor1);
+        PanelContenedor1.setLayout(PanelContenedor1Layout);
+        PanelContenedor1Layout.setHorizontalGroup(
+            PanelContenedor1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(PanelContenedor1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(PanelContenedor1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(Separador1)
+                    .addComponent(LabelTitulo1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+            .addGroup(PanelContenedor1Layout.createSequentialGroup()
+                .addGap(27, 27, 27)
+                .addComponent(btnNuevo, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(28, Short.MAX_VALUE))
+        );
+        PanelContenedor1Layout.setVerticalGroup(
+            PanelContenedor1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(PanelContenedor1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(btnNuevo, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(8, 8, 8)
+                .addComponent(Separador1, javax.swing.GroupLayout.PREFERRED_SIZE, 3, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(2, 2, 2)
+                .addComponent(LabelTitulo1)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel2.add(PanelContenedor1, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 3, 100, -1));
+
+        PanelContenedor3.setImagen(new javax.swing.ImageIcon(getClass().getResource("/Recursos/CONTENEDOR2.png"))); // NOI18N
+
+        btnGuardar.setBackground(new java.awt.Color(255, 255, 255));
+        btnGuardar.setBackgroundHover(new java.awt.Color(0, 102, 0));
+        btnGuardar.setForegroundText(new java.awt.Color(0, 102, 0));
+        btnGuardar.setIcons(rojeru_san.efectos.ValoresEnum.ICONS.SAVE);
+        btnGuardar.setRippleColor(java.awt.Color.white);
+        btnGuardar.setTypeBorder(RSMaterialComponent.RSButtonIconUno.TYPEBORDER.CIRCLE);
+        btnGuardar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGuardarActionPerformed(evt);
+            }
+        });
+
+        Separador3.setForeground(new java.awt.Color(204, 204, 204));
+
+        LabelTitulo3.setFont(new java.awt.Font("Roboto", 1, 11)); // NOI18N
+        LabelTitulo3.setForeground(new java.awt.Color(0, 102, 102));
+        LabelTitulo3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        LabelTitulo3.setText("REGISTRAR");
+
+        javax.swing.GroupLayout PanelContenedor3Layout = new javax.swing.GroupLayout(PanelContenedor3);
+        PanelContenedor3.setLayout(PanelContenedor3Layout);
+        PanelContenedor3Layout.setHorizontalGroup(
+            PanelContenedor3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(PanelContenedor3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(PanelContenedor3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(Separador3)
+                    .addComponent(LabelTitulo3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+            .addGroup(PanelContenedor3Layout.createSequentialGroup()
+                .addGap(27, 27, 27)
+                .addComponent(btnGuardar, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(28, Short.MAX_VALUE))
+        );
+        PanelContenedor3Layout.setVerticalGroup(
+            PanelContenedor3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(PanelContenedor3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(btnGuardar, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(8, 8, 8)
+                .addComponent(Separador3, javax.swing.GroupLayout.PREFERRED_SIZE, 3, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(2, 2, 2)
+                .addComponent(LabelTitulo3)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel2.add(PanelContenedor3, new org.netbeans.lib.awtextra.AbsoluteConstraints(102, 3, 100, -1));
+
+        PanelContenedor4.setImagen(new javax.swing.ImageIcon(getClass().getResource("/Recursos/CONTENEDOR2.png"))); // NOI18N
+
+        btnCancelar.setBackground(new java.awt.Color(255, 255, 255));
+        btnCancelar.setBackgroundHover(new java.awt.Color(255, 0, 0));
+        btnCancelar.setForegroundText(new java.awt.Color(255, 0, 0));
+        btnCancelar.setIcons(rojeru_san.efectos.ValoresEnum.ICONS.CANCEL);
+        btnCancelar.setRippleColor(java.awt.Color.white);
+        btnCancelar.setTypeBorder(RSMaterialComponent.RSButtonIconUno.TYPEBORDER.CIRCLE);
+        btnCancelar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelarActionPerformed(evt);
+            }
+        });
+
+        Separador4.setForeground(new java.awt.Color(204, 204, 204));
+
+        LabelTitulo4.setFont(new java.awt.Font("Roboto", 1, 11)); // NOI18N
+        LabelTitulo4.setForeground(new java.awt.Color(0, 102, 102));
+        LabelTitulo4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        LabelTitulo4.setText("CANCELAR");
+
+        javax.swing.GroupLayout PanelContenedor4Layout = new javax.swing.GroupLayout(PanelContenedor4);
+        PanelContenedor4.setLayout(PanelContenedor4Layout);
+        PanelContenedor4Layout.setHorizontalGroup(
+            PanelContenedor4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(PanelContenedor4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(PanelContenedor4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(Separador4)
+                    .addComponent(LabelTitulo4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, PanelContenedor4Layout.createSequentialGroup()
+                .addContainerGap(29, Short.MAX_VALUE)
+                .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(26, 26, 26))
+        );
+        PanelContenedor4Layout.setVerticalGroup(
+            PanelContenedor4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(PanelContenedor4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(8, 8, 8)
+                .addComponent(Separador4, javax.swing.GroupLayout.PREFERRED_SIZE, 3, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(2, 2, 2)
+                .addComponent(LabelTitulo4)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel2.add(PanelContenedor4, new org.netbeans.lib.awtextra.AbsoluteConstraints(199, 3, 100, -1));
 
         javax.swing.GroupLayout OscuroLayout = new javax.swing.GroupLayout(Oscuro);
         Oscuro.setLayout(OscuroLayout);
         OscuroLayout.setHorizontalGroup(
             OscuroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(OscuroLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(55, Short.MAX_VALUE))
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(OscuroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(OscuroLayout.createSequentialGroup()
+                        .addComponent(txtMotivo, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtFuncionario, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 253, Short.MAX_VALUE)
+                        .addComponent(btnSalir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(OscuroLayout.createSequentialGroup()
+                        .addComponent(txtOrigen, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
         OscuroLayout.setVerticalGroup(
             OscuroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(OscuroLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(OscuroLayout.createSequentialGroup()
+                .addGroup(OscuroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnSalir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(OscuroLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(OscuroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtMotivo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtFuncionario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtOrigen, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jPanel1.setOpaque(false);
+        Blanco.add(Oscuro, new org.netbeans.lib.awtextra.AbsoluteConstraints(1, 1, 701, 101));
 
-        jLabel6.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-        jLabel6.setText("Movimiento N°");
+        jPanel1.setOpaque(false);
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel6.setFont(new java.awt.Font("Roboto", 0, 11)); // NOI18N
+        jLabel6.setText("Mov. N°");
+        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 13, 82, 23));
 
         txtCaja.setEditable(false);
         txtCaja.setBackground(new java.awt.Color(255, 255, 255));
-        txtCaja.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
+        txtCaja.setFont(new java.awt.Font("Roboto", 0, 11)); // NOI18N
+        txtCaja.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
+        jPanel1.add(txtCaja, new org.netbeans.lib.awtextra.AbsoluteConstraints(102, 13, 110, 23));
 
         dcFecha.setCurrentView(new datechooser.view.appearance.AppearancesList("Swing",
             new datechooser.view.appearance.ViewAppearance("custom",
@@ -290,49 +408,31 @@ public class dlgGastos extends javax.swing.JDialog {
     dcFecha.setCalendarBackground(new java.awt.Color(255, 255, 204));
     dcFecha.setWeekStyle(datechooser.view.WeekDaysStyle.SHORT);
     dcFecha.setEnabled(false);
-    dcFecha.setFieldFont(new java.awt.Font("Microsoft Sans Serif", java.awt.Font.PLAIN, 11));
+    dcFecha.setFieldFont(new java.awt.Font("Roboto", java.awt.Font.PLAIN, 11));
+    jPanel1.add(dcFecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(596, 13, 94, 23));
 
-    jLabel1.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-    jLabel1.setText("Fecha");
+    jLabel1.setFont(new java.awt.Font("Roboto", 0, 11)); // NOI18N
+    jLabel1.setText("Fecha de la deuda");
+    jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 13, 90, 23));
 
-    jLabel2.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-    jLabel2.setText("Motivo");
+    jLabel2.setFont(new java.awt.Font("Roboto", 0, 11)); // NOI18N
+    jLabel2.setText("Generado en");
+    jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 73, -1, 23));
 
-    cbDetalleGasto.setBackground(new java.awt.Color(255, 255, 204));
-    cbDetalleGasto.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-    cbDetalleGasto.setEnabled(false);
-    cbDetalleGasto.addActionListener(new java.awt.event.ActionListener() {
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
-            cbDetalleGastoActionPerformed(evt);
-        }
-    });
-    cbDetalleGasto.addKeyListener(new java.awt.event.KeyAdapter() {
-        public void keyPressed(java.awt.event.KeyEvent evt) {
-            cbDetalleGastoKeyPressed(evt);
-        }
-    });
+    lbOtorgado.setFont(new java.awt.Font("Roboto", 0, 11)); // NOI18N
+    lbOtorgado.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+    lbOtorgado.setText("Otorgado a");
+    jPanel1.add(lbOtorgado, new org.netbeans.lib.awtextra.AbsoluteConstraints(365, 43, 60, 23));
 
-    btnDetalle.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/document15.png"))); // NOI18N
-    btnDetalle.setToolTipText("Gestionar Laboratorio");
-    btnDetalle.setBorderPainted(false);
-    btnDetalle.setContentAreaFilled(false);
-    btnDetalle.setEnabled(false);
-    btnDetalle.addActionListener(new java.awt.event.ActionListener() {
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
-            btnDetalleActionPerformed(evt);
-        }
-    });
+    jLabel4.setFont(new java.awt.Font("Roboto", 0, 11)); // NOI18N
+    jLabel4.setText("Monto de gasto");
+    jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 103, 83, 23));
 
-    jLabel3.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-    jLabel3.setText("Responsable");
-
-    jLabel4.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-    jLabel4.setText("Importe");
-
-    txtImporte.setFont(new java.awt.Font("Microsoft Sans Serif", 1, 11)); // NOI18N
+    txtImporte.setFont(new java.awt.Font("Roboto", 1, 14)); // NOI18N
     txtImporte.setForeground(new java.awt.Color(0, 153, 0));
     txtImporte.setHorizontalAlignment(javax.swing.JTextField.CENTER);
     txtImporte.setText("0");
+    txtImporte.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
     txtImporte.setEnabled(false);
     txtImporte.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -347,16 +447,21 @@ public class dlgGastos extends javax.swing.JDialog {
             txtImporteKeyReleased(evt);
         }
     });
+    jPanel1.add(txtImporte, new org.netbeans.lib.awtextra.AbsoluteConstraints(102, 103, 144, 23));
 
     txtImporteL.setEditable(false);
     txtImporteL.setBackground(new java.awt.Color(255, 255, 255));
     txtImporteL.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
     txtImporteL.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+    txtImporteL.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
+    jPanel1.add(txtImporteL, new org.netbeans.lib.awtextra.AbsoluteConstraints(251, 103, 110, 23));
 
-    jLabel5.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
+    jLabel5.setFont(new java.awt.Font("Roboto", 0, 11)); // NOI18N
     jLabel5.setText("Observación");
+    jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 134, 83, 23));
 
-    txtObservacion.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
+    txtObservacion.setFont(new java.awt.Font("Roboto", 0, 11)); // NOI18N
+    txtObservacion.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
     txtObservacion.setEnabled(false);
     txtObservacion.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -368,387 +473,92 @@ public class dlgGastos extends javax.swing.JDialog {
             txtObservacionKeyTyped(evt);
         }
     });
+    jPanel1.add(txtObservacion, new org.netbeans.lib.awtextra.AbsoluteConstraints(102, 134, 590, 23));
 
-    lblCodDetalle.setText(".");
-
-    cboResponsable.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-    cboResponsable.setEnabled(false);
-    cboResponsable.addActionListener(new java.awt.event.ActionListener() {
+    cbDetalleGasto.setForeground(new java.awt.Color(0, 0, 0));
+    cbDetalleGasto.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "SELECCIONE EL MOTIVO:", "1- GASTOS VARIOS", "2- ADELANTO DE SUELDO", "3- PAGO DE SUELDO" }));
+    cbDetalleGasto.setColorArrow(new java.awt.Color(255, 255, 255));
+    cbDetalleGasto.setColorBorde(new java.awt.Color(204, 204, 204));
+    cbDetalleGasto.setColorBoton(new java.awt.Color(153, 153, 153));
+    cbDetalleGasto.setColorFondo(new java.awt.Color(255, 255, 255));
+    cbDetalleGasto.setColorSeleccion(new java.awt.Color(0, 102, 102));
+    cbDetalleGasto.setConBorde(true);
+    cbDetalleGasto.setEnabled(false);
+    cbDetalleGasto.setFont(new java.awt.Font("Roboto", 0, 11)); // NOI18N
+    cbDetalleGasto.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
-            cboResponsableActionPerformed(evt);
+            cbDetalleGastoActionPerformed(evt);
         }
     });
-    cboResponsable.addKeyListener(new java.awt.event.KeyAdapter() {
+    cbDetalleGasto.addKeyListener(new java.awt.event.KeyAdapter() {
         public void keyPressed(java.awt.event.KeyEvent evt) {
-            cboResponsableKeyPressed(evt);
+            cbDetalleGastoKeyPressed(evt);
         }
     });
+    jPanel1.add(cbDetalleGasto, new org.netbeans.lib.awtextra.AbsoluteConstraints(102, 43, 260, 23));
 
-    lbInfoMovil.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-    lbInfoMovil.setForeground(new java.awt.Color(0, 102, 153));
-    lbInfoMovil.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(153, 153, 255), 1, true));
+    cboOtorgado.setForeground(new java.awt.Color(0, 0, 0));
+    cboOtorgado.setColorArrow(new java.awt.Color(255, 255, 255));
+    cboOtorgado.setColorBorde(new java.awt.Color(204, 204, 204));
+    cboOtorgado.setColorBoton(new java.awt.Color(153, 153, 153));
+    cboOtorgado.setColorFondo(new java.awt.Color(255, 255, 255));
+    cboOtorgado.setColorSeleccion(new java.awt.Color(0, 102, 102));
+    cboOtorgado.setConBorde(true);
+    cboOtorgado.setEnabled(false);
+    cboOtorgado.setFont(new java.awt.Font("Roboto", 0, 11)); // NOI18N
+    cboOtorgado.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            cboOtorgadoActionPerformed(evt);
+        }
+    });
+    cboOtorgado.addKeyListener(new java.awt.event.KeyAdapter() {
+        public void keyPressed(java.awt.event.KeyEvent evt) {
+            cboOtorgadoKeyPressed(evt);
+        }
+    });
+    jPanel1.add(cboOtorgado, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 43, 260, 23));
 
-    cbGenerado.setFont(new java.awt.Font("Times New Roman", 0, 12)); // NOI18N
-    cbGenerado.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "GENERADO EN:", "SALÓN", "REPARTO", "ADMINISTRACIÓN" }));
+    cbGenerado.setForeground(new java.awt.Color(0, 0, 0));
+    cbGenerado.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "ORIGEN DEL GASTO:", "1- SALÓN DE VENTA", "2- ADMINISTRACIÓN" }));
+    cbGenerado.setColorArrow(new java.awt.Color(255, 255, 255));
+    cbGenerado.setColorBorde(new java.awt.Color(204, 204, 204));
+    cbGenerado.setColorBoton(new java.awt.Color(153, 153, 153));
+    cbGenerado.setColorFondo(new java.awt.Color(255, 255, 255));
+    cbGenerado.setColorSeleccion(new java.awt.Color(0, 102, 102));
+    cbGenerado.setConBorde(true);
     cbGenerado.setEnabled(false);
+    cbGenerado.setFont(new java.awt.Font("Roboto", 0, 11)); // NOI18N
     cbGenerado.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
             cbGeneradoActionPerformed(evt);
         }
     });
-
-    javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-    jPanel1.setLayout(jPanel1Layout);
-    jPanel1Layout.setHorizontalGroup(
-        jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addGroup(jPanel1Layout.createSequentialGroup()
-            .addContainerGap()
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jLabel2)
-                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(jLabel4)
-                .addComponent(jLabel5)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(txtIdMovil, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel1Layout.createSequentialGroup()
-                    .addComponent(txtImporte, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                    .addComponent(txtImporteL, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(lblCodDetalle, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(cboResponsable, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(lbInfoMovil, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addGap(0, 0, Short.MAX_VALUE)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(txtCaja, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(cbDetalleGasto, 0, 204, Short.MAX_VALUE)
-                                .addComponent(cbGenerado, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGap(0, 0, 0)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(btnDetalle, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(dcFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addComponent(txtObservacion, javax.swing.GroupLayout.Alignment.LEADING))
-                    .addGap(12, 12, 12))))
-    );
-    jPanel1Layout.setVerticalGroup(
-        jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addGroup(jPanel1Layout.createSequentialGroup()
-            .addGap(14, 14, 14)
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel1Layout.createSequentialGroup()
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(txtCaja, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel6)
-                        .addComponent(jLabel1))
-                    .addGap(8, 8, 8)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(btnDetalle, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(cbDetalleGasto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel2))))
-                .addComponent(dcFecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(cbGenerado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                .addComponent(cboResponsable, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(jLabel3))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(lbInfoMovil, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(txtIdMovil, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                .addComponent(jLabel4)
-                .addComponent(txtImporte, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(txtImporteL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(lblCodDetalle))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                .addComponent(jLabel5)
-                .addComponent(txtObservacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addContainerGap(25, Short.MAX_VALUE))
-    );
-
-    javax.swing.GroupLayout BlancoLayout = new javax.swing.GroupLayout(Blanco);
-    Blanco.setLayout(BlancoLayout);
-    BlancoLayout.setHorizontalGroup(
-        BlancoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addGroup(BlancoLayout.createSequentialGroup()
-            .addGroup(BlancoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(Oscuro, javax.swing.GroupLayout.PREFERRED_SIZE, 519, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(BlancoLayout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-            .addGap(31, 31, 31))
-    );
-    BlancoLayout.setVerticalGroup(
-        BlancoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addGroup(BlancoLayout.createSequentialGroup()
-            .addComponent(Oscuro, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addContainerGap())
-    );
-
-    barMenu.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
-
-    menuOpciones.setText("Opciones");
-    menuOpciones.setFocusable(false);
-    menuOpciones.setFont(new java.awt.Font("Calibri", 1, 12)); // NOI18N
-    menuOpciones.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
-
-    itemNuevo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F1, 0));
-    itemNuevo.setFont(new java.awt.Font("Calibri", 0, 11)); // NOI18N
-    itemNuevo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/document15.png"))); // NOI18N
-    itemNuevo.setText("Nuevo");
-    itemNuevo.addActionListener(new java.awt.event.ActionListener() {
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
-            itemNuevoActionPerformed(evt);
+    cbGenerado.addKeyListener(new java.awt.event.KeyAdapter() {
+        public void keyPressed(java.awt.event.KeyEvent evt) {
+            cbGeneradoKeyPressed(evt);
         }
     });
-    menuOpciones.add(itemNuevo);
+    jPanel1.add(cbGenerado, new org.netbeans.lib.awtextra.AbsoluteConstraints(102, 73, 260, 23));
 
-    itemModificar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F5, 0));
-    itemModificar.setFont(new java.awt.Font("Calibri", 0, 11)); // NOI18N
-    itemModificar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/edit15.png"))); // NOI18N
-    itemModificar.setText("Guardar Modificación");
-    itemModificar.setEnabled(false);
-    itemModificar.addActionListener(new java.awt.event.ActionListener() {
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
-            itemModificarActionPerformed(evt);
-        }
-    });
-    menuOpciones.add(itemModificar);
+    jLabel3.setFont(new java.awt.Font("Roboto", 0, 11)); // NOI18N
+    jLabel3.setText("Motivo del gasto");
+    jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 43, -1, 23));
 
-    itemGuardar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F6, 0));
-    itemGuardar.setFont(new java.awt.Font("Calibri", 0, 11)); // NOI18N
-    itemGuardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/save15.png"))); // NOI18N
-    itemGuardar.setText("Guardar Nuevo");
-    itemGuardar.setEnabled(false);
-    itemGuardar.addActionListener(new java.awt.event.ActionListener() {
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
-            itemGuardarActionPerformed(evt);
-        }
-    });
-    menuOpciones.add(itemGuardar);
-
-    itemCancelar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_ESCAPE, 0));
-    itemCancelar.setFont(new java.awt.Font("Calibri", 0, 11)); // NOI18N
-    itemCancelar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/cancel15.png"))); // NOI18N
-    itemCancelar.setText("Cancelar");
-    itemCancelar.setEnabled(false);
-    itemCancelar.addActionListener(new java.awt.event.ActionListener() {
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
-            itemCancelarActionPerformed(evt);
-        }
-    });
-    menuOpciones.add(itemCancelar);
-
-    itemSalir.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.ALT_DOWN_MASK));
-    itemSalir.setFont(new java.awt.Font("Calibri", 0, 11)); // NOI18N
-    itemSalir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/back15.png"))); // NOI18N
-    itemSalir.setText("Salir");
-    itemSalir.addActionListener(new java.awt.event.ActionListener() {
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
-            itemSalirActionPerformed(evt);
-        }
-    });
-    menuOpciones.add(itemSalir);
-
-    barMenu.add(menuOpciones);
-
-    setJMenuBar(barMenu);
+    Blanco.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 110, 700, 160));
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addComponent(Blanco, javax.swing.GroupLayout.PREFERRED_SIZE, 516, Short.MAX_VALUE)
+        .addComponent(Blanco, javax.swing.GroupLayout.PREFERRED_SIZE, 703, javax.swing.GroupLayout.PREFERRED_SIZE)
     );
     layout.setVerticalGroup(
         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addComponent(Blanco, javax.swing.GroupLayout.DEFAULT_SIZE, 326, Short.MAX_VALUE)
+        .addComponent(Blanco, javax.swing.GroupLayout.PREFERRED_SIZE, 278, javax.swing.GroupLayout.PREFERRED_SIZE)
     );
 
     pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void cbDetalleGastoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbDetalleGastoActionPerformed
-        // TODO add your handling code here:
-        if (cbDetalleGasto.getSelectedIndex() == 0) {
-            lblCodDetalle.setText("");
-        } else {
-            String cod = cargarComboBox.getCodidgo(cbDetalleGasto);
-            lblCodDetalle.setText(cod);
-        }
-    }//GEN-LAST:event_cbDetalleGastoActionPerformed
-
-    private void btnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoActionPerformed
-        // TODO add your handling code here:
-        try {
-            String FechaI = String.valueOf(Fecha.fechaCorrecta());
-            txtCaja.setText(generarCodigos.ObtenerCodigo("SELECT ca_id from caja WHERE ca_fechainicio='" + FechaI + "' and ca_indicador='S'"));
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-        cargarComboBox.cargar(cbDetalleGasto, "SELECT * FROM detallegasto WHERE dg_indicador='S'");
-        cargarComboBox.cargarResponsable(cboResponsable, "SELECT * FROM v_vendedores WHERE idfuncion>=2 AND idfuncion<=4 AND ven_indicador='S'");
-
-        cbDetalleGasto.setEnabled(true);
-        txtImporte.setEnabled(true);
-        txtObservacion.setEnabled(true);
-        cboResponsable.setEnabled(true);
-        //dcFecha.setEnabled(true);
-        cbGenerado.setEnabled(true);
-
-        btnNuevo.setEnabled(false);
-        itemNuevo.setEnabled(false);
-        btnModificar.setEnabled(false);
-        itemModificar.setEnabled(false);
-        btnGuardar.setEnabled(true);
-        itemGuardar.setEnabled(true);
-        btnCancelar.setEnabled(true);
-        itemCancelar.setEnabled(true);
-        btnDetalle.setEnabled(true);
-        btnSalir.setEnabled(false);
-        itemSalir.setEnabled(false);
-
-        cbDetalleGasto.requestFocus();
-        cbDetalleGasto.setPopupVisible(true);
-    }//GEN-LAST:event_btnNuevoActionPerformed
-
-    private void btnModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarActionPerformed
-        // TODO add your handling code here:
-        /*   if (validarCampos.estaVacio(txtDescripcion)&& validarCampos.estaVacio(txtCostoL) && validarCampos.estaVacio(txtPrecioPublicoL)&& validarCampos.estaVacio(txtPrecioVentaL)
-            && validarCampos.estaVacio(txtCodLab)&& validarCampos.estaVacio(txtCodPro)&& validarCampos.estaVacio(txtCodFam)
-            && validarCampos.estaVacio(txtStock)&& validarCampos.estaVacio(txtStockMin)){
-            try{
-                int resp = JOptionPane.showConfirmDialog(this,"¿Seguro que desea modificar el registro?", "Modificar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                if (resp == JOptionPane.YES_OPTION){
-                    controlArticulo.actArticulo();
-                    limpiarCampos();
-                    CabecerasTablas.limpiarTablas(tbProductos);
-                    controlArticulo.listArticulo(tbProductos, "cod");
-                    cant();
-                    this.dispose();
-                }
-            }catch(Exception ee){System.out.println(ee.getMessage());}
-        } else {
-            Mensajes.informacion("Debe llenar obligatoriamente los campos señalados");
-        }*/
-    }//GEN-LAST:event_btnModificarActionPerformed
-
-    private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-        // TODO add your handling code here:
-        if (txtImporte.getText().isEmpty()) {
-            Mensajes.error("Ingrese en importe a registrar");
-            txtImporte.requestFocus();
-            txtImporte.selectAll();
-        } else if (txtImporte.getText().equals("0")) {
-            Mensajes.error("Ingrese un importe mayor a 0");
-            txtImporte.requestFocus();
-            txtImporte.selectAll();
-        } else if (txtObservacion.getText().isEmpty()) {
-            Mensajes.error("Ingrese una Observacion con relacion al registro");
-            txtObservacion.requestFocus();
-        } else if (lblCodDetalle.getText().isEmpty()) {
-            Mensajes.error("Seleccione un Motivo");
-            cbDetalleGasto.requestFocus();
-            cbDetalleGasto.setPopupVisible(true);
-        } else if (cboResponsable.getSelectedIndex() == 0) {
-            Mensajes.error("Seleccione el Responsable");
-            cboResponsable.requestFocus();
-            cboResponsable.setPopupVisible(true);
-        } else if (cbGenerado.getSelectedIndex() == 0) {
-            Mensajes.error("Seleccione el origen del gasto");
-            cbGenerado.requestFocus();
-            cbGenerado.setPopupVisible(true);
-        } else {
-            try {
-                int resp = JOptionPane.showConfirmDialog(this, "¿Seguro que desea insertar el registro?", "Insertar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                if (resp == JOptionPane.YES_OPTION) {
-                    ControlGasto.addGasto();
-                    btnCancelarActionPerformed(null);
-                }
-            } catch (HeadlessException ee) {
-                System.out.println(ee.getMessage());
-            }
-
-        }
-    }//GEN-LAST:event_btnGuardarActionPerformed
-
-    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
-        // TODO add your handling code here:
-        limpiarCampos();
-        cbDetalleGasto.setEnabled(false);
-        txtImporte.setEnabled(false);
-        txtObservacion.setEnabled(false);
-        btnDetalle.setEnabled(false);
-        cboResponsable.setEnabled(false);
-        dcFecha.setEnabled(false);
-        cbGenerado.setEnabled(false);
-
-        btnNuevo.setEnabled(true);
-        itemNuevo.setEnabled(true);
-        btnModificar.setEnabled(false);
-        itemModificar.setEnabled(false);
-        btnGuardar.setEnabled(false);
-        itemGuardar.setEnabled(false);
-        btnCancelar.setEnabled(false);
-        itemCancelar.setEnabled(false);
-        btnSalir.setEnabled(true);
-        itemSalir.setEnabled(true);
-    }//GEN-LAST:event_btnCancelarActionPerformed
-
-    private void itemNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemNuevoActionPerformed
-        // TODO add your handling code here:
-        btnNuevoActionPerformed(null);
-    }//GEN-LAST:event_itemNuevoActionPerformed
-
-    private void itemModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemModificarActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_itemModificarActionPerformed
-
-    private void itemGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemGuardarActionPerformed
-        // TODO add your handling code here:
-        btnGuardarActionPerformed(null);
-    }//GEN-LAST:event_itemGuardarActionPerformed
-
-    private void itemCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemCancelarActionPerformed
-        // TODO add your handling code here:
-        btnCancelarActionPerformed(null);
-    }//GEN-LAST:event_itemCancelarActionPerformed
-
-    private void itemSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemSalirActionPerformed
-        // TODO add your handling code here:
-        btnSalirActionPerformed(null);
-    }//GEN-LAST:event_itemSalirActionPerformed
-
-    private void btnDetalleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDetalleActionPerformed
-        // TODO add your handling code here:
-        dlgDetalleGasto dg = new dlgDetalleGasto(null, true);
-        dg.setLocationRelativeTo(null);
-        dg.setVisible(true);
-    }//GEN-LAST:event_btnDetalleActionPerformed
-
-    private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
-        // TODO add your handling code here:
-        int rpta = Mensajes.confirmar("¿Seguro que desea salir del formulario?");
-        if (rpta == 0) {
-            this.dispose();
-            Volver();
-        }
-    }//GEN-LAST:event_btnSalirActionPerformed
 
     private void txtImporteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtImporteActionPerformed
         // TODO add your handling code here:
@@ -796,14 +606,6 @@ public class dlgGastos extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_txtObservacionKeyTyped
 
-    private void cbDetalleGastoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cbDetalleGastoKeyPressed
-        // TODO add your handling code here:
-        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-            cboResponsable.requestFocus();
-            cboResponsable.setPopupVisible(true);
-        }
-    }//GEN-LAST:event_cbDetalleGastoKeyPressed
-
     private void txtObservacionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtObservacionActionPerformed
         // TODO add your handling code here:
         if (txtObservacion.getText().isEmpty()) {
@@ -814,38 +616,170 @@ public class dlgGastos extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_txtObservacionActionPerformed
 
-    private void cboResponsableActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboResponsableActionPerformed
+    private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
         // TODO add your handling code here:
-        if (cboResponsable.getSelectedIndex() == 0) {
-            txtIdMovil.setText("");
-            lbInfoMovil.setText("");
+        int rpta = Mensajes.confirmar("¿Seguro que desea salir del formulario?");
+        if (rpta == 0) {
+            this.dispose();
+            Volver();
+        }
+    }//GEN-LAST:event_btnSalirActionPerformed
+
+    private void btnSalirKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_btnSalirKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnSalirKeyPressed
+
+    private void btnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoActionPerformed
+        // TODO add your handling code here:
+        try {
+            String FechaI = String.valueOf(Fecha.fechaCorrecta());
+            txtCaja.setText(generarCodigos.ObtenerCodigo("SELECT ca_id from caja WHERE ca_fechainicio='" + FechaI + "' and ca_indicador='S'"));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        //cbDetalleGastoActionPerformed(null);
+        cbDetalleGasto.setEnabled(true);
+        txtImporte.setEnabled(true);
+        txtObservacion.setEnabled(true);
+        cboOtorgado.setEnabled(true);
+        //dcFecha.setEnabled(true);
+        cbGenerado.setEnabled(true);
+
+        btnNuevo.setEnabled(false);
+        btnGuardar.setEnabled(true);
+        btnCancelar.setEnabled(true);
+        btnSalir.setEnabled(false);
+
+        cbDetalleGasto.requestFocus();
+        cbDetalleGasto.setPopupVisible(true);
+    }//GEN-LAST:event_btnNuevoActionPerformed
+
+    private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
+        // TODO add your handling code here:
+        if (cbDetalleGasto.getSelectedIndex() == 0) {
+            Mensajes.Sistema("Seleccione el motivo por el cual se registrara el gasto al sistema.");
+            cbDetalleGasto.requestFocus();
+            cbDetalleGasto.setPopupVisible(true);
+        } else if (cbDetalleGasto.getSelectedIndex() != 1 && cboOtorgado.getSelectedIndex() == 0) {
+            Mensajes.Sistema("Seleccione a quien se otorga este gasto.");
+            cboOtorgado.requestFocus();
+            cboOtorgado.setPopupVisible(true);
+        } else if (cbGenerado.getSelectedIndex() == 0) {
+            Mensajes.Sistema("Seleccione el origen del gasto.");
+            cbGenerado.requestFocus();
+            cbGenerado.setPopupVisible(true);
+        } else if (txtImporte.getText().isEmpty()) {
+            Mensajes.Sistema("Ingrese en importe a registrar");
+            txtImporte.requestFocus();
+            txtImporte.selectAll();
+        } else if (txtImporte.getText().equals("0")) {
+            Mensajes.Sistema("Ingrese un importe mayor a 0");
+            txtImporte.requestFocus();
+            txtImporte.selectAll();
+        } else if (txtObservacion.getText().isEmpty()) {
+            Mensajes.Sistema("Ingrese una Observacion con relacion a este gasto.");
+            txtObservacion.requestFocus();
         } else {
             try {
-                String resp = cargarComboBox.getCodidgo(cboResponsable);
-                String sql = "SELECT idmovil, movil FROM v_vendedores WHERE ven_codigo=" + resp;
-                try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
-                    rs.last();
-                    txtIdMovil.setText(String.valueOf(rs.getInt("idmovil")));
-                    lbInfoMovil.setText("Referencia: " + rs.getString("movil"));
-                    rs.close();
-                } catch (SQLException ex) {
-                    Mensajes.error("Error al querer obtener ID del móvil: " + ex.getMessage());
+                int resp = JOptionPane.showConfirmDialog(this, "¿Seguro que desea insertar el registro?", "Insertar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                if (resp == JOptionPane.YES_OPTION) {
+                    ControlGasto.addGasto();
+                    btnCancelarActionPerformed(null);
                 }
-            } catch (Exception pr) {
+            } catch (HeadlessException ee) {
+                System.out.println(ee.getMessage());
+            }
+
+        }
+    }//GEN-LAST:event_btnGuardarActionPerformed
+
+    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
+        // TODO add your handling code here:
+        limpiarCampos();
+        cbDetalleGasto.setEnabled(false);
+        txtImporte.setEnabled(false);
+        txtObservacion.setEnabled(false);
+        cboOtorgado.setEnabled(false);
+        dcFecha.setEnabled(false);
+        cbGenerado.setEnabled(false);
+        btnNuevo.setEnabled(true);
+        btnGuardar.setEnabled(false);
+        btnCancelar.setEnabled(false);
+        btnSalir.setEnabled(true);
+    }//GEN-LAST:event_btnCancelarActionPerformed
+
+    private void cbDetalleGastoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbDetalleGastoActionPerformed
+        // TODO add your handling code here:
+        switch (cbDetalleGasto.getSelectedIndex()) {
+            case 0 -> {
+                lbOtorgado.setVisible(false);
+                cboOtorgado.setVisible(false);
+                txtMotivo.setText("");
+            }
+            case 1 -> {
+                lbOtorgado.setVisible(false);
+                cboOtorgado.setVisible(false);
+                txtMotivo.setText("1");
+            }
+            case 2 -> {
+                lbOtorgado.setVisible(true);
+                cboOtorgado.setVisible(true);
+                txtMotivo.setText("2");
+            }
+            case 3 -> {
+                lbOtorgado.setVisible(true);
+                cboOtorgado.setVisible(true);
+                txtMotivo.setText("3");
+            }
+            default -> {
             }
         }
-    }//GEN-LAST:event_cboResponsableActionPerformed
+        cargarComboBox.cargarResponsable(cboOtorgado, "SELECT * FROM v_vendedores WHERE idfuncion>=3 AND idfuncion<=4 AND ven_indicador='S'");
+        cboOtorgadoActionPerformed(null);
+    }//GEN-LAST:event_cbDetalleGastoActionPerformed
 
-    private void cboResponsableKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cboResponsableKeyPressed
+    private void cbDetalleGastoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cbDetalleGastoKeyPressed
+        // TODO add your handling code here:
+        // AccesoRapido(evt.getKeyCode());
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            cboOtorgado.requestFocus();
+            cboOtorgado.setPopupVisible(true);
+        }
+    }//GEN-LAST:event_cbDetalleGastoKeyPressed
+
+    private void cboOtorgadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboOtorgadoActionPerformed
+        // TODO add your handling code here:
+        if (cboOtorgado.getSelectedIndex() == 0) {
+            txtFuncionario.setText("0");
+        } else {
+            txtFuncionario.setText(cargarComboBox.getCodidgo(cboOtorgado));
+        }
+    }//GEN-LAST:event_cboOtorgadoActionPerformed
+
+    private void cboOtorgadoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cboOtorgadoKeyPressed
         // TODO add your handling code here:
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             txtImporte.requestFocus();
         }
-    }//GEN-LAST:event_cboResponsableKeyPressed
+    }//GEN-LAST:event_cboOtorgadoKeyPressed
 
     private void cbGeneradoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbGeneradoActionPerformed
         // TODO add your handling code here:
+        switch (cbGenerado.getSelectedIndex()) {
+            case 0 ->
+                txtOrigen.setText("");
+            case 1 ->
+                txtOrigen.setText("L");
+            case 2 ->
+                txtOrigen.setText("A");
+            default -> {
+            }
+        }
     }//GEN-LAST:event_cbGeneradoActionPerformed
+
+    private void cbGeneradoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cbGeneradoKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cbGeneradoKeyPressed
 
     /**
      * @param args the command line arguments
@@ -885,23 +819,24 @@ public class dlgGastos extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private org.edisoncor.gui.panel.PanelImage Blanco;
+    private javax.swing.JLabel LabelTitulo1;
+    private javax.swing.JLabel LabelTitulo3;
+    private javax.swing.JLabel LabelTitulo4;
     private org.edisoncor.gui.panel.PanelImage Oscuro;
-    private javax.swing.JMenuBar barMenu;
-    public static javax.swing.JButton btnCancelar;
-    public static javax.swing.JButton btnDetalle;
-    public static javax.swing.JButton btnGuardar;
-    public static javax.swing.JButton btnModificar;
-    public static javax.swing.JButton btnNuevo;
-    private javax.swing.JButton btnSalir;
-    public static javax.swing.JComboBox cbDetalleGasto;
-    public static javax.swing.JComboBox<String> cbGenerado;
-    public static javax.swing.JComboBox<String> cboResponsable;
+    private rojeru_san.rspanel.RSPanelImage PanelContenedor1;
+    private rojeru_san.rspanel.RSPanelImage PanelContenedor3;
+    private rojeru_san.rspanel.RSPanelImage PanelContenedor4;
+    private javax.swing.JSeparator Separador1;
+    private javax.swing.JSeparator Separador3;
+    private javax.swing.JSeparator Separador4;
+    private RSMaterialComponent.RSButtonIconUno btnCancelar;
+    private RSMaterialComponent.RSButtonIconUno btnGuardar;
+    private RSMaterialComponent.RSButtonIconUno btnNuevo;
+    private RSMaterialComponent.RSButtonIconOne btnSalir;
+    public static RSMaterialComponent.RSComboBox cbDetalleGasto;
+    public static RSMaterialComponent.RSComboBox cbGenerado;
+    public static RSMaterialComponent.RSComboBox cboOtorgado;
     public static datechooser.beans.DateChooserCombo dcFecha;
-    public static javax.swing.JMenuItem itemCancelar;
-    public static javax.swing.JMenuItem itemGuardar;
-    public static javax.swing.JMenuItem itemModificar;
-    public static javax.swing.JMenuItem itemNuevo;
-    private javax.swing.JMenuItem itemSalir;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -909,14 +844,14 @@ public class dlgGastos extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel4;
-    private javax.swing.JLabel lbInfoMovil;
-    public static javax.swing.JLabel lblCodDetalle;
-    private javax.swing.JMenu menuOpciones;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JLabel lbOtorgado;
     public static javax.swing.JTextField txtCaja;
-    public static javax.swing.JTextField txtIdMovil;
+    public static javax.swing.JTextField txtFuncionario;
     public static javax.swing.JTextField txtImporte;
     public static javax.swing.JTextField txtImporteL;
+    public static javax.swing.JTextField txtMotivo;
     public static javax.swing.JTextField txtObservacion;
+    public static javax.swing.JTextField txtOrigen;
     // End of variables declaration//GEN-END:variables
 }

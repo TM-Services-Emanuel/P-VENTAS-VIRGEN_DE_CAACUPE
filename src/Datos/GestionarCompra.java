@@ -38,7 +38,7 @@ public class GestionarCompra {
         return msg;
     }
 
-    public static List listarCompras() {
+    /*public static List listarCompras() {
         StringBuilder sql = new StringBuilder("SELECT compra.com_codigo,");
         sql.append("compra.caja_ca_id,");
         sql.append("compra.tipo,");
@@ -52,6 +52,27 @@ public class GestionarCompra {
         sql.append(" compra.com_total,");
         sql.append(" compra.com_indicador,");
         sql.append(" compra.obs");
+        sql.append(" FROM compra ");
+        sql.append(" JOIN proveedor ON compra.proveedor_pro_codigo = proveedor.pro_codigo order by compra.com_codigo");
+        //sql.append(" WHERE compra.com_indicador='S'");
+        return Operacion.getTabla(sql.toString());
+    }*/
+    public static List listarCompras() {
+        StringBuilder sql = new StringBuilder("SELECT compra.com_codigo,");
+        sql.append("compra.caja_ca_id,");
+        sql.append("compra.tipo,");
+        sql.append(" compra.com_fecha,");
+        sql.append(" compra.com_hora,");
+        sql.append(" proveedor.pro_ruc,");
+        sql.append(" proveedor.pro_razonsocial,");
+        sql.append(" compra.com_condpago,");
+        sql.append(" compra.com_factura,");
+        sql.append(" proveedor.pro_codigo,");
+        sql.append(" compra.com_total,");
+        sql.append(" compra.com_indicador,");
+        sql.append(" compra.obs,");
+        sql.append(" compra.estado,");
+        sql.append(" compra.saldo");
         sql.append(" FROM compra ");
         sql.append(" JOIN proveedor ON compra.proveedor_pro_codigo = proveedor.pro_codigo order by compra.com_codigo");
         //sql.append(" WHERE compra.com_indicador='S'");

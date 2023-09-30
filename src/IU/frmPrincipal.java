@@ -71,7 +71,7 @@ public final class frmPrincipal extends javax.swing.JFrame {
         Reloj hilo = new Reloj(lblFecha);
         hilo.start();
     }
-    
+
     void abrirPagosProveedor() {
         try {
             dlgRegistrarPagosProveedor rpp = new dlgRegistrarPagosProveedor(this, true);
@@ -107,7 +107,7 @@ public final class frmPrincipal extends javax.swing.JFrame {
             ((JPanelConFondo) panelFondo).setImagen(nombre);
         } catch (Exception e) {
             Mensajes.informacion("Error al cargar Fondo del Sistema.");
-            System.out.println("Error al cargar Fondo del Sistema: "+e.getMessage());
+            System.out.println("Error al cargar Fondo del Sistema: " + e.getMessage());
         }
     }
 
@@ -277,7 +277,7 @@ public final class frmPrincipal extends javax.swing.JFrame {
         jSeparator25 = new javax.swing.JPopupMenu.Separator();
         mnGVM1 = new javax.swing.JMenuItem();
         mnGVM = new javax.swing.JMenuItem();
-        mnAyuda2 = new javax.swing.JMenu();
+        mnPagos = new javax.swing.JMenu();
         mnPagoProveedor1 = new javax.swing.JMenuItem();
         jSeparator10 = new javax.swing.JPopupMenu.Separator();
         mnDetallePagoProveedor = new javax.swing.JMenuItem();
@@ -331,6 +331,7 @@ public final class frmPrincipal extends javax.swing.JFrame {
         S9 = new javax.swing.JPopupMenu.Separator();
         rpGanancias = new javax.swing.JMenu();
         jMenuItem57 = new javax.swing.JMenuItem();
+        jMenuItem58 = new javax.swing.JMenuItem();
         divisor2 = new javax.swing.JMenu();
         mnAyuda = new javax.swing.JMenu();
         jMenuItem17 = new javax.swing.JMenuItem();
@@ -1521,11 +1522,10 @@ public final class frmPrincipal extends javax.swing.JFrame {
 
         mbBarraMenu.add(mnVentas);
 
-        mnAyuda2.setText("Pagos");
-        mnAyuda2.setFont(new java.awt.Font("Calibri", 1, 12)); // NOI18N
-        mnAyuda2.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
+        mnPagos.setText("Pagos");
+        mnPagos.setFont(new java.awt.Font("Roboto", 1, 11)); // NOI18N
 
-        mnPagoProveedor1.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        mnPagoProveedor1.setFont(new java.awt.Font("Roboto", 0, 11)); // NOI18N
         mnPagoProveedor1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/billete.png"))); // NOI18N
         mnPagoProveedor1.setText("Registrar pagos a Proveedores");
         mnPagoProveedor1.addActionListener(new java.awt.event.ActionListener() {
@@ -1533,10 +1533,10 @@ public final class frmPrincipal extends javax.swing.JFrame {
                 mnPagoProveedor1ActionPerformed(evt);
             }
         });
-        mnAyuda2.add(mnPagoProveedor1);
-        mnAyuda2.add(jSeparator10);
+        mnPagos.add(mnPagoProveedor1);
+        mnPagos.add(jSeparator10);
 
-        mnDetallePagoProveedor.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        mnDetallePagoProveedor.setFont(new java.awt.Font("Roboto", 0, 11)); // NOI18N
         mnDetallePagoProveedor.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/billetera.png"))); // NOI18N
         mnDetallePagoProveedor.setText("Gestionar todos los pagos realizados");
         mnDetallePagoProveedor.addActionListener(new java.awt.event.ActionListener() {
@@ -1544,9 +1544,9 @@ public final class frmPrincipal extends javax.swing.JFrame {
                 mnDetallePagoProveedorActionPerformed(evt);
             }
         });
-        mnAyuda2.add(mnDetallePagoProveedor);
+        mnPagos.add(mnDetallePagoProveedor);
 
-        mbBarraMenu.add(mnAyuda2);
+        mbBarraMenu.add(mnPagos);
 
         mnTransferencias.setText("Transferencias");
         mnTransferencias.setEnabled(false);
@@ -1835,18 +1835,28 @@ public final class frmPrincipal extends javax.swing.JFrame {
         mnMD.add(S9);
 
         rpGanancias.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/Impri_report.png"))); // NOI18N
-        rpGanancias.setText("Ganancia");
+        rpGanancias.setText("Ganancia & Balance");
         rpGanancias.setFont(new java.awt.Font("Roboto", 0, 11)); // NOI18N
 
         jMenuItem57.setFont(new java.awt.Font("Roboto", 0, 11)); // NOI18N
         jMenuItem57.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/Reportes.png"))); // NOI18N
-        jMenuItem57.setText("Reporte de Ganancias en General");
+        jMenuItem57.setText("Reporte de Ganancias");
         jMenuItem57.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem57ActionPerformed(evt);
             }
         });
         rpGanancias.add(jMenuItem57);
+
+        jMenuItem58.setFont(new java.awt.Font("Roboto", 0, 11)); // NOI18N
+        jMenuItem58.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/Reportes.png"))); // NOI18N
+        jMenuItem58.setText("Reporte de Balances en General");
+        jMenuItem58.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem58ActionPerformed(evt);
+            }
+        });
+        rpGanancias.add(jMenuItem58);
 
         mnMD.add(rpGanancias);
 
@@ -2544,7 +2554,7 @@ public final class frmPrincipal extends javax.swing.JFrame {
     private void btnGestionarComprasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGestionarComprasActionPerformed
         // TODO add your handling code here:
         try {
-            dlgConsultarCompras consCompras = new dlgConsultarCompras(this, true);
+            dlgConsultarCompras11 consCompras = new dlgConsultarCompras11(this, true);
             consCompras.setLocationRelativeTo(null);
             consCompras.setVisible(true);
         } catch (Exception e) {
@@ -2597,14 +2607,23 @@ public final class frmPrincipal extends javax.swing.JFrame {
 
     private void mnGestGastosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnGestGastosActionPerformed
         // TODO add your handling code here:
-        /*try {
-                dlgGestGastos Ggastos = new dlgGestGastos(this, true);
-                Ggastos.setLocationRelativeTo(null);
-                Ggastos.setVisible(true);
+        try {
+            String fe = generarCodigos.getFecha("SELECT ca_fechainicio FROM caja where ca_indicador='S' ORDER BY ca_id DESC LIMIT 1");
+            if (!fe.equals(Fecha.fechaCorrecta())) {
+                Mensajes.informacion("La caja del día aún no ha sido inicializada.\n\nPara poder comenzar a vender sera necesario hacerlo.\nLa apertura puede realizarse con los perfiles ADMINISTRADOR y VENTAS.");
+            } else {
+                try {
+                    dlgGestGastos Ggastos = new dlgGestGastos(this, true);
+                    Ggastos.setLocationRelativeTo(null);
+                    Ggastos.setVisible(true);
+                } catch (Exception e) {
+                    Mensajes.informacion("Servidor no esta activo");
+                }
+            }
         } catch (Exception e) {
-            Mensajes.informacion("Servidor no esta activo");
-        }*/
-        Mensajes.Sistema("Esta función se encuentra bloqueada en estos momentos.\nPara más información comuniquese con el proveedor del sistema.");
+            Mensajes.error("Error obteniendo fecha de caja: " + e.getMessage());
+        }
+        //Mensajes.Sistema("Esta función se encuentra bloqueada en estos momentos.\nPara más información comuniquese con el proveedor del sistema.");
 
     }//GEN-LAST:event_mnGestGastosActionPerformed
 
@@ -2927,6 +2946,17 @@ public final class frmPrincipal extends javax.swing.JFrame {
             Mensajes.informacion("Servidor no esta activo");
         }
     }//GEN-LAST:event_mnDetallePagoProveedorActionPerformed
+
+    private void jMenuItem58ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem58ActionPerformed
+        // TODO add your handling code here:
+        try {
+            dlgGestionarArqueo ReCom = new dlgGestionarArqueo(this, true);
+            ReCom.setLocationRelativeTo(this);
+            ReCom.setVisible(true);
+        } catch (Exception e) {
+            Mensajes.informacion("Servidor no esta activo");
+        }
+    }//GEN-LAST:event_jMenuItem58ActionPerformed
     void abrirProveedor() {
         try {
             dlgProveedores proveedor = new dlgProveedores(this, true);
@@ -3079,6 +3109,7 @@ public final class frmPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem53;
     private javax.swing.JMenuItem jMenuItem54;
     private javax.swing.JMenuItem jMenuItem57;
+    private javax.swing.JMenuItem jMenuItem58;
     private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JMenuItem jMenuItem8;
@@ -3126,7 +3157,6 @@ public final class frmPrincipal extends javax.swing.JFrame {
     private javax.swing.JLabel lbversion;
     private javax.swing.JMenuBar mbBarraMenu;
     public static javax.swing.JMenu mnAyuda;
-    public static javax.swing.JMenu mnAyuda2;
     private javax.swing.JMenuItem mnBuscarCaja;
     public static javax.swing.JMenu mnCaja;
     private javax.swing.JMenuItem mnCerrarSistema;
@@ -3168,6 +3198,7 @@ public final class frmPrincipal extends javax.swing.JFrame {
     public static javax.swing.JMenuItem mnNCProveedor;
     public static javax.swing.JMenuItem mnPagoProveedor;
     public static javax.swing.JMenuItem mnPagoProveedor1;
+    public static javax.swing.JMenu mnPagos;
     public static javax.swing.JMenu mnProductos;
     public static javax.swing.JMenu mnProveedores;
     public static javax.swing.JMenu mnReparto;

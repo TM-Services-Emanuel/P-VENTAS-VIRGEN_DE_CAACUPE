@@ -1,5 +1,6 @@
 package Datos;
 
+import Componentes.Fecha;
 import Componentes.Operacion;
 import Componentes.generarCodigos;
 import Modelo.Gasto;
@@ -15,16 +16,16 @@ public class GestionarGasto {
     public static String addGasto(Gasto g) {
         String msg;
         StringBuilder sql = new StringBuilder("INSERT INTO gastos VALUES (");
-        sql.append(getCodigo()).append(", ").append(g.getCaj()).append(", '").append(g.getGaFecha()).append("',");
-        sql.append(g.getGaDescripcion()).append(",").append(g.getGaNombre()).append(",");
-        sql.append(g.getGaImporte()).append(",'").append(g.getGaObservacion()).append("','S','").append(g.getUsusario()).append("','").append(g.getGenerado()).append("')");;
+        sql.append(getCodigo()).append(", ").append(g.getCaja_ca_id()).append(", '").append(g.getGa_fecha()).append("','").append(Fecha.darHora()).append("',");
+        sql.append(g.getMotivo_g()).append(",").append(g.getOtorgado()).append(",");
+        sql.append(g.getGa_importe()).append(",'").append(g.getGaObservacion()).append("','S','").append(g.getUsu()).append("','").append(g.getTipo()).append("')");;
         msg = Operacion.exeOperacion(sql.toString());
         return msg;
     }
     
     public static List listarGastos(String fecha) {
-        StringBuilder sql = new StringBuilder("SELECT ga_codigo,caja_ca_id,ga_fecha,dg_descripcion,tipo,descripcion,ga_importe,ga_observacion FROM v_gastos");
-        sql.append(" WHERE ga_fecha>='").append(fecha).append("' AND ga_fecha<='").append(fecha).append("' ORDER BY tipo ASC");
+        StringBuilder sql = new StringBuilder("SELECT ga_codigo,caja_ca_id,ga_fecha, ga_hora,tipo,motivo_gasto,nombre_vendedor,ga_importe,ga_observacion, usu FROM v_gastos_gral");
+        sql.append(" WHERE ga_fecha>='").append(fecha).append("' AND ga_fecha<='").append(fecha).append("' order by ga_codigo ASC");
         return Operacion.getTabla(sql.toString());
     }
     

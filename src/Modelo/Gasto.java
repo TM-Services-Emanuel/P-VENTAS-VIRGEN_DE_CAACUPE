@@ -2,79 +2,73 @@ package Modelo;
 
 public class Gasto {
 
-    private int caj;
-    private int gaCodigo;
-    private String gaFecha;
-    private int gaDescripcion;
-    private int gaNombre;
-    private int gaImporte;
+    private int caja_ca_id;
+    private String ga_fecha;
+    private int motivo_g;
+    private int otorgado;
+    private int ga_importe;
     private String gaObservacion;
-    private String usuario;
-    private String generado;
+    private String usu;
+    private String tipo;
 
     /*Constructo vacio*/
     public Gasto() {
     }
 
     /*Constructor Lleno*/
-    public Gasto(int caj, String gaFecha, int gaDescripcion, int gaNombre, int gaImporte, String gaObservacion, String usuario, String generado) {
-        this.caj = caj;
-        this.gaFecha = gaFecha;
-        this.gaDescripcion = gaDescripcion;
-        this.gaNombre = gaNombre;
-        this.gaImporte = gaImporte;
+
+    public Gasto(int caja_ca_id, String ga_fecha, int motivo_g, int otorgado, int ga_importe, String gaObservacion, String usu, String tipo) {
+        this.caja_ca_id = caja_ca_id;
+        this.ga_fecha = ga_fecha;
+        this.motivo_g = motivo_g;
+        this.otorgado = otorgado;
+        this.ga_importe = ga_importe;
         this.gaObservacion = gaObservacion;
-        this.usuario = usuario;
-        this.generado = generado;
+        this.usu = usu;
+        this.tipo = tipo;
     }
+    
 
     /*Getter y Setter*/
-    public int getGaCodigo() {
-        return gaCodigo;
+
+    public int getCaja_ca_id() {
+        return caja_ca_id;
     }
 
-    public void setGaCodigo(int gaCodigo) {
-        this.gaCodigo = gaCodigo;
+    public void setCaja_ca_id(int caja_ca_id) {
+        this.caja_ca_id = caja_ca_id;
     }
 
-    public int getCaj() {
-        return caj;
+    public String getGa_fecha() {
+        return ga_fecha;
     }
 
-    public void setCaj(int caj) {
-        this.caj = caj;
+    public void setGa_fecha(String ga_fecha) {
+        this.ga_fecha = ga_fecha;
     }
 
-    public String getGaFecha() {
-        return gaFecha;
+    public int getMotivo_g() {
+        return motivo_g;
     }
 
-    public void setGaFecha(String gaFecha) {
-        this.gaFecha = gaFecha;
+    public void setMotivo_g(int motivo_g) {
+        this.motivo_g = motivo_g;
     }
 
-    public int getGaDescripcion() {
-        return gaDescripcion;
+    public int getOtorgado() {
+        return otorgado;
     }
 
-    public void setGaDescripcion(int gaDescripcion) {
-        this.gaDescripcion = gaDescripcion;
+    public void setOtorgado(int otorgado) {
+        this.otorgado = otorgado;
     }
 
-    public int getGaNombre() {
-        return gaNombre;
+    public int getGa_importe() {
+        return ga_importe;
     }
 
-    public void setGaNombre(int gaNombre) {
-        this.gaNombre = gaNombre;
-    }
-
-    public int getGaImporte() {
-        return gaImporte;
-    }
-
-    public void setGaImporte(int gaImporte) {
-        this.gaImporte = gaImporte;
+    public void setGa_importe(int ga_importe) {
+        this.ga_importe = ga_importe;
     }
 
     public String getGaObservacion() {
@@ -85,22 +79,21 @@ public class Gasto {
         this.gaObservacion = gaObservacion;
     }
 
-    public String getUsusario() {
-        return usuario;
+    public String getUsu() {
+        return usu;
     }
 
-    public void setUsuario(String usuario) {
-        this.usuario = usuario;
+    public void setUsu(String usu) {
+        this.usu = usu;
     }
 
-    public String getGenerado() {
-        return generado;
+    public String getTipo() {
+        return tipo;
     }
 
-    public void setGenerado(String generado) {
-        this.generado = generado;
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
-    
     
 
 }

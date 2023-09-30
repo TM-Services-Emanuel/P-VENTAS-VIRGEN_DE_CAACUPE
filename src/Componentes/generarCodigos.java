@@ -122,6 +122,28 @@ public class generarCodigos {
         }
         return codgen;
     }
+    
+    public static long getDecimalesLong(String sql) {
+        long valor = 0;
+        try {
+            try (Connection conexion = dss.getDataSource().getConnection(); Statement sentencia = conexion.createStatement(); ResultSet resultado = sentencia.executeQuery(sql);) {
+                ResultSetMetaData rmeta = resultado.getMetaData();
+                int numColumnas = rmeta.getColumnCount();
+                while (resultado.next()) {
+                    for (int j = 1; j <= numColumnas; j++) {
+                        valor = resultado.getLong(j);
+                    }
+                }
+                resultado.close();
+                sentencia.close();
+                conexion.close();
+            }
+        } catch (SQLException e) {
+            System.out.println("Error obteniendo valor en getDecinalesINT: "+e.getMessage());
+        }
+        return valor;
+    }
+    
 
     public static String getFecha(String sql) {
         String codgen;

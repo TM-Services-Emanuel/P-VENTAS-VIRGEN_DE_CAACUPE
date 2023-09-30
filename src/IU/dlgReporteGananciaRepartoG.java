@@ -5,8 +5,6 @@ import Componentes.Fecha;
 import Componentes.Mensajes;
 import java.awt.BorderLayout;
 import java.awt.Toolkit;
-import org.mariadb.jdbc.MariaDbConnection;
-import org.mariadb.jdbc.MariaDbStatement;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;

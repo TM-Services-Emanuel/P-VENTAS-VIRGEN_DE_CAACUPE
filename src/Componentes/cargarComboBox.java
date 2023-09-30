@@ -61,7 +61,7 @@ public class cargarComboBox {
     public static void cargarResponsable(JComboBox cb, String sql) {
         try (Connection con = dss.getDataSource().getConnection(); Statement st = con.createStatement(); ResultSet rs = (ResultSet) st.executeQuery(sql)) {
             modeloCombo = new DefaultComboBoxModel();
-            modeloCombo.addElement("SELECCIONE UN RESPONSABLE");
+            modeloCombo.addElement("SELECCIONE EL FUNCIONARIO");
             while (rs.next()) {
                 modeloCombo.addElement(new Combo(Integer.parseInt(rs.getString(1)), rs.getString(6)));
             }

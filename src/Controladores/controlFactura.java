@@ -409,31 +409,38 @@ public class controlFactura {
                             if (cantTabla + cant >= art.getCant_prom()) {
                                 MensajePromocion = "- PROMOCIÓN HABILITADO (-" + art.getPorc_prom() + "%)";
                                 precio = art.getPrecio_prom();
+                                costo = art.getPrecio_costo();
                             } else {
                                 if (art.getVentam().equals("SI")) {
                                     if (cantTabla + cant < art.getCantm()) {
                                         MensajePromocion = " ";
                                         precio = art.getPreciominorista();
+                                        costo = art.getPrecio_costo();
                                     } else {
                                         MensajePromocion = " ";
                                         precio = art.getPrecio_venta();
+                                        costo = art.getPrecio_costo();
                                     }
                                 } else {
                                     MensajePromocion = " ";
                                     precio = art.getPreciominorista();
+                                    costo = art.getPrecio_costo();
                                 }
                             }
                         } else if (art.getVentam().equals("SI")) {
                             if (cantTabla + cant < art.getCantm()) {
                                 MensajePromocion = " ";
                                 precio = art.getPreciominorista();
+                                costo = art.getPrecio_costo();
                             } else {
                                 MensajePromocion = " ";
                                 precio = art.getPrecio_venta();
+                                costo = art.getPrecio_costo();
                             }
                         } else {
                             MensajePromocion = " ";
                             precio = art.getPreciominorista();
+                            costo = art.getPrecio_costo();
                         }
                         addmismoItemFactura(Nfila, cantTabla, iva, cant, precio, costo, MensajePromocion);
                         String total = String.valueOf(getTotal());
@@ -1473,6 +1480,7 @@ public class controlFactura {
             //int Gan = CalcGanancia();
             //dlgCompras1.tbDetalle.setValueAt(String.valueOf(Gan), fila, 16);
             String total = String.valueOf(getTotal());
+            String totalCosto = String.valueOf(getTotalCosto());
             String exentas = String.valueOf(getExcetas());
             String iva5 = String.valueOf(get5());
             String iva10 = String.valueOf(get10());
@@ -1485,6 +1493,7 @@ public class controlFactura {
             dlgVentas.txt10.setText(df.format(Integer.parseInt(iva10.replace(".", "").replace(",", ""))));
             dlgVentas.txtTotalL.setText(total);
             dlgVentas.txtTotal.setText(df.format(Integer.parseInt(total.replace(".", "").replace(",", ""))));
+            dlgVentas.txtTotalCosto.setText(totalCosto);
         } catch (NumberFormatException e) {
             Mensajes.error("Seleccione una fila de la tabla");
         }

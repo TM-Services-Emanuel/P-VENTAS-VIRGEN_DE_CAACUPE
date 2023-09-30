@@ -1061,13 +1061,12 @@
             </MenuItem>
           </SubComponents>
         </Menu>
-        <Menu class="javax.swing.JMenu" name="mnAyuda2">
+        <Menu class="javax.swing.JMenu" name="mnPagos">
           <Properties>
             <Property name="text" type="java.lang.String" value="Pagos"/>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-              <Font name="Calibri" size="12" style="1"/>
+              <Font name="Roboto" size="11" style="1"/>
             </Property>
-            <Property name="verticalAlignment" type="int" value="3"/>
           </Properties>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="9"/>
@@ -1076,7 +1075,7 @@
             <MenuItem class="javax.swing.JMenuItem" name="mnPagoProveedor1">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                  <Font name="Calibri" size="12" style="0"/>
+                  <Font name="Roboto" size="11" style="0"/>
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/Iconos/billete.png"/>
@@ -1095,7 +1094,7 @@
             <MenuItem class="javax.swing.JMenuItem" name="mnDetallePagoProveedor">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                  <Font name="Calibri" size="12" style="0"/>
+                  <Font name="Roboto" size="11" style="0"/>
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/Iconos/billetera.png"/>
@@ -1641,7 +1640,7 @@
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/Iconos/Impri_report.png"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Ganancia"/>
+                <Property name="text" type="java.lang.String" value="Ganancia &amp; Balance"/>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Roboto" size="11" style="0"/>
                 </Property>
@@ -1658,10 +1657,24 @@
                     <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                       <Image iconType="3" name="/Iconos/Reportes.png"/>
                     </Property>
-                    <Property name="text" type="java.lang.String" value="Reporte de Ganancias en General"/>
+                    <Property name="text" type="java.lang.String" value="Reporte de Ganancias"/>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem57ActionPerformed"/>
+                  </Events>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuItem58">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Roboto" size="11" style="0"/>
+                    </Property>
+                    <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                      <Image iconType="3" name="/Iconos/Reportes.png"/>
+                    </Property>
+                    <Property name="text" type="java.lang.String" value="Reporte de Balances en General"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem58ActionPerformed"/>
                   </Events>
                 </MenuItem>
               </SubComponents>
