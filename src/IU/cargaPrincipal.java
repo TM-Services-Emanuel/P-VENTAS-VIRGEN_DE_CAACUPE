@@ -45,6 +45,7 @@ public class cargaPrincipal extends javax.swing.JFrame {
         swEstado = new rojerusan.RSSwitch();
         btnSalir = new RSMaterialComponent.RSButtonIconOne();
         cboMarca = new RSMaterialComponent.RSComboBox();
+        rSTextFieldShade1 = new rscomponentshade.RSTextFieldShade();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -434,7 +435,7 @@ public class cargaPrincipal extends javax.swing.JFrame {
                 btnSalirKeyPressed(evt);
             }
         });
-        getContentPane().add(btnSalir, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 350, -1, -1));
+        getContentPane().add(btnSalir, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 270, -1, -1));
 
         cboMarca.setForeground(new java.awt.Color(0, 0, 0));
         cboMarca.setColorArrow(new java.awt.Color(255, 255, 255));
@@ -455,6 +456,10 @@ public class cargaPrincipal extends javax.swing.JFrame {
             }
         });
         getContentPane().add(cboMarca, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 270, 267, 23));
+
+        rSTextFieldShade1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        rSTextFieldShade1.setRound(25);
+        getContentPane().add(rSTextFieldShade1, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 410, -1, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -593,6 +598,7 @@ public class cargaPrincipal extends javax.swing.JFrame {
     private rojerusan.RSComboBox rSComboBox1;
     private RSMaterialComponent.RSPasswordMaterial rSPasswordMaterial1;
     private rojerusan.RSRadioButton rSRadioButton1;
+    private rscomponentshade.RSTextFieldShade rSTextFieldShade1;
     public static rojerusan.RSSwitch swEstado;
     // End of variables declaration//GEN-END:variables
 }

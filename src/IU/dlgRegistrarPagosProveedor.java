@@ -17,6 +17,7 @@ import Controladores.controlArticuloMovil;
 import Controladores.controlCompra;
 //import Controladores.controlCompra;
 import Datos.GestionarCompra;
+import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.sql.*;
 import java.text.DecimalFormat;
@@ -38,6 +39,18 @@ public final class dlgRegistrarPagosProveedor extends javax.swing.JDialog {
         CabecerasTablas.Pagos(tbDetalle);
         Cancelar();
         Invisible();
+
+    }
+
+    public static void CalcularDifDeposito() {
+        try {
+            if (!txtTotal.getText().isEmpty() && !txtMontoDepositado.getText().isEmpty()) {
+                long resultado = Long.parseLong(txtMontoDepositado.getText().replace(".", "").replace(",", "")) - Long.parseLong(txtTotal.getText().replace("Gs.", "").replace(".", "").replace(",", ""));
+                txtDifDeposito.setText(String.valueOf(resultado));
+            }
+        } catch (Exception e) {
+            System.out.println("Error calculando diferencia: " + e.getMessage());
+        }
 
     }
 
@@ -99,6 +112,7 @@ public final class dlgRegistrarPagosProveedor extends javax.swing.JDialog {
         txtHasta.setVisible(false);
         lbmonto.setVisible(false);
         lbmonto1.setVisible(false);
+        txtDifDeposito.setVisible(false);
     }
 
     public static void cant() {
@@ -113,6 +127,9 @@ public final class dlgRegistrarPagosProveedor extends javax.swing.JDialog {
         txtCodProveedor.setText("");
         txtFechaFachada.setText("");
         txtTotal.setText("");
+        txtDifDeposito.setText("");
+        txtMontoDepositado.setText("");
+        txtReciboD.setText("");
         controlCompra.arrayPago.vaciar();
         CabecerasTablas.Pagos(tbDetalle);
         CabecerasTablas.limpiarTablas(tbDetalle);
@@ -129,14 +146,33 @@ public final class dlgRegistrarPagosProveedor extends javax.swing.JDialog {
                 int monto_saldo = Integer.parseInt(dlgRegistrarPagosProveedor.tbDetalle.getValueAt(fila, 3).toString().replace(".", "").replace(",", ""));
                 int monto_abonar = Integer.parseInt(dlgRegistrarPagosProveedor.tbDetalle.getValueAt(fila, 4).toString().replace(".", "").replace(",", ""));
                 int saldo = monto_saldo - monto_abonar;
+                int DIFDEP;
+                if (Integer.parseInt(txtDifDeposito.getText()) < 0) {
+                    DIFDEP = Integer.parseInt(txtDifDeposito.getText()) * -1;
+                } else {
+                    DIFDEP = Integer.parseInt(txtDifDeposito.getText());
+                }
                 DecimalFormat df = new DecimalFormat("#,###");
+                if (DIFDEP >= monto_abonar) {
+                    lbSaldoDepositado.setForeground(new Color(0, 102, 0));
+                    lbSaldoDepositado.setText("Monto cubierto sin inconvenientes");
+                } else if (Integer.parseInt(txtMontoDepositado.getText().replace(",", "").replace(".", "")) >= Integer.parseInt(txtTotal.getText().replace("Gs.", "").replace(".", "").replace(",", ""))) {
+                    lbSaldoDepositado.setForeground(new Color(0, 102, 0));
+                    lbSaldoDepositado.setText("Monto cubierto sin inconvenientes");
+
+                } else {
+                    int Depositado = monto_abonar - DIFDEP;
+                    lbSaldoDepositado.setForeground(new Color(255, 0, 0));
+                    lbSaldoDepositado.setText("Monto habilitado del depósito: " + df.format(Depositado));
+                }
                 lbFactura.setText("Factura Nro: " + factura);
                 lbMonto_Factura.setText("Monto de la compra: " + df.format(monto_factura));
                 lbMonto_abonar.setText("Monto del saldo a abonar: " + df.format(monto_saldo));
+
                 lbSaldo_final.setText("Saldo pendiente: " + df.format(saldo));
                 lbmonto.setText(String.valueOf(monto_saldo));
                 txtAbono.setText("0");
-                DialogCambioPago.setSize(295, 185);
+                DialogCambioPago.setSize(299, 222);
                 DialogCambioPago.setLocationRelativeTo(this);
                 DialogCambioPago.setModal(true);
                 //DialogCambioPago.setTStitle("OPCIONES");
@@ -163,7 +199,7 @@ public final class dlgRegistrarPagosProveedor extends javax.swing.JDialog {
                 lbmonto1.setText(String.valueOf(monto_saldo));
                 txtNC.setText("-");
                 txtAbono1.setText("0");
-                DialogAgregarNC.setSize(295, 201);
+                DialogAgregarNC.setSize(318, 190);
                 DialogAgregarNC.setLocationRelativeTo(this);
                 DialogAgregarNC.setModal(true);
                 //DialogCambioPago.setTStitle("OPCIONES");
@@ -193,6 +229,10 @@ public final class dlgRegistrarPagosProveedor extends javax.swing.JDialog {
         lbMonto_Factura = new javax.swing.JLabel();
         lbSaldo_final = new javax.swing.JLabel();
         lbmonto = new javax.swing.JLabel();
+        lbSaldoDepositado = new javax.swing.JLabel();
+        jSeparator1 = new javax.swing.JSeparator();
+        jSeparator3 = new javax.swing.JSeparator();
+        jSeparator2 = new javax.swing.JSeparator();
         DialogAgregarNC = new javax.swing.JDialog();
         jPanel6 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
@@ -203,6 +243,7 @@ public final class dlgRegistrarPagosProveedor extends javax.swing.JDialog {
         lbMonto_Factura1 = new javax.swing.JLabel();
         lbmonto1 = new javax.swing.JLabel();
         txtNC = new javax.swing.JTextField();
+        jSeparator4 = new javax.swing.JSeparator();
         Blanco = new org.edisoncor.gui.panel.PanelImage();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -213,6 +254,8 @@ public final class dlgRegistrarPagosProveedor extends javax.swing.JDialog {
         txtFechaFachada = new javax.swing.JTextField();
         jLabel14 = new javax.swing.JLabel();
         txtReciboD = new javax.swing.JTextField();
+        jLabel15 = new javax.swing.JLabel();
+        txtMontoDepositado = new javax.swing.JTextField();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tbDetalle = new javax.swing.JTable()
@@ -244,6 +287,7 @@ public final class dlgRegistrarPagosProveedor extends javax.swing.JDialog {
         btnCancelar = new RSMaterialComponent.RSButtonIconUno();
         Separador4 = new javax.swing.JSeparator();
         LabelTitulo4 = new javax.swing.JLabel();
+        txtDifDeposito = new javax.swing.JTextField();
         jPanel4 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
@@ -285,12 +329,14 @@ public final class dlgRegistrarPagosProveedor extends javax.swing.JDialog {
         DialogCambioPago.setUndecorated(true);
 
         jPanel5.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel5.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 102, 102)));
+        jPanel5.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
+        jPanel5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel3.setFont(new java.awt.Font("Roboto", 1, 10)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(0, 102, 102));
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setText("CAMBIO DEL MONTO A ABONAR");
+        jPanel5.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(1, 5, 297, 23));
 
         txtAbono.setFont(new java.awt.Font("Roboto", 1, 20)); // NOI18N
         txtAbono.setHorizontalAlignment(javax.swing.JTextField.CENTER);
@@ -309,6 +355,7 @@ public final class dlgRegistrarPagosProveedor extends javax.swing.JDialog {
                 txtAbonoKeyReleased(evt);
             }
         });
+        jPanel5.add(txtAbono, new org.netbeans.lib.awtextra.AbsoluteConstraints(13, 145, 273, 30));
 
         btnAceptar.setText("ACEPTAR CAMBIO");
         btnAceptar.addActionListener(new java.awt.event.ActionListener() {
@@ -316,6 +363,7 @@ public final class dlgRegistrarPagosProveedor extends javax.swing.JDialog {
                 btnAceptarActionPerformed(evt);
             }
         });
+        jPanel5.add(btnAceptar, new org.netbeans.lib.awtextra.AbsoluteConstraints(56, 185, -1, -1));
 
         btnCancelarModificacionPago.setText("CANCELAR");
         btnCancelarModificacionPago.addActionListener(new java.awt.event.ActionListener() {
@@ -323,85 +371,64 @@ public final class dlgRegistrarPagosProveedor extends javax.swing.JDialog {
                 btnCancelarModificacionPagoActionPerformed(evt);
             }
         });
+        jPanel5.add(btnCancelarModificacionPago, new org.netbeans.lib.awtextra.AbsoluteConstraints(193, 185, -1, -1));
 
         lbFactura.setFont(new java.awt.Font("Roboto", 0, 11)); // NOI18N
         lbFactura.setText("Factura Nro:");
+        jPanel5.add(lbFactura, new org.netbeans.lib.awtextra.AbsoluteConstraints(7, 35, 285, -1));
 
+        lbMonto_abonar.setFont(new java.awt.Font("Roboto", 0, 11)); // NOI18N
+        lbMonto_abonar.setForeground(new java.awt.Color(204, 102, 0));
         lbMonto_abonar.setText("Monto actual a abonar:");
+        jPanel5.add(lbMonto_abonar, new org.netbeans.lib.awtextra.AbsoluteConstraints(7, 77, 285, -1));
 
         lbMonto_Factura.setFont(new java.awt.Font("Roboto", 0, 11)); // NOI18N
         lbMonto_Factura.setText("Monto de la Factura:");
+        jPanel5.add(lbMonto_Factura, new org.netbeans.lib.awtextra.AbsoluteConstraints(7, 56, 285, -1));
 
+        lbSaldo_final.setFont(new java.awt.Font("Roboto", 0, 11)); // NOI18N
         lbSaldo_final.setText("Saldo final:");
+        jPanel5.add(lbSaldo_final, new org.netbeans.lib.awtextra.AbsoluteConstraints(7, 125, 285, -1));
 
         lbmonto.setText("0");
+        jPanel5.add(lbmonto, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 200, 38, -1));
 
-        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
-        jPanel5.setLayout(jPanel5Layout);
-        jPanel5Layout.setHorizontalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(jPanel5Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lbMonto_abonar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                        .addComponent(lbmonto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnAceptar)
-                        .addGap(6, 6, 6)
-                        .addComponent(btnCancelarModificacionPago))
-                    .addComponent(txtAbono)
-                    .addComponent(lbMonto_Factura, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(lbFactura, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(lbSaldo_final, javax.swing.GroupLayout.DEFAULT_SIZE, 273, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        jPanel5Layout.setVerticalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
-                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lbFactura)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lbMonto_Factura)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lbMonto_abonar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(lbSaldo_final)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtAbono, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btnAceptar)
-                        .addComponent(lbmonto))
-                    .addComponent(btnCancelarModificacionPago))
-                .addContainerGap())
-        );
+        lbSaldoDepositado.setFont(new java.awt.Font("Roboto", 1, 11)); // NOI18N
+        lbSaldoDepositado.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lbSaldoDepositado.setText("Monto habilitado del depósito:");
+        jPanel5.add(lbSaldoDepositado, new org.netbeans.lib.awtextra.AbsoluteConstraints(7, 100, 285, -1));
+
+        jSeparator1.setForeground(new java.awt.Color(204, 204, 204));
+        jPanel5.add(jSeparator1, new org.netbeans.lib.awtextra.AbsoluteConstraints(1, 30, 297, 10));
+
+        jSeparator3.setForeground(new java.awt.Color(204, 204, 204));
+        jPanel5.add(jSeparator3, new org.netbeans.lib.awtextra.AbsoluteConstraints(1, 120, 297, 10));
+
+        jSeparator2.setForeground(new java.awt.Color(204, 204, 204));
+        jPanel5.add(jSeparator2, new org.netbeans.lib.awtextra.AbsoluteConstraints(1, 95, 297, 10));
 
         javax.swing.GroupLayout DialogCambioPagoLayout = new javax.swing.GroupLayout(DialogCambioPago.getContentPane());
         DialogCambioPago.getContentPane().setLayout(DialogCambioPagoLayout);
         DialogCambioPagoLayout.setHorizontalGroup(
             DialogCambioPagoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, 299, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         DialogCambioPagoLayout.setVerticalGroup(
             DialogCambioPagoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(DialogCambioPagoLayout.createSequentialGroup()
-                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         DialogAgregarNC.setUndecorated(true);
 
         jPanel6.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel6.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 102, 102)));
+        jPanel6.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
+        jPanel6.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel6.setFont(new java.awt.Font("Roboto", 1, 10)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(0, 102, 102));
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel6.setText("ANEXAR NOTA DE CRÉDITO A LA FACTURA");
+        jPanel6.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(1, 1, 316, 27));
 
         txtAbono1.setFont(new java.awt.Font("Roboto", 1, 20)); // NOI18N
         txtAbono1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
@@ -420,6 +447,7 @@ public final class dlgRegistrarPagosProveedor extends javax.swing.JDialog {
                 txtAbono1KeyReleased(evt);
             }
         });
+        jPanel6.add(txtAbono1, new org.netbeans.lib.awtextra.AbsoluteConstraints(13, 114, 292, 30));
 
         btnAceptar1.setText("ACEPTAR ANEXIÓN");
         btnAceptar1.addActionListener(new java.awt.event.ActionListener() {
@@ -427,6 +455,7 @@ public final class dlgRegistrarPagosProveedor extends javax.swing.JDialog {
                 btnAceptar1ActionPerformed(evt);
             }
         });
+        jPanel6.add(btnAceptar1, new org.netbeans.lib.awtextra.AbsoluteConstraints(69, 151, -1, -1));
 
         btnCancelarModificacionPago1.setText("CANCELAR");
         btnCancelarModificacionPago1.addActionListener(new java.awt.event.ActionListener() {
@@ -434,14 +463,18 @@ public final class dlgRegistrarPagosProveedor extends javax.swing.JDialog {
                 btnCancelarModificacionPago1ActionPerformed(evt);
             }
         });
+        jPanel6.add(btnCancelarModificacionPago1, new org.netbeans.lib.awtextra.AbsoluteConstraints(212, 151, -1, -1));
 
         lbFactura1.setFont(new java.awt.Font("Roboto", 0, 11)); // NOI18N
         lbFactura1.setText("Factura Nro:");
+        jPanel6.add(lbFactura1, new org.netbeans.lib.awtextra.AbsoluteConstraints(13, 35, 292, -1));
 
         lbMonto_Factura1.setFont(new java.awt.Font("Roboto", 0, 11)); // NOI18N
         lbMonto_Factura1.setText("Monto de la Factura:");
+        jPanel6.add(lbMonto_Factura1, new org.netbeans.lib.awtextra.AbsoluteConstraints(13, 56, 292, -1));
 
         lbmonto1.setText("0");
+        jPanel6.add(lbmonto1, new org.netbeans.lib.awtextra.AbsoluteConstraints(13, 155, 51, -1));
 
         txtNC.setFont(new java.awt.Font("Roboto", 1, 20)); // NOI18N
         txtNC.setHorizontalAlignment(javax.swing.JTextField.CENTER);
@@ -460,57 +493,20 @@ public final class dlgRegistrarPagosProveedor extends javax.swing.JDialog {
                 txtNCKeyReleased(evt);
             }
         });
+        jPanel6.add(txtNC, new org.netbeans.lib.awtextra.AbsoluteConstraints(13, 77, 292, 30));
 
-        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
-        jPanel6.setLayout(jPanel6Layout);
-        jPanel6Layout.setHorizontalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
-                        .addComponent(lbmonto1, javax.swing.GroupLayout.DEFAULT_SIZE, 51, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnAceptar1)
-                        .addGap(6, 6, 6)
-                        .addComponent(btnCancelarModificacionPago1))
-                    .addComponent(txtAbono1)
-                    .addComponent(lbMonto_Factura1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(lbFactura1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(txtNC, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addContainerGap())
-        );
-        jPanel6Layout.setVerticalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lbFactura1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lbMonto_Factura1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(txtNC, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtAbono1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btnAceptar1)
-                        .addComponent(lbmonto1))
-                    .addComponent(btnCancelarModificacionPago1))
-                .addContainerGap())
-        );
+        jSeparator4.setForeground(new java.awt.Color(204, 204, 204));
+        jPanel6.add(jSeparator4, new org.netbeans.lib.awtextra.AbsoluteConstraints(1, 25, 316, 10));
 
         javax.swing.GroupLayout DialogAgregarNCLayout = new javax.swing.GroupLayout(DialogAgregarNC.getContentPane());
         DialogAgregarNC.getContentPane().setLayout(DialogAgregarNCLayout);
         DialogAgregarNCLayout.setHorizontalGroup(
             DialogAgregarNCLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, 318, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         DialogAgregarNCLayout.setVerticalGroup(
             DialogAgregarNCLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -600,6 +596,26 @@ public final class dlgRegistrarPagosProveedor extends javax.swing.JDialog {
             }
         });
 
+        jLabel15.setFont(new java.awt.Font("Roboto", 0, 11)); // NOI18N
+        jLabel15.setText("Monto Depositado");
+
+        txtMontoDepositado.setFont(new java.awt.Font("Roboto", 0, 11)); // NOI18N
+        txtMontoDepositado.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtMontoDepositado.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
+        txtMontoDepositado.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtMontoDepositadoActionPerformed(evt);
+            }
+        });
+        txtMontoDepositado.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtMontoDepositadoKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtMontoDepositadoKeyReleased(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -609,19 +625,23 @@ public final class dlgRegistrarPagosProveedor extends javax.swing.JDialog {
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtCod, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addComponent(jLabel12)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtCaja, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtFechaFachada, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addComponent(jLabel14)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtReciboD, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(28, 28, 28)
+                .addComponent(jLabel15)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtMontoDepositado, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(20, 20, 20))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -629,19 +649,23 @@ public final class dlgRegistrarPagosProveedor extends javax.swing.JDialog {
                 .addGap(14, 14, 14)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtFechaFachada, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(txtReciboD, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtMontoDepositado, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(txtCod, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(txtCaja, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(txtFechaFachada, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(txtCaja, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        Blanco.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 104, 770, -1));
+        Blanco.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 104, 1090, -1));
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)), "Tabla de Facturas a liquidar", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.ABOVE_TOP, new java.awt.Font("Roboto", 1, 11), new java.awt.Color(0, 102, 102))); // NOI18N
         jPanel2.setOpaque(false);
@@ -697,10 +721,7 @@ public final class dlgRegistrarPagosProveedor extends javax.swing.JDialog {
                 .addGap(3, 3, 3)
                 .addComponent(etiCant, javax.swing.GroupLayout.DEFAULT_SIZE, 616, Short.MAX_VALUE)
                 .addGap(466, 466, 466))
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(0, 0, 0)
-                .addComponent(jScrollPane1)
-                .addGap(0, 0, 0))
+            .addComponent(jScrollPane1)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -981,7 +1002,7 @@ public final class dlgRegistrarPagosProveedor extends javax.swing.JDialog {
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel9Layout.createSequentialGroup()
                 .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel9Layout.createSequentialGroup()
                         .addGap(50, 50, 50)
                         .addComponent(btnRestar)
@@ -998,8 +1019,10 @@ public final class dlgRegistrarPagosProveedor extends javax.swing.JDialog {
                                 .addComponent(txtDesde, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(btnSalir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel9Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 531, Short.MAX_VALUE)
+                    .addGroup(jPanel9Layout.createSequentialGroup()
+                        .addGap(61, 61, 61)
+                        .addComponent(txtDifDeposito, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 324, Short.MAX_VALUE)
                         .addComponent(txtTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap())))
         );
@@ -1007,7 +1030,7 @@ public final class dlgRegistrarPagosProveedor extends javax.swing.JDialog {
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel9Layout.createSequentialGroup()
                 .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 6, Short.MAX_VALUE))
             .addGroup(jPanel9Layout.createSequentialGroup()
                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnRestar, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1021,9 +1044,15 @@ public final class dlgRegistrarPagosProveedor extends javax.swing.JDialog {
                             .addComponent(btnSalir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(0, 0, 0)
                         .addComponent(txtHasta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(txtTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel9Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(txtTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())
+                    .addGroup(jPanel9Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(txtDifDeposito, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
 
         Blanco.add(jPanel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(1, 1, 1103, 99));
@@ -1311,6 +1340,12 @@ dcFHasta.addCommitListener(new datechooser.events.CommitListener() {
             Mensajes.Alerta("Es necesario proporcionar una fecha de inicio para iniciar el filtrado.");
         } else if (txtHasta.getText().isEmpty()) {
             Mensajes.Alerta("Es necesario proporcionar una fecha final para iniciar el filtrado.");
+        } else if (txtMontoDepositado.getText().isEmpty()) {
+            Mensajes.Alerta("MONTO DEPOSITADO: Vacio.\nEs necesario proporcionar el monto depositado para que el sistema realice los calculos pertinentes.");
+            txtMontoDepositado.requestFocus();
+        } else if (txtMontoDepositado.getText().equals("0")) {
+            Mensajes.Alerta("MONTO DEPOSITADO: 0.\nEs necesario proporcionar el monto depositado para que el sistema realice los calculos pertinentes.");
+            txtMontoDepositado.requestFocus();
         } else {
             try {
                 dlgBuscarFacturaCredito bac = new dlgBuscarFacturaCredito(null, true);
@@ -1347,6 +1382,7 @@ dcFHasta.addCommitListener(new datechooser.events.CommitListener() {
         // TODO add your handling code here:
         DialogCambioPago.dispose();
         tbDetalle.clearSelection();
+        CalcularDifDeposito();
     }//GEN-LAST:event_btnCancelarModificacionPagoActionPerformed
 
     private void txtAbonoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtAbonoKeyReleased
@@ -1394,6 +1430,7 @@ dcFHasta.addCommitListener(new datechooser.events.CommitListener() {
         controlCompra.actMontoPago(tbDetalle);
         DialogCambioPago.dispose();
         tbDetalle.clearSelection();
+        CalcularDifDeposito();
     }//GEN-LAST:event_btnAceptarActionPerformed
 
     private void txtAbonoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtAbonoKeyPressed
@@ -1471,13 +1508,14 @@ dcFHasta.addCommitListener(new datechooser.events.CommitListener() {
                 tbDetalle.clearSelection();
             }
         }
-
+        CalcularDifDeposito();
 
     }//GEN-LAST:event_btnAceptar1ActionPerformed
 
     private void btnCancelarModificacionPago1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarModificacionPago1ActionPerformed
         // TODO add your handling code here:
         DialogAgregarNC.dispose();
+        CalcularDifDeposito();
     }//GEN-LAST:event_btnCancelarModificacionPago1ActionPerformed
 
     private void itemAnexarNCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemAnexarNCActionPerformed
@@ -1541,6 +1579,7 @@ dcFHasta.addCommitListener(new datechooser.events.CommitListener() {
         btnCancelar.setEnabled(true);
         btnSalir.setEnabled(false);
         cbProveedores.setEnabled(true);
+        CalcularDifDeposito();
     }//GEN-LAST:event_btnNuevoActionPerformed
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
@@ -1553,6 +1592,8 @@ dcFHasta.addCommitListener(new datechooser.events.CommitListener() {
         } else if (tbDetalle.getRowCount() <= 0) {
             Mensajes.informacion("Tabla vacía.\nPara registrar un pago es necesario identificar las Facturas de Compra.");
             btnBuscarFacturas.doClick();
+        } else if (Integer.parseInt(txtMontoDepositado.getText().replace(",", "").replace(".", "")) < Integer.parseInt(txtTotal.getText().replace("Gs.", "").replace(".", "").replace(",", ""))) {
+            Mensajes.informacion("El monto depositado no cubre la totalidad de las facturas anexadas.");
         } else {
             try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement()) {
                 int resp = JOptionPane.showConfirmDialog(this, "¿Seguro que deseas registrar el pago al sistema?", "CONFIRMACIÓN DE PAGO", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
@@ -1561,7 +1602,7 @@ dcFHasta.addCommitListener(new datechooser.events.CommitListener() {
                         String usuario = Login.getUsuarioLogueado();
                         cn.setAutoCommit(false);
                         String sql = "insert into pagos_proveedor values(" + txtCod.getText() + "," + txtCaja.getText() + "," + txtCodProveedor.getText() + ",'" + txtReciboD.getText()
-                                + "','" + Fecha.formatoFecha(txtFechaFachada.getText().trim()) + "','" + Fecha.darHora() + "'," + txtTotal.getText().replace("Gs.", "").replace(".", "").replace(",", "") + ",'S','" + usuario + "')";
+                                + "','" + Fecha.formatoFecha(txtFechaFachada.getText().trim()) + "','" + Fecha.darHora() + "'," + txtTotal.getText().replace("Gs.", "").replace(".", "").replace(",", "") +","+ txtMontoDepositado.getText().replace(".", "").replace(",", "") + ",'S','" + usuario + "')";
                         st.executeUpdate(sql);
                         int fila = tbDetalle.getRowCount();
                         for (int j = 0; j < fila; j++) {
@@ -1705,6 +1746,31 @@ dcFHasta.addCommitListener(new datechooser.events.CommitListener() {
         AccesoRapido(evt.getKeyCode());
     }//GEN-LAST:event_BlancoKeyPressed
 
+    private void txtMontoDepositadoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtMontoDepositadoKeyPressed
+        // TODO add your handling code here:
+        validarCampos.soloNumeros(txtMontoDepositado);
+    }//GEN-LAST:event_txtMontoDepositadoKeyPressed
+
+    private void txtMontoDepositadoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtMontoDepositadoKeyReleased
+        // TODO add your handling code here:
+        try {
+            if (txtMontoDepositado.getText().trim().length() >= 1) {
+                DecimalFormat df = new DecimalFormat("#,###");
+                txtMontoDepositado.setText(df.format(Integer.valueOf(txtMontoDepositado.getText().trim().replace(".", "").replace(",", ""))));
+            } else {
+                txtMontoDepositado.setText("0");
+                txtMontoDepositado.selectAll();
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("c: " + e.getMessage());
+        }
+        CalcularDifDeposito();
+    }//GEN-LAST:event_txtMontoDepositadoKeyReleased
+
+    private void txtMontoDepositadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtMontoDepositadoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtMontoDepositadoActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1786,6 +1852,7 @@ dcFHasta.addCommitListener(new datechooser.events.CommitListener() {
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -1799,11 +1866,16 @@ dcFHasta.addCommitListener(new datechooser.events.CommitListener() {
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JSeparator jSeparator3;
+    private javax.swing.JSeparator jSeparator4;
     private javax.swing.JLabel lbFactura;
     private javax.swing.JLabel lbFactura1;
     private javax.swing.JLabel lbMonto_Factura;
     private javax.swing.JLabel lbMonto_Factura1;
     private javax.swing.JLabel lbMonto_abonar;
+    private javax.swing.JLabel lbSaldoDepositado;
     private javax.swing.JLabel lbSaldo_final;
     private javax.swing.JLabel lbmonto;
     private javax.swing.JLabel lbmonto1;
@@ -1815,8 +1887,10 @@ dcFHasta.addCommitListener(new datechooser.events.CommitListener() {
     public static javax.swing.JTextField txtCod;
     public static javax.swing.JTextField txtCodProveedor;
     public static javax.swing.JTextField txtDesde;
+    public static javax.swing.JTextField txtDifDeposito;
     private javax.swing.JTextField txtFechaFachada;
     public static javax.swing.JTextField txtHasta;
+    public static javax.swing.JTextField txtMontoDepositado;
     public static javax.swing.JTextField txtNC;
     private javax.swing.JTextField txtReciboD;
     public static javax.swing.JTextField txtTotal;

@@ -41,7 +41,7 @@ public class dlgBuscarFacturaCredito extends javax.swing.JDialog {
             this.setTitle(Software.getSoftware() + " - Gestión de compras realizadas");
         }
     }
-    
+
     private void AccesoRapido(int n) {
         switch (n) {
             case KeyEvent.VK_ALT | KeyEvent.VK_F4 ->
@@ -393,7 +393,7 @@ public class dlgBuscarFacturaCredito extends javax.swing.JDialog {
                     }
                     this.dispose();
                 }
-
+                dlgRegistrarPagosProveedor.CalcularDifDeposito();
             } else {
                 Mensajes.Sistema("No se ha seleccionado ninguna factura.\nProceda a tildar una o varias facturas de la lista filtrada para avanzar con la operación.");
             }

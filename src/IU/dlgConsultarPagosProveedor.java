@@ -24,6 +24,7 @@ public class dlgConsultarPagosProveedor extends javax.swing.JDialog {
         cargarComboBox.cargar(cbProveedores, "SELECT pro_codigo, pro_razonsocial FROM proveedor WHERE pro_indicador='S'");
         Renders();
         txtCodProveedor.setVisible(false);
+        PanelContenedor.setVisible(false);
 
     }
     
