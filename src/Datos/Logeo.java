@@ -23,7 +23,7 @@ public class Logeo {
         if (filaObt != null) {
             u = new Usuario();
             u.setCodUsuario(Integer.parseInt(filaObt[0].toString()));
-            System.out.println("CodUsusario:"+Integer.parseInt(filaObt[0].toString()));
+            System.out.println("CodUsusario:"+Integer.valueOf(filaObt[0].toString()));
             u.setPefil(filaObt[1].toString());
             System.out.println("Perfil:"+filaObt[1].toString());
             u.setNomUsuario(filaObt[2].toString());

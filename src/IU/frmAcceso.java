@@ -208,8 +208,8 @@ public final class frmAcceso extends javax.swing.JFrame {
         jLabel19.setFont(new java.awt.Font("Roboto", 1, 11)); // NOI18N
         jLabel19.setForeground(new java.awt.Color(255, 255, 255));
         jLabel19.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel19.setText("Software de gestión de Productos, Compras & Ventas.");
-        panelImage1.add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 115, 280, -1));
+        jLabel19.setText("Software de gestión comercial");
+        panelImage1.add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 112, 280, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

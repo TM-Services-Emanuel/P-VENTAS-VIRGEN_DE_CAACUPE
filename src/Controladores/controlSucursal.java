@@ -24,6 +24,7 @@ public class controlSucursal {
         if(msg==null)
         {
             Mensajes.informacion("Sucursal registrado");
+             ControlLogeo.Empresa();
         }
         else{
             Mensajes.error(msg);
@@ -43,6 +44,7 @@ public class controlSucursal {
         if(msg==null)
         {
             Mensajes.informacion("Sucursal Actualizado");
+            ControlLogeo.Empresa();
         }
         else{
             Mensajes.error(msg);
@@ -59,6 +61,7 @@ public class controlSucursal {
         if(msg==null)
         {
             Mensajes.informacion("Sucursal Eliminado");
+             ControlLogeo.Empresa();
         }
         else{
             Mensajes.error(msg);

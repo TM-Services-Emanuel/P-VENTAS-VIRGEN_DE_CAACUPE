@@ -5,6 +5,7 @@ import Componentes.Mensajes;
 import Componentes.Software;
 import Componentes.validarCampos;
 import Controladores.CabecerasTablas;
+import Controladores.ControlLogeo;
 import Controladores.controlTimbradoMovil;
 import Datos.GestionarTimbradoMovil;
 import java.awt.HeadlessException;
@@ -560,6 +561,7 @@ public class dlgTimbradoMovil extends javax.swing.JDialog {
         // TODO add your handling code here:
         int rpta = Mensajes.confirmar("¿Seguro que desea salir del formulario?");
         if (rpta == 0) {
+            ControlLogeo.Timbrado_Ticket();
             this.dispose();
         }
     }//GEN-LAST:event_rSButtonIconOne1ActionPerformed

@@ -809,7 +809,7 @@ public final class dlgEmpresa extends javax.swing.JDialog {
         //cargarComboBox.cargar(dlgGestAriculos.cbUnidad, "SELECT * FROM unidad WHERE uni_indicador='S'");
         int rpta = Mensajes.confirmar("¿Seguro que desea salir del formulario?");
         if (rpta == 0) {
-            informacionGral();
+            frmPrincipal.informacionGral();
             this.dispose();
         }
 

@@ -96,9 +96,9 @@ public final class frmCargaInicial extends javax.swing.JFrame {
         getContentPane().add(rSProgressMaterial1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 370, 40, 40));
 
         jLabel19.setFont(new java.awt.Font("Roboto", 1, 11)); // NOI18N
-        jLabel19.setForeground(new java.awt.Color(17, 35, 46));
+        jLabel19.setForeground(new java.awt.Color(51, 51, 51));
         jLabel19.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel19.setText("Software de gestión de Productos, Compras & Ventas.");
+        jLabel19.setText("Software de gestión comercial");
         getContentPane().add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 105, 280, -1));
 
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Recursos/icon.png"))); // NOI18N

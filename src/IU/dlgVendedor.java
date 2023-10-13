@@ -3,6 +3,7 @@ package IU;
 import Componentes.Fecha;
 import Componentes.Mensajes;
 import Componentes.Numero_a_Letra;
+import Componentes.RenderDecimal1;
 import Componentes.Software;
 import Componentes.clsExportarExcel;
 import Controladores.CabecerasTablas;
@@ -35,6 +36,7 @@ public final class dlgVendedor extends javax.swing.JDialog {
         d= new Numero_a_Letra();
         cabe.vendedor(tablaEmpleados);
         controlVendedor.listVendedor(tablaEmpleados, "v_vendedores.ven_codigo");
+        Renders();
         cargarIcono();
         cbkBuscarActionPerformed(null);
     }
@@ -46,6 +48,10 @@ public final class dlgVendedor extends javax.swing.JDialog {
         }else{
             this.setTitle(Software.getSoftware()+" - Gestionar Funcionarios");
         }
+    }
+    
+    public static void Renders() {
+        tablaEmpleados.getColumnModel().getColumn(9).setCellRenderer(new RenderDecimal1());
     }
     
     private void modificar(){

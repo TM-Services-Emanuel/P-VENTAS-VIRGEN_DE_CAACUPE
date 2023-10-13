@@ -138,7 +138,7 @@ public class GestionarCompra {
 
     public static List listarPagosCompras() {
         StringBuilder sql = new StringBuilder("SELECT idpago, idcaja, proveedor.pro_codigo, proveedor.pro_ruc, proveedor.pro_razonsocial, recibo_nro, fecha, hora, ");
-        sql.append("monto_pago, indicador FROM pagos_proveedor INNER JOIN proveedor ");
+        sql.append("monto_pago, indicador, monto_depositado, boleta FROM pagos_proveedor INNER JOIN proveedor ");
         sql.append("WHERE pagos_proveedor.idproveedor=proveedor.pro_codigo ");
         sql.append("ORDER BY idpago");
         return Operacion.getTabla(sql.toString());

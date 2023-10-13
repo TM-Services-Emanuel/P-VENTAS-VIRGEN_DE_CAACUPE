@@ -89,5 +89,45 @@ public class ControlGasto {
             tb.addRow(fila);
         }
     }
+    
+    public static void listarGastosReporte(JTable tabla, String desde, String hasta, int idfuncionario) {
+        List lista;
+        lista = GestionarGasto.listarGastosReparto(desde, hasta, idfuncionario);
+        for (int i = 1; i < lista.size(); i++) {
+            DefaultTableModel tb = (DefaultTableModel) tabla.getModel();
+            Object[] fila = (Object[]) lista.get(i);
+            fila[0] = fila[0].toString();
+            fila[1] = fila[1].toString();
+            fila[2] = Fecha.formatoFechaDinver(fila[2].toString())+" "+Fecha.FormatoHoraSinSSString(fila[3].toString());
+            switch (fila[4].toString()) {
+                case "L":
+                    fila[3] = "SALÓN DE VENTA";
+                    break;
+                case "A":
+                    fila[3] = "ADMINISTRATIVO";
+                    break;
+                default:
+                    break;
+            }
+            switch (Integer.parseInt(fila[5].toString())) {
+                case 1:
+                    fila[4] = "GASTOS VARIOS";
+                    break;
+                case 2:
+                    fila[4] = "ADELANTO DE SUELDO";
+                    break;
+                case 3:
+                    fila[4] = "PAGO DE SUELDO";
+                    break;
+                default:
+                    break;
+            }
+            fila[5]= fila[6].toString();
+            fila[6] = fila[7].toString();
+            fila[7]= fila[8].toString();
+            fila[8]= fila[9].toString();
+            tb.addRow(fila);
+        }
+    }
 
 }

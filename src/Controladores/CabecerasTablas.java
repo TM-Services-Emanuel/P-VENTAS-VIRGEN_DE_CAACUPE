@@ -73,7 +73,7 @@ public final class CabecerasTablas {
     static String CQ[] = {"ID", "FECHA", "TIPO", "BANCO", "CHEQUE N°", "MONTO", "RAZÓN SOCIAL", "RUC", "RECIBIDO EN"};
     String consComprasCreditosPendientes[] = {"ID COMPRA", "MOV.NRO", "FECHA", "HORA", "FACTURA NRO", "MONTO DE LA COMPRA", "ESTADO DE PAGO", "SALDO", ""};
     static String pagos[] = {"ID COMPRA", "FACTURA NRO.", "MONTO DE LA COMPRA", "MONTO SALDO", "MONTO A ABONAR", "SALDO", "ESTADO DE PAGO", "SALDO P/ NC", "NOTA DE CRÉDITO NRO", "MONTO NOTA DE C."};
-    String consPagosProveedor[] = {"PAGO.N°", "MOV.N°", "PROVEEDOR", "RECIBO DINERO NRO.", "FECHA", "HORA", "MONTO DE PAGO", "ESTADO",};
+    String consPagosProveedor[] = {"PAGO.N°", "MOV.N°", "PROVEEDOR", "RECIBO DINERO NRO.", "FECHA", "HORA", "MONTO DE PAGO", "ESTADO","DEPOSITADO","BOLETA N°"};
     String consDetallePagosProveedor[] = {"OPER. N°", "IDCOMPRA", "CONDICIÓN", "FACTURA NRO", "FECHA FACTURACIÓN", "HORA FACT.", "MONTO FACTURA", "MONTO ABONADO", "NOTA DE CRÉDITO", "MONTO N.C."};
     static String datos[][] = {};
     static String datosVentasMoviles[][] = {};
@@ -83,6 +83,7 @@ public final class CabecerasTablas {
     static String datosTT2[][] = {};
     static String datosTrans[][] = {};
     static String datosGastos[][] = {};
+    static String datosGastosReporte[][] = {};
     static String datosCompras[][] = {};
     static String datosArtAuxCompra[][] = {};
     static String datosBuscarClientes[][] = {};
@@ -113,6 +114,7 @@ public final class CabecerasTablas {
     private static DefaultTableModel modeloVentas;
     private static DefaultTableModel modeloCompras;
     private static DefaultTableModel modeloGastos;
+    private static DefaultTableModel modeloGastosReporte;
     private static DefaultTableModel modeloDP;
     private static DefaultTableModel modeloCQ;
     private static TableColumn colum = null;
@@ -312,6 +314,62 @@ public final class CabecerasTablas {
         colum.setPreferredWidth(400);
         colum = tabla.getColumnModel().getColumn(8);
         colum.setPreferredWidth(100);
+
+    }
+    
+    public static void gestGastosReport(JTable tabla) {
+        modeloGastos = new DefaultTableModel(datosGastos, Gastos){
+        boolean[] canEdit = new boolean[]{
+                false, false, false, false, false, false, false, false, false
+            };
+            Class[] types = new Class[]{
+                java.lang.Object.class, java.lang.Object.class, java.lang.Object.class,
+                java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
+            };
+
+            @Override
+            public Class getColumnClass(int columnIndex) {
+                return types[columnIndex];
+            }
+
+            @Override
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit[columnIndex];
+            }};
+        tabla.setModel(modeloGastos);
+        colum = tabla.getColumnModel().getColumn(0);
+        colum.setPreferredWidth(70);
+        colum.setMaxWidth(0);
+        colum.setMinWidth(0);
+        colum.setPreferredWidth(0);
+        colum = tabla.getColumnModel().getColumn(1);
+        colum.setPreferredWidth(75);
+        colum.setMaxWidth(0);
+        colum.setMinWidth(0);
+        colum.setPreferredWidth(0);
+        colum = tabla.getColumnModel().getColumn(2);
+        colum.setPreferredWidth(100);
+        colum = tabla.getColumnModel().getColumn(3);
+        colum.setPreferredWidth(150);
+        colum.setMaxWidth(0);
+        colum.setMinWidth(0);
+        colum.setPreferredWidth(0);
+        colum = tabla.getColumnModel().getColumn(4);
+        colum.setPreferredWidth(170);
+        colum = tabla.getColumnModel().getColumn(5);
+        colum.setPreferredWidth(250);
+        colum.setMaxWidth(0);
+        colum.setMinWidth(0);
+        colum.setPreferredWidth(0);
+        colum = tabla.getColumnModel().getColumn(6);
+        colum.setPreferredWidth(90);
+        colum = tabla.getColumnModel().getColumn(7);
+        colum.setPreferredWidth(300);
+        colum = tabla.getColumnModel().getColumn(8);
+        colum.setPreferredWidth(100);
+        colum.setMaxWidth(0);
+        colum.setMinWidth(0);
+        colum.setPreferredWidth(0);
 
     }
 
@@ -2747,7 +2805,7 @@ public final class CabecerasTablas {
         colum.setMinWidth(0);
         colum.setPreferredWidth(0);
         colum = tabla.getColumnModel().getColumn(2);
-        colum.setPreferredWidth(240);
+        colum.setPreferredWidth(290);
         colum = tabla.getColumnModel().getColumn(3);
         colum.setPreferredWidth(110);
         colum = tabla.getColumnModel().getColumn(4);
@@ -2758,6 +2816,10 @@ public final class CabecerasTablas {
         colum.setPreferredWidth(100);
         colum = tabla.getColumnModel().getColumn(7);
         colum.setPreferredWidth(90);
+        colum = tabla.getColumnModel().getColumn(8);
+        colum.setPreferredWidth(100);
+        colum = tabla.getColumnModel().getColumn(9);
+        colum.setPreferredWidth(100);
 
     }
 

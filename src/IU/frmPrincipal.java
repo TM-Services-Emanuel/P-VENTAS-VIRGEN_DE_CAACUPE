@@ -1,6 +1,7 @@
 package IU;
 
 import Componentes.DataSourceService;
+import Componentes.Empresa;
 import Componentes.Fecha;
 import Componentes.ReporteMovil;
 import Componentes.Mensajes;
@@ -28,13 +29,9 @@ public final class frmPrincipal extends javax.swing.JFrame {
     static DataSourceService dss = new DataSourceService();
 
     public frmPrincipal() {
-
+        ControlLogeo.Empresa();
+        ControlLogeo.Timbrado_Ticket();
         initComponents();
-        this.setExtendedState(MAXIMIZED_BOTH);
-        try {
-            lbIp.setText("DIRECCIÓN IP : " + traerIP.getIP());
-        } catch (Exception e) {
-        }
         titulo();
         Iniciar();
         cargarIcono();
@@ -42,7 +39,7 @@ public final class frmPrincipal extends javax.swing.JFrame {
         informacionGral();
         mnNCProveedor.setVisible(false);
         mnPagoProveedor.setVisible(false);
-        lbversion.setText("Versión del Software: " + Software.getVersion());
+        //lbversion.setText("Versión del Software: " + Software.getVersion());
         mnMD1.setVisible(false);
         mnGeI.setVisible(false);
         jSeparator26.setVisible(false);
@@ -63,7 +60,7 @@ public final class frmPrincipal extends javax.swing.JFrame {
         if (Software.getVersion().equals("null")) {
             lbversion.setText("Versión del Software: No disponible");
         } else {
-            lbversion.setText("Versión del Software: " + Software.getVersion());
+            lbversion.setText("Versión del Software: " + Software.getVersion() + Fecha.soloAnho() + " - TM•SERVICES, Todos los derechos reservados.");
         }
     }
 
@@ -111,27 +108,21 @@ public final class frmPrincipal extends javax.swing.JFrame {
         }
     }
 
-    public void informacionGral() {
-        String sql = "select * from v_sucursal where suc_indicador='S'";
-        try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
-            rs.first();
-            try {
-                if (rs.getRow() != 0) {
-                    lbSucursal.setText(rs.getString(5));
-                    lbEmpresa.setText(rs.getString(3));
-                    lbRUC.setText(rs.getString(4));
-                } else {
-                    System.out.println("No se puede cargar Información Gral.");
-                }
-            } catch (SQLException ee) {
-                System.out.println(ee.getMessage());
+    public static void informacionGral() {
+        try {
+            if (Empresa.getHabilitado().equals("SI")) {
+                lbSucursal.setText(Empresa.getSucursal());
+                //lbNombreFantasia.setText(Empresa.getEmpresa());
+                lbEmpresa.setText(Empresa.getRazonSocial());
+                lbRUC.setText(Empresa.getRUC());
+            } else if (Empresa.getHabilitado().equals("NO")) {
+                lbSucursal.setText("");
+                //lbNombreFantasia.setText("");
+                lbEmpresa.setText("");
+                lbRUC.setText("");
             }
-            rs.close();
-            st.close();
-            cn.close();
-
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+        } catch (Exception e) {
+            System.out.println("Informacion Gral: " + e.getMessage());
         }
     }
 
@@ -179,10 +170,6 @@ public final class frmPrincipal extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         lblFecha = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
-        jSeparator18 = new javax.swing.JToolBar.Separator();
-        jLabel10 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
-        jLabel12 = new javax.swing.JLabel();
         jSeparator3 = new javax.swing.JToolBar.Separator();
         jLabel13 = new javax.swing.JLabel();
         lbversion = new javax.swing.JLabel();
@@ -799,23 +786,6 @@ public final class frmPrincipal extends javax.swing.JFrame {
         jLabel9.setText("   ");
         jToolBar1.add(jLabel9);
 
-        jSeparator18.setBackground(new java.awt.Color(255, 255, 255));
-        jSeparator18.setForeground(new java.awt.Color(255, 255, 255));
-        jToolBar1.add(jSeparator18);
-
-        jLabel10.setForeground(java.awt.Color.white);
-        jLabel10.setText("   ");
-        jToolBar1.add(jLabel10);
-
-        jLabel8.setFont(new java.awt.Font("Roboto", 1, 10)); // NOI18N
-        jLabel8.setForeground(java.awt.Color.white);
-        jLabel8.setText("Data base name: P-VENTA - port: 3306");
-        jToolBar1.add(jLabel8);
-
-        jLabel12.setForeground(java.awt.Color.white);
-        jLabel12.setText("   ");
-        jToolBar1.add(jLabel12);
-
         jSeparator3.setBackground(new java.awt.Color(255, 255, 255));
         jSeparator3.setForeground(new java.awt.Color(255, 255, 255));
         jToolBar1.add(jSeparator3);
@@ -849,7 +819,7 @@ public final class frmPrincipal extends javax.swing.JFrame {
         jLabel19.setFont(new java.awt.Font("Roboto", 1, 11)); // NOI18N
         jLabel19.setForeground(new java.awt.Color(255, 255, 255));
         jLabel19.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel19.setText("Software de gestión de Productos, Compras & Ventas.");
+        jLabel19.setText("Software de gestión comercial");
 
         javax.swing.GroupLayout panelImage1Layout = new javax.swing.GroupLayout(panelImage1);
         panelImage1.setLayout(panelImage1Layout);
@@ -885,7 +855,7 @@ public final class frmPrincipal extends javax.swing.JFrame {
                 .addGroup(panelImage1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelImage1Layout.createSequentialGroup()
                         .addComponent(jLabel11)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(0, 0, 0)
                         .addComponent(jLabel19)
                         .addGap(53, 53, 53)
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -3067,9 +3037,7 @@ public final class frmPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenuItem itemTVentasv1;
     private javax.swing.JMenuItem itemTVentasv2;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
@@ -3084,7 +3052,6 @@ public final class frmPrincipal extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem10;
@@ -3124,7 +3091,6 @@ public final class frmPrincipal extends javax.swing.JFrame {
     private javax.swing.JPopupMenu.Separator jSeparator14;
     private javax.swing.JPopupMenu.Separator jSeparator15;
     public static javax.swing.JPopupMenu.Separator jSeparator16;
-    private javax.swing.JToolBar.Separator jSeparator18;
     private javax.swing.JPopupMenu.Separator jSeparator19;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator20;

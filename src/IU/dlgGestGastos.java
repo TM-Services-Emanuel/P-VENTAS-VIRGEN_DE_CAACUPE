@@ -99,10 +99,7 @@ public class dlgGestGastos extends javax.swing.JDialog {
                 if (tbGastos.getModel().getValueAt(i, 3).equals("SALÓN DE VENTA")) {
                     GL += Integer.parseInt(String.valueOf(dlgGestGastos.tbGastos.getModel().getValueAt(i, 6)).replace(".", "").replace(",", ""));
                     txtGL.setText(df.format(GL));
-                }/* else if (tbGastos.getModel().getValueAt(i, 4).equals("REPARTO")) {
-                    GR += Integer.parseInt(String.valueOf(dlgGestGastos.tbGastos.getModel().getValueAt(i, 6)).replace(".", "").replace(",", ""));
-                    txtGR.setText(df.format(GR));
-                } */else if (tbGastos.getModel().getValueAt(i, 3).equals("ADMINISTRATIVO")) {
+                }else if (tbGastos.getModel().getValueAt(i, 3).equals("ADMINISTRATIVO")) {
                     GA += (int) Integer.parseInt(String.valueOf(dlgGestGastos.tbGastos.getModel().getValueAt(i, 6)).replace(".", "").replace(",", ""));
                     txtGA.setText(df.format(GA));
                 }

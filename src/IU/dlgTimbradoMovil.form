@@ -61,7 +61,7 @@
               <Component id="Oscuro" alignment="0" pref="508" max="32767" attributes="0"/>
               <Group type="102" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jPanel2" pref="488" max="32767" attributes="0"/>
+                  <Component id="jPanel2" pref="484" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
               <Component id="jScrollPane1" alignment="0" max="32767" attributes="1"/>

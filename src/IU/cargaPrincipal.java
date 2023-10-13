@@ -425,6 +425,7 @@ public class cargaPrincipal extends javax.swing.JFrame {
         btnSalir.setOpaque(true);
         btnSalir.setPreferredSize(new java.awt.Dimension(20, 20));
         btnSalir.setRequestFocusEnabled(false);
+        btnSalir.setTypeBorder(RSMaterialComponent.RSButtonIconOne.TYPEBORDER.CIRCLE);
         btnSalir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSalirActionPerformed(evt);

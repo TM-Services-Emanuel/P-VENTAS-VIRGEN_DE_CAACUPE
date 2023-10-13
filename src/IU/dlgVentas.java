@@ -15,6 +15,8 @@ import Componentes.validarCampos;
 import Componentes.PrinterService;
 import Componentes.RenderCantidadconPuntos;
 import Componentes.RenderDecimal1;
+import Componentes.Tickets;
+import Componentes.Timbrado;
 import Componentes.traerIP;
 import Controladores.CabecerasTablas;
 import Controladores.controlFactura;
@@ -24,11 +26,9 @@ import Datos.GestionarVendedor;
 import java.awt.event.KeyEvent;
 import Modelo.ArticuloMovil;
 import Modelo.Vendedor;
+import java.awt.Color;
 import java.sql.*;
 import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -40,29 +40,19 @@ public final class dlgVentas extends javax.swing.JDialog {
     public static double descuento;
     public Reporte jasper;
 
-    private static String Timbrado;
-    private static String Desde;
-    private static String Hasta;
-
     static public Numero_a_Letra d;
-
-    private static String ImpresoraPred;
 
     static DataSourceService1 dss1 = new DataSourceService1();
     static DataSourceService dss = new DataSourceService();
 
     public dlgVentas(java.awt.Frame parent, boolean modal) throws SQLException {
         super(parent, modal);
-
         initComponents();
-        //prepararBD();
         jasper = new Reporte();
         CabecerasTablas.ventas(tbDetalle);
         Cancelar();
         pintarCondicion();
         Invisible();
-
-        obtenerTIMBRA();
         titulo();
         d = new Numero_a_Letra();
 
@@ -74,15 +64,27 @@ public final class dlgVentas extends javax.swing.JDialog {
         } else {
             this.setTitle(Software.getSoftware() + " - VENTA DE PRODUCTOS");
         }
-        if (Timbrado == null) {
+        if (Timbrado.getHabilitado().equals("SI")) {
+            if (Timbrado.getValidado().equals("SI")) {
+                lbTimbrado.setText("TIMBRADO N°: " + Timbrado.getTimbrado());
+                lbValidaz.setText("PERIODO DE VALIDEZ: " + Timbrado.getDesde() + " AL " + Timbrado.getHasta());
+                lbValidaz.setForeground(new Color(0, 102, 102));
+                btnFacturaLegal.setEnabled(true);
+                itemFactura_Legal.setEnabled(true);
+            } else {
+                Mensajes.Sistema("EMISIÓN DE FACTURA LEGAL NO HABILITADO:\nEl Timbrado actual ha expirado.\nPara retomar las facturaciones legales sera necesario configurar un nuevo Timbrado.");
+                lbTimbrado.setText("TIMBRADO N°: " + Timbrado.getTimbrado());
+                lbValidaz.setText("PERIODO DE VALIDEZ: " + Timbrado.getDesde() + " AL " + Timbrado.getHasta());
+                lbValidaz.setForeground(new Color(255, 0, 0));
+                btnFacturaLegal.setEnabled(false);
+                itemFactura_Legal.setEnabled(false);
+            }
+        } else {
+            Mensajes.Sistema("FACTURA LEGAL NO HABILITADO:\nNo se encuentra un timbrado ni punto de expedición para registras facturas legales.");
             lbTimbrado.setText("");
-        } else {
-            lbTimbrado.setText("TIMBRADO N°: " + Timbrado);
-        }
-        if (Desde == null && Hasta == null) {
             lbValidaz.setText("");
-        } else {
-            lbValidaz.setText("PERIODO DE VALIDEZ: " + Desde + " AL " + Hasta);
+            btnFacturaLegal.setEnabled(false);
+            itemFactura_Legal.setEnabled(false);
         }
     }
 
@@ -234,80 +236,82 @@ public final class dlgVentas extends javax.swing.JDialog {
     }
 
     // ticketera mtu matricial
-    private static void obtenerTIMBRA() {
+    /*private static void obtenerTIMBRA() {
+        if(Timbrado.getValidado().equals("SI")){
+            Timbrado = rs.getString("timbra");
+                    Desde = rs.getString("fechadesde");
+                    Hasta = rs.getString("fechahasta");
+        }else{
+            
+        }
         String sql = "SELECT * FROM v_puntoemision3 WHERE ip='" + traerIP.getIP() + "' AND tipo='L' AND estado='Activo'";
         try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
-            rs.last();
-            do {
-                Timbrado = rs.getString("timbra");
-                Desde = rs.getString("fechadesde");
-                Hasta = rs.getString("fechahasta");
-            } while (rs.next());
-            SimpleDateFormat fe = new SimpleDateFormat("dd/MM/yyyy");
-            rs.close();
-            try {
-                Date FechaA = fe.parse(Fecha.fechaFormulario());
-                Date FechaT = fe.parse(Hasta);
-                if (FechaA.compareTo(FechaT) > 0) {
-                    Mensajes.Alerta("FACTURA LEGAL NO HABILITADO:\nEl Timbrado actual ha expirado.\nPara retomar las facturaciones legales sera necesario configurar un nuevo Timbrado.");
-                    btnFacturaLegal.setEnabled(false);
-                    itemFactura_Legal.setEnabled(false);
+            if (rs.getRow() == 0) {
+                Mensajes.error("FACTURA LEGAL NO HABILITADO:\nNo se encuentra un timbrado ni punto de expedición para registras facturas legales.");
+                btnFacturaLegal.setEnabled(false);
+                itemFactura_Legal.setEnabled(false);
+            } else {
+                rs.last();
+                do {
+                    Timbrado = rs.getString("timbra");
+                    Desde = rs.getString("fechadesde");
+                    Hasta = rs.getString("fechahasta");
+                } while (rs.next());
+                SimpleDateFormat fe = new SimpleDateFormat("dd/MM/yyyy");
+                rs.close();
+                try {
+                    Date FechaA = fe.parse(Fecha.fechaFormulario());
+                    Date FechaT = fe.parse(Hasta);
+                    if (FechaA.compareTo(FechaT) > 0) {
+                        Mensajes.Alerta("FACTURA LEGAL NO HABILITADO:\nEl Timbrado actual ha expirado.\nPara retomar las facturaciones legales sera necesario configurar un nuevo Timbrado.");
+                        btnFacturaLegal.setEnabled(false);
+                        itemFactura_Legal.setEnabled(false);
+                    }
+                } catch (ParseException es) {
                 }
-            } catch (ParseException es) {
+                st.close();
+                cn.close();
             }
-            st.close();
-            cn.close();
+
         } catch (SQLException ex) {
-            Mensajes.error("FACTURA LEGAL NO HABILITADO:\nNo se encuentra un timbrado ni punto de emisión para registras facturas legales.");
+            Mensajes.error("FACTURA LEGAL NO HABILITADO:\nNo se encuentra un timbrado ni punto de expedición para registras facturas legales.");
             btnFacturaLegal.setEnabled(false);
             itemFactura_Legal.setEnabled(false);
-            btnNuevo.setEnabled(false);
-            itemNuevo.setEnabled(false);
+            //btnNuevo.setEnabled(false);
+            //itemNuevo.setEnabled(false);
 
         }
-    }
-
+    }*/
     private static void obtenerNFactura() {
-
-        int idEmision1;
-        String Establecimiento1;
-        String Emision1;
         int facturaactual1;
-        int facturafin1;
-        int idBoca;
         String sql = "SELECT * FROM v_puntoemision4 WHERE ip='" + traerIP.getIP() + "' AND tipo='L' AND tipo2='F' AND estado='Activo'";
         try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
             rs.first();
             do {
-                idEmision1 = rs.getInt("idemision");
-                Establecimiento1 = rs.getString("establecimiento");
-                Emision1 = rs.getString("puntoemision");
-                facturaactual1 = rs.getInt("facturaactual");
-                facturafin1 = rs.getInt("facturafin");
-                idBoca = rs.getInt("idboca");
-                if (facturaactual1 < facturafin1) {
+                facturaactual1 = rs.getInt("facturaactual") + 1;
+                if (facturaactual1 <= Timbrado.getFacturaFin()) {
                     String cod = GestionarFactura.getCodigo();
                     txtCodF.setText(cod);
-                    txtidEmision.setText(String.valueOf(idEmision1));
-                    txtEstablecimiento1.setText(Establecimiento1);
-                    txtEmision1.setText(Emision1);
-                    txtIdBoca.setText(String.valueOf(idBoca));
+                    txtidEmision.setText(String.valueOf(Timbrado.getIdEmision()));
+                    txtEstablecimiento1.setText(Timbrado.getEstablecimiento());
+                    txtEmision1.setText(Timbrado.getPuntoExpedicion());
+                    txtIdBoca.setText(String.valueOf(Timbrado.getIdBoca()));
 
                     switch (String.valueOf(facturaactual1).length()) {
                         case 1 ->
-                            txtFacturaN1.setText("000000" + String.valueOf(facturaactual1 + 1));
+                            txtFacturaN1.setText("000000" + String.valueOf(facturaactual1));
                         case 2 ->
-                            txtFacturaN1.setText("00000" + String.valueOf(facturaactual1 + 1));
+                            txtFacturaN1.setText("00000" + String.valueOf(facturaactual1));
                         case 3 ->
-                            txtFacturaN1.setText("0000" + String.valueOf(facturaactual1 + 1));
+                            txtFacturaN1.setText("0000" + String.valueOf(facturaactual1));
                         case 4 ->
-                            txtFacturaN1.setText("000" + String.valueOf(facturaactual1 + 1));
+                            txtFacturaN1.setText("000" + String.valueOf(facturaactual1));
                         case 5 ->
-                            txtFacturaN1.setText("00" + String.valueOf(facturaactual1 + 1));
+                            txtFacturaN1.setText("00" + String.valueOf(facturaactual1));
                         case 6 ->
-                            txtFacturaN1.setText("0" + String.valueOf(facturaactual1 + 1));
+                            txtFacturaN1.setText("0" + String.valueOf(facturaactual1));
                         case 7 ->
-                            txtFacturaN1.setText(String.valueOf(facturaactual1 + 1));
+                            txtFacturaN1.setText(String.valueOf(facturaactual1));
                         default -> {
                         }
                     }
@@ -320,56 +324,46 @@ public final class dlgVentas extends javax.swing.JDialog {
                     dlgFinFacturaL.setVisible(true);
                     txtCodVendedorF.requestFocus();
                 } else {
-                    Mensajes.Alerta("OBSERVACIÓN:\nNo es posible emitir una nueva factura legal.\nSe ha alcanzado la cantidad máxima de facturación para el punto de expedición o emisión actual.\n");
+                    Mensajes.Sistema("OBSERVACIÓN:\nNo es posible emitir una nueva factura legal.\nSe ha alcanzado la cantidad máxima de facturación para el punto de expedición o emisión actual.\n");
                 }
             } while (rs.next());
             rs.close();
             st.close();
             cn.close();
         } catch (SQLException ex) {
-            Mensajes.Alerta("FACTURA LEGAL NO HABILITADO:\nNo se encuentra un timbrado ni punto de emisión para registras facturas legales.");
+            Mensajes.Sistema("FACTURA LEGAL NO HABILITADO:\nNo se encuentra un timbrado ni punto de expedición para registras facturas legales.");
             btnFacturaLegal.setEnabled(false);
             itemFactura_Legal.setEnabled(false);
-            btnNuevo.setEnabled(false);
-            itemNuevo.setEnabled(false);
         }
     }
 
     public static void comprobarNFactura() {
         String sqlcnf = "SELECT * FROM v_puntoemision4 WHERE idemision=" + txtidEmision.getText().trim();
         try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sqlcnf); Connection con = dss.getDataSource().getConnection(); Connection conm = dss1.getDataSource().getConnection(); Statement stt = con.createStatement(); Statement sttm = conm.createStatement()) {
-            String Establecimiento1;
-            String Emision1;
             int facturaactual1;
-            int facturafin1;
             rs.first();
             do {
-                Establecimiento1 = rs.getString("establecimiento");
-                Emision1 = rs.getString("puntoemision");
-                facturaactual1 = rs.getInt("facturaactual");
-                facturafin1 = rs.getInt("facturafin");
-                ImpresoraPred = rs.getString("impresora").trim();
+                facturaactual1 = rs.getInt("facturaactual") + 1;
 
-                if (facturaactual1 < facturafin1) {
+                if (facturaactual1 <= Timbrado.getFacturaFin()) {
 
-                    txtEstablecimiento1.setText(Establecimiento1);
-                    txtEmision1.setText(Emision1);
-                    int fa = facturaactual1 + 1;
-                    switch (String.valueOf(fa).length()) {
+                    txtEstablecimiento1.setText(Timbrado.getEstablecimiento());
+                    txtEmision1.setText(Timbrado.getPuntoExpedicion());
+                    switch (String.valueOf(facturaactual1).length()) {
                         case 1 ->
-                            txtFacturaN1.setText("000000" + String.valueOf(fa));
+                            txtFacturaN1.setText("000000" + String.valueOf(facturaactual1));
                         case 2 ->
-                            txtFacturaN1.setText("00000" + String.valueOf(fa));
+                            txtFacturaN1.setText("00000" + String.valueOf(facturaactual1));
                         case 3 ->
-                            txtFacturaN1.setText("0000" + String.valueOf(fa));
+                            txtFacturaN1.setText("0000" + String.valueOf(facturaactual1));
                         case 4 ->
-                            txtFacturaN1.setText("000" + String.valueOf(fa));
+                            txtFacturaN1.setText("000" + String.valueOf(facturaactual1));
                         case 5 ->
-                            txtFacturaN1.setText("00" + String.valueOf(fa));
+                            txtFacturaN1.setText("00" + String.valueOf(facturaactual1));
                         case 6 ->
-                            txtFacturaN1.setText("0" + String.valueOf(fa));
+                            txtFacturaN1.setText("0" + String.valueOf(facturaactual1));
                         case 7 ->
-                            txtFacturaN1.setText(String.valueOf(fa));
+                            txtFacturaN1.setText(String.valueOf(facturaactual1));
                         default -> {
                         }
                     }
@@ -472,26 +466,15 @@ public final class dlgVentas extends javax.swing.JDialog {
     public static void obtenerNTicket() {
         String cod = GestionarFactura.getCodigo();
         txtCodT.setText(cod);
-
-        int idEmision1;
-        String Establecimiento1;
-        String Emision1;
-        int facturaactual1;
-        int idBoca;
         String sql = "SELECT * FROM v_puntoemision4 WHERE ip='" + traerIP.getIP() + "' AND tipo='L' AND tipo2='T' AND estado='Activo'";
         try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
             if (rs != null) {
                 rs.first();
                 do {
-                    idEmision1 = rs.getInt("idemision");
-                    Establecimiento1 = rs.getString("establecimiento");
-                    Emision1 = rs.getString("puntoemision");
-                    facturaactual1 = rs.getInt("facturaactual");
-                    idBoca = rs.getInt("idboca");
-                    txtidEmision.setText(String.valueOf(idEmision1));
-                    txtIdBoca.setText(String.valueOf(idBoca));
-                    txtEPE.setText(Establecimiento1 + "-" + Emision1);
-                    int numero = (facturaactual1 + 1);
+                    txtidEmision.setText(String.valueOf(Tickets.getIdEmision()));
+                    txtIdBoca.setText(String.valueOf(Timbrado.getIdBoca()));
+                    txtEPE.setText(Tickets.getEstablecimiento() + "-" + Tickets.getPuntoExpedicion());
+                    int numero = (rs.getInt("facturaactual") + 1);
                     txtTicketN.setText(String.valueOf(numero));
                 } while (rs.next());
                 rs.close();
@@ -509,7 +492,7 @@ public final class dlgVentas extends javax.swing.JDialog {
             txtCodVendedorT.requestFocus();
 
         } catch (SQLException ex) {
-            Mensajes.Alerta("OBSERVACIÓN:\nEn estos momentos es imposible emitir Ticket de venta.\nEl Sistema no logra identificar un PUNTO DE EMISIÓN habilitado para esta terminal de venta.Para mayor información comuniquese con el proveedor del Sistema.\n\nOrigen: " + ex.getMessage());
+            Mensajes.Sistema("OBSERVACIÓN:\nEn estos momentos es imposible emitir Ticket de venta.\nEl Sistema no logra identificar un PUNTO DE EMISIÓN habilitado para esta terminal de venta.Para mayor información comuniquese con el proveedor del Sistema.\n\nOrigen: " + ex.getMessage());
         }
     }
 
@@ -518,18 +501,10 @@ public final class dlgVentas extends javax.swing.JDialog {
         txtCodT.setText(cod);
         String sqlcnt = "SELECT * FROM v_puntoemision4 WHERE idemision=" + txtidEmision.getText().trim();
         try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sqlcnt); Connection con = dss.getDataSource().getConnection(); Connection conm = dss1.getDataSource().getConnection(); Statement stt = con.createStatement(); Statement sttm = conm.createStatement()) {
-            String Establecimiento1;
-            String Emision1;
-            int facturaactual1;
             rs.last();
             do {
-                Establecimiento1 = rs.getString("establecimiento");
-                Emision1 = rs.getString("puntoemision");
-                facturaactual1 = rs.getInt("facturaactual");
-                ImpresoraPred = rs.getString("impresora").trim();
-                System.out.println(ImpresoraPred);
-                int numero = facturaactual1 + 1;
-                txtEPE.setText(Establecimiento1 + "-" + Emision1);
+                int numero = rs.getInt("facturaactual") + 1;
+                txtEPE.setText(Tickets.getEstablecimiento() + "-" + Tickets.getPuntoExpedicion());
                 txtTicketN.setText(String.valueOf(numero));
 
             } while (rs.next());
@@ -586,7 +561,7 @@ public final class dlgVentas extends javax.swing.JDialog {
                     stt.close();
                     sttm.close();
                     //Mensajes.informacion("VENTA REGISTRADA EXITOSAMENTE!");
-                    int rpta = Mensajes.confirmar2("VENTA REGISTRADA EXITOSAMENTE!\n\n" + "¿Desea Imprimir el Ticket de Venta?");
+                    int rpta = Mensajes.confirmar2("VENTA REGISTRADA EXITOSAMENTE!\n\n¿Desea Imprimir el Ticket de Venta?");
                     if (rpta == 0) {
                         imprimirTicket();
                     }
@@ -611,7 +586,7 @@ public final class dlgVentas extends javax.swing.JDialog {
                 }
             }
         } catch (SQLException ex) {
-            Mensajes.informacion("OBSERVACIÓN:\nEn estos momentos es imposible emitir Ticket de venta.\nEl Sistema no logra identificar un PUNTO DE EMISIÓN habilitado para esta terminal de venta.\nPara mayor información comuniquese con el proveedor del Sistema.");
+            Mensajes.Sistema("OBSERVACIÓN:\nEn estos momentos es imposible emitir Ticket de venta.\nEl Sistema no logra identificar un PUNTO DE EMISIÓN habilitado para esta terminal de venta.\nPara mayor información comuniquese con el proveedor del Sistema.");
         }
     }
 
@@ -626,7 +601,7 @@ public final class dlgVentas extends javax.swing.JDialog {
         PrinterService printerService = new PrinterService();
 
         final byte[] openCD = {27, 112, 0, 60, 120};
-        printerService.printBytes2(ImpresoraPred, openCD);
+        printerService.printBytes2(Tickets.getImpresora(), openCD);
 
         System.out.println(printerService.getPrinters());
         int filas = tbDetalle.getRowCount();
@@ -709,9 +684,9 @@ public final class dlgVentas extends javax.swing.JDialog {
         // printerService.printBytes(openCD);
         //printerService.printBytes(cutP);
         try {
-            printerService.printString2(ImpresoraPred, Ticket);
+            printerService.printString2(Tickets.getImpresora(), Ticket);
             byte[] cutP = new byte[]{0x1d, 'V', 1};
-            printerService.printBytes2(ImpresoraPred, cutP);
+            printerService.printBytes2(Tickets.getImpresora(), cutP);
         } catch (Exception e) {
             Mensajes.error("No se encuentra instalada la impresora predeterminada para este punto de impresión");
         }
@@ -727,9 +702,9 @@ public final class dlgVentas extends javax.swing.JDialog {
 
         PrinterService printerService = new PrinterService();
 
-        //final byte[] openCD = {27, 112, 0, 60, 120};
-        //printerService.printBytes2(ImpresoraPred, openCD);
-        //System.out.println(printerService.getPrinters());
+        final byte[] openCD = {27, 112, 0, 60, 120};
+        printerService.printBytes2(Timbrado.getImpresora(), openCD);
+
         int filas = tbDetalle.getRowCount();
         DecimalFormat formateador = new DecimalFormat("#,###");
         String tot = formateador.format(Integer.parseInt(txtTotalL.getText().replace(".", "").replace(",", "")));
@@ -753,8 +728,8 @@ public final class dlgVentas extends javax.swing.JDialog {
         Ticket += direccion + "\n";
         Ticket += "     CNEL. OVIEDO - DPTO. DE CAAGUAZU - PY\n";
         Ticket += "-----------------------------------------------\n";
-        Ticket += "              TIMBRADO: " + Timbrado + "\n";
-        Ticket += "  VALIDO DESDE: " + Desde + " HASTA: " + Hasta + "\n";
+        Ticket += "              TIMBRADO: " + Timbrado.getTimbrado() + "\n";
+        Ticket += "  VALIDO DESDE: " + Timbrado.getDesde() + " HASTA: " + Timbrado.getHasta() + "\n";
         Ticket += "               I.V.A. INCLUIDO\n";
         Ticket += "----------------------------------------------\n";
         Ticket += "FACTURA " + lbCond.getText().trim() + " NRO: " + txtEstablecimiento1.getText().trim()
@@ -835,9 +810,9 @@ public final class dlgVentas extends javax.swing.JDialog {
         //printerService.printBytes(openCD);
         //printerService.printBytes(cutP);
         try {
-            printerService.printString2(ImpresoraPred, Ticket);
+            printerService.printString2(Timbrado.getImpresora(), Ticket);
             byte[] cutP = new byte[]{0x1d, 'V', 1};
-            printerService.printBytes2(ImpresoraPred, cutP);
+            printerService.printBytes2(Timbrado.getImpresora(), cutP);
         } catch (Exception e) {
             Mensajes.error("No se encuentra instalada la impresora predeterminada para este punto de impresión");
         }
@@ -877,8 +852,8 @@ public final class dlgVentas extends javax.swing.JDialog {
         Ticket += direccion + "\n";
         Ticket += "     CNEL. OVIEDO - DPTO. DE CAAGUAZU - PY\n";
         Ticket += "-----------------------------------------------\n";
-        Ticket += "              TIMBRADO: " + Timbrado + "\n";
-        Ticket += "  VALIDO DESDE: " + Desde + " HASTA: " + Hasta + "\n";
+        Ticket += "              TIMBRADO: " + Timbrado.getTimbrado() + "\n";
+        Ticket += "  VALIDO DESDE: " + Timbrado.getDesde() + " HASTA: " + Timbrado.getHasta() + "\n";
         Ticket += "               I.V.A. INCLUIDO\n";
         Ticket += "----------------------------------------------\n";
         Ticket += "FACTURA " + lbCond.getText().trim() + " NRO: " + txtEstablecimiento1.getText().trim()
@@ -952,9 +927,9 @@ public final class dlgVentas extends javax.swing.JDialog {
         Ticket += "\n";
 
         try {
-            printerService.printString2(ImpresoraPred, Ticket);
+            printerService.printString2(Timbrado.getImpresora(), Ticket);
             byte[] cutP = new byte[]{0x1d, 'V', 1};
-            printerService.printBytes2(ImpresoraPred, cutP);
+            printerService.printBytes2(Timbrado.getImpresora(), cutP);
         } catch (Exception e) {
             Mensajes.error("No se encuentra instalada la impresora predeterminada para este punto de impresión");
         }
@@ -3402,7 +3377,7 @@ public final class dlgVentas extends javax.swing.JDialog {
             try {
                 dlgVentas dialog = new dlgVentas(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    
+
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
                         System.exit(0);

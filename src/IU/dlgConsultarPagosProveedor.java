@@ -1,6 +1,7 @@
 package IU;
 
 import Componentes.Mensajes;
+import Componentes.RenderDecimal;
 import Componentes.RenderDecimal2;
 import Componentes.RenderDecimal1;
 import Componentes.Software;
@@ -8,7 +9,6 @@ import Componentes.cargarComboBox;
 import Controladores.CabecerasTablas;
 import Controladores.controlCompra;
 import java.awt.event.KeyEvent;
-import javax.swing.JOptionPane;
 
 public class dlgConsultarPagosProveedor extends javax.swing.JDialog {
 
@@ -48,7 +48,7 @@ public class dlgConsultarPagosProveedor extends javax.swing.JDialog {
 
     public static void Renders() {
         dlgConsultarPagosProveedor.tbPagosProveedor.getColumnModel().getColumn(6).setCellRenderer(new RenderDecimal2());
-        //dlgConsultarPagosProveedor.tbPagosProveedor.getColumnModel().getColumn(13).setCellRenderer(new RenderPagos());
+        dlgConsultarPagosProveedor.tbPagosProveedor.getColumnModel().getColumn(8).setCellRenderer(new RenderDecimal1());
         //dlgConsultarPagosProveedor.tbPagosProveedor.getColumnModel().getColumn(14).setCellRenderer(new RenderDecimal2());
     }
 
@@ -274,7 +274,7 @@ public class dlgConsultarPagosProveedor extends javax.swing.JDialog {
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(62, 62, 62)
                 .addComponent(txtCodProveedor, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 655, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 769, Short.MAX_VALUE)
                 .addComponent(btnSalir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         OscuroLayout.setVerticalGroup(
@@ -290,7 +290,7 @@ public class dlgConsultarPagosProveedor extends javax.swing.JDialog {
                 .addContainerGap())
         );
 
-        Blanco.add(Oscuro, new org.netbeans.lib.awtextra.AbsoluteConstraints(1, 1, 989, 99));
+        Blanco.add(Oscuro, new org.netbeans.lib.awtextra.AbsoluteConstraints(1, 1, 1103, 99));
 
         jScrollPane1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
         jScrollPane1.setOpaque(false);
@@ -328,7 +328,7 @@ public class dlgConsultarPagosProveedor extends javax.swing.JDialog {
         });
         jScrollPane1.setViewportView(tbPagosProveedor);
 
-        Blanco.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(1, 134, 989, 210));
+        Blanco.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(1, 134, 1103, 210));
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)), "Detalle de facturas vinculadas al pago seleccionado", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.ABOVE_TOP, new java.awt.Font("Roboto", 1, 11), new java.awt.Color(0, 102, 102))); // NOI18N
         jPanel1.setOpaque(false);
@@ -363,9 +363,9 @@ public class dlgConsultarPagosProveedor extends javax.swing.JDialog {
         });
         jScrollPane2.setViewportView(tbDetallePagosProveedor);
 
-        jPanel1.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 18, 972, 245));
+        jPanel1.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 18, 1086, 245));
 
-        Blanco.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 355, 982, 270));
+        Blanco.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 355, 1096, 270));
 
         btnFiltrar.setText("FITRAR FACTURAS");
         btnFiltrar.setEnabled(false);
@@ -424,7 +424,7 @@ public class dlgConsultarPagosProveedor extends javax.swing.JDialog {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(Blanco, javax.swing.GroupLayout.DEFAULT_SIZE, 991, Short.MAX_VALUE)
+            .addComponent(Blanco, javax.swing.GroupLayout.DEFAULT_SIZE, 1105, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

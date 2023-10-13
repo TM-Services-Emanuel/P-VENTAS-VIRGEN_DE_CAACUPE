@@ -1812,7 +1812,7 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" attributes="0">
                           <Component id="jLabel11" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
+                          <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
                           <Component id="jLabel19" min="-2" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="53" max="-2" attributes="0"/>
                           <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
@@ -2694,43 +2694,6 @@
                 <Property name="text" type="java.lang.String" value="   "/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JToolBar$Separator" name="jSeparator18">
-              <Properties>
-                <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                  <Color blue="ff" green="ff" red="ff" type="rgb"/>
-                </Property>
-                <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                  <Color blue="ff" green="ff" red="ff" type="rgb"/>
-                </Property>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JLabel" name="jLabel10">
-              <Properties>
-                <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                  <Color blue="ff" green="ff" id="white" palette="1" red="ff" type="palette"/>
-                </Property>
-                <Property name="text" type="java.lang.String" value="   "/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JLabel" name="jLabel8">
-              <Properties>
-                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                  <Font name="Roboto" size="10" style="1"/>
-                </Property>
-                <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                  <Color blue="ff" green="ff" id="white" palette="1" red="ff" type="palette"/>
-                </Property>
-                <Property name="text" type="java.lang.String" value="Data base name: P-VENTA - port: 3306"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JLabel" name="jLabel12">
-              <Properties>
-                <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                  <Color blue="ff" green="ff" id="white" palette="1" red="ff" type="palette"/>
-                </Property>
-                <Property name="text" type="java.lang.String" value="   "/>
-              </Properties>
-            </Component>
             <Component class="javax.swing.JToolBar$Separator" name="jSeparator3">
               <Properties>
                 <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
@@ -2808,7 +2771,7 @@
               <Color blue="ff" green="ff" red="ff" type="rgb"/>
             </Property>
             <Property name="horizontalAlignment" type="int" value="0"/>
-            <Property name="text" type="java.lang.String" value="Software de gesti&#xf3;n de Productos, Compras &amp; Ventas."/>
+            <Property name="text" type="java.lang.String" value="Software de gesti&#xf3;n comercial"/>
           </Properties>
         </Component>
       </SubComponents>

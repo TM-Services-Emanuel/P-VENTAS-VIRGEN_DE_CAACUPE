@@ -1069,6 +1069,7 @@ public final class dlgGestVendedor extends javax.swing.JDialog {
         cabe.vendedor(dlgVendedor.tablaEmpleados);
         CabecerasTablas.limpiarTablas(dlgVendedor.tablaEmpleados);
         controlVendedor.listVendedor(dlgVendedor.tablaEmpleados, "v_vendedores.ven_codigo");
+        dlgVendedor.Renders();
     }
 
     void cargarIcono() {

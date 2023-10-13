@@ -470,7 +470,7 @@ public class dlgSucursal extends javax.swing.JDialog {
         // TODO add your handling code here:
         int rpta = Mensajes.confirmar("¿Seguro que desea salir del formulario?");
         if (rpta == 0) {
-            informacionGral();
+            frmPrincipal.informacionGral();
             this.dispose();
         }
     }//GEN-LAST:event_btnSalirActionPerformed

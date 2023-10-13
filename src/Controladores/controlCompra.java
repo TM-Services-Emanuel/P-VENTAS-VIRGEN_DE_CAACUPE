@@ -471,7 +471,7 @@ public class controlCompra {
     }*/
 
  /*------CONSULTADO LAS COMPRAS REALIZADAS*/
-    /*public static void listarCompras(JTable tabla) {
+ /*public static void listarCompras(JTable tabla) {
         List lista;
         lista = GestionarCompra.listarCompras();
         for (int i = 1; i < lista.size(); i++) {
@@ -626,7 +626,7 @@ public class controlCompra {
         }
         return msg;
     }
-    
+
     /*public static String anularPagosProveedor() {
         String msg;
         int x = dlgConsultarPagosProveedor.tbPagosProveedor.getSelectedRow();
@@ -641,7 +641,6 @@ public class controlCompra {
         }
         return msg;
     }*/
-
     public static void actCantidad(JTable tabla) {
         try {
             int fila = dlgCompras.tbDetalle.getSelectedRow();
@@ -775,21 +774,24 @@ public class controlCompra {
         lista = GestionarCompra.listarPagosCompras();
         for (int i = 1; i < lista.size(); i++) {
             DefaultTableModel tb = (DefaultTableModel) tabla.getModel();
+            String filas[] = new String[10];
             Object[] fila = (Object[]) lista.get(i);
-            fila[0].toString();
-            fila[1].toString();
-            fila[2] = fila[3].toString() + " - " + fila[4].toString();
-            fila[3] = fila[5].toString();
-            fila[4] = Fecha.formatoFechaDinver(fila[6].toString());
-            fila[5] = Fecha.FormatoHoraSinSSString(fila[7].toString());
-            fila[6] = fila[8].toString();
+            filas[0] = fila[0].toString();
+            filas[1] = fila[1].toString();
+            filas[2] = fila[3].toString() + " - " + fila[4].toString();
+            filas[3] = fila[5].toString();
+            filas[4] = Fecha.formatoFechaDinver(fila[6].toString());
+            filas[5] = Fecha.FormatoHoraSinSSString(fila[7].toString());
+            filas[6] = fila[8].toString();
             if (fila[9].toString().equals("S")) {
-                fila[7] = "";
+                filas[7] = "";
             } else if (fila[9].toString().equals("N")) {
-                fila[7] = "ANULADO";
+                filas[7] = "ANULADO";
             }
+            filas[8] = fila[10].toString();
+            filas[9] = fila[11].toString();
 
-            tb.addRow(fila);
+            tb.addRow(filas);
         }
     }
 
@@ -879,7 +881,7 @@ public class controlCompra {
             tb.addRow(fila);
         }
     }
-    
+
     public static void consLineaPagos() {
         int fila = dlgRegistrarPagosProveedor.tbDetalle.getSelectedRow();
         int cod = Integer.parseInt(dlgRegistrarPagosProveedor.tbDetalle.getValueAt(fila, 0).toString());
@@ -912,7 +914,7 @@ public class controlCompra {
             }
         }
     }
-    
+
     public static void actMontoPago(JTable tabla) {
         try {
             int fila = dlgRegistrarPagosProveedor.tbDetalle.getSelectedRow();
@@ -939,17 +941,16 @@ public class controlCompra {
             Mensajes.error("Seleccione una fila de la tabla");
         }
     }
-    
+
     public static void addNCPagoProveedor(JTable tabla) {
         try {
             int fila = dlgRegistrarPagosProveedor.tbDetalle.getSelectedRow();
             int monto_saldo = Integer.parseInt(dlgRegistrarPagosProveedor.tbDetalle.getValueAt(fila, 7).toString().replace(".", "").replace(",", ""));
             int monto_nc = Integer.parseInt(dlgRegistrarPagosProveedor.txtAbono1.getText().trim().replace(".", "").replace(",", ""));
-            String NroNC= dlgRegistrarPagosProveedor.txtNC.getText().trim();
+            String NroNC = dlgRegistrarPagosProveedor.txtNC.getText().trim();
             //int monto_abonado = Integer.parseInt(dlgRegistrarPagosProveedor.tbDetalle.getValueAt(fila, 4).toString().replace(".", "").replace(",", ""));
-            
-            
-            int nuevo_monto_saldo= monto_saldo - monto_nc;
+
+            int nuevo_monto_saldo = monto_saldo - monto_nc;
             int saldo = nuevo_monto_saldo - nuevo_monto_saldo;
             String estado = null;
             if (saldo == 0) {
@@ -965,7 +966,6 @@ public class controlCompra {
             dlgRegistrarPagosProveedor.tbDetalle.setValueAt(estado, fila, 6);
             dlgRegistrarPagosProveedor.tbDetalle.setValueAt(NroNC, fila, 8);
             dlgRegistrarPagosProveedor.tbDetalle.setValueAt(monto_nc, fila, 9);
-            
 
             String total = String.valueOf(getTotalPagos());
             DecimalFormat df = new DecimalFormat("#,###");

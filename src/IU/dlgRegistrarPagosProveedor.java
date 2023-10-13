@@ -48,7 +48,7 @@ public final class dlgRegistrarPagosProveedor extends javax.swing.JDialog {
                 long resultado = Long.parseLong(txtMontoDepositado.getText().replace(".", "").replace(",", "")) - Long.parseLong(txtTotal.getText().replace("Gs.", "").replace(".", "").replace(",", ""));
                 txtDifDeposito.setText(String.valueOf(resultado));
             }
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             System.out.println("Error calculando diferencia: " + e.getMessage());
         }
 
@@ -92,6 +92,10 @@ public final class dlgRegistrarPagosProveedor extends javax.swing.JDialog {
         btnCancelar.setEnabled(false);
         cbProveedores.setEnabled(false);
         btnSalir.setEnabled(true);
+        txtFechaFachada.setEnabled(false);
+        txtReciboD.setEnabled(false);
+        txtMontoDepositado.setEnabled(false);
+        txtBoleta.setEnabled(false);
         cant();
     }
 
@@ -130,6 +134,7 @@ public final class dlgRegistrarPagosProveedor extends javax.swing.JDialog {
         txtDifDeposito.setText("");
         txtMontoDepositado.setText("");
         txtReciboD.setText("");
+        txtBoleta.setText("");
         controlCompra.arrayPago.vaciar();
         CabecerasTablas.Pagos(tbDetalle);
         CabecerasTablas.limpiarTablas(tbDetalle);
@@ -256,6 +261,8 @@ public final class dlgRegistrarPagosProveedor extends javax.swing.JDialog {
         txtReciboD = new javax.swing.JTextField();
         jLabel15 = new javax.swing.JLabel();
         txtMontoDepositado = new javax.swing.JTextField();
+        jLabel16 = new javax.swing.JLabel();
+        txtBoleta = new javax.swing.JTextField();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tbDetalle = new javax.swing.JTable()
@@ -590,6 +597,11 @@ public final class dlgRegistrarPagosProveedor extends javax.swing.JDialog {
         txtReciboD.setFont(new java.awt.Font("Roboto", 0, 11)); // NOI18N
         txtReciboD.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         txtReciboD.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
+        txtReciboD.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtReciboDActionPerformed(evt);
+            }
+        });
         txtReciboD.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 txtReciboDKeyPressed(evt);
@@ -616,6 +628,26 @@ public final class dlgRegistrarPagosProveedor extends javax.swing.JDialog {
             }
         });
 
+        jLabel16.setFont(new java.awt.Font("Roboto", 0, 11)); // NOI18N
+        jLabel16.setText("Boleta N°");
+
+        txtBoleta.setFont(new java.awt.Font("Roboto", 0, 11)); // NOI18N
+        txtBoleta.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtBoleta.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
+        txtBoleta.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtBoletaActionPerformed(evt);
+            }
+        });
+        txtBoleta.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtBoletaKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtBoletaKeyReleased(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -625,23 +657,27 @@ public final class dlgRegistrarPagosProveedor extends javax.swing.JDialog {
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtCod, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel12)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtCaja, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtFechaFachada, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel14)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtReciboD, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(28, 28, 28)
+                .addComponent(txtReciboD, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel15)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtMontoDepositado, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(20, 20, 20))
+                .addComponent(txtMontoDepositado, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel16)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtBoleta, javax.swing.GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -652,11 +688,13 @@ public final class dlgRegistrarPagosProveedor extends javax.swing.JDialog {
                         .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(txtFechaFachada, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtMontoDepositado, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtBoleta, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(txtReciboD, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(txtMontoDepositado, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(txtCod, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1030,7 +1068,7 @@ public final class dlgRegistrarPagosProveedor extends javax.swing.JDialog {
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel9Layout.createSequentialGroup()
                 .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 6, Short.MAX_VALUE))
+                .addGap(0, 4, Short.MAX_VALUE))
             .addGroup(jPanel9Layout.createSequentialGroup()
                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnRestar, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1261,7 +1299,7 @@ dcFHasta.addCommitListener(new datechooser.events.CommitListener() {
         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addGroup(layout.createSequentialGroup()
             .addComponent(Blanco, javax.swing.GroupLayout.PREFERRED_SIZE, 1105, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGap(0, 0, Short.MAX_VALUE))
+            .addGap(0, 0, 0))
     );
     layout.setVerticalGroup(
         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1579,7 +1617,12 @@ dcFHasta.addCommitListener(new datechooser.events.CommitListener() {
         btnCancelar.setEnabled(true);
         btnSalir.setEnabled(false);
         cbProveedores.setEnabled(true);
+        txtFechaFachada.setEnabled(true);
+        txtReciboD.setEnabled(true);
+        txtMontoDepositado.setEnabled(true);
+        txtBoleta.setEnabled(true);
         CalcularDifDeposito();
+        txtMontoDepositado.requestFocus();
     }//GEN-LAST:event_btnNuevoActionPerformed
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
@@ -1594,6 +1637,9 @@ dcFHasta.addCommitListener(new datechooser.events.CommitListener() {
             btnBuscarFacturas.doClick();
         } else if (Integer.parseInt(txtMontoDepositado.getText().replace(",", "").replace(".", "")) < Integer.parseInt(txtTotal.getText().replace("Gs.", "").replace(".", "").replace(",", ""))) {
             Mensajes.informacion("El monto depositado no cubre la totalidad de las facturas anexadas.");
+        } else if (txtBoleta.getText().isEmpty()) {
+            Mensajes.informacion("Ingrese el número correspondiente a la Boleta de depósito.");
+            txtBoleta.requestFocus();
         } else {
             try (Connection cn = dss.getDataSource().getConnection(); Statement st = cn.createStatement()) {
                 int resp = JOptionPane.showConfirmDialog(this, "¿Seguro que deseas registrar el pago al sistema?", "CONFIRMACIÓN DE PAGO", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
@@ -1602,7 +1648,8 @@ dcFHasta.addCommitListener(new datechooser.events.CommitListener() {
                         String usuario = Login.getUsuarioLogueado();
                         cn.setAutoCommit(false);
                         String sql = "insert into pagos_proveedor values(" + txtCod.getText() + "," + txtCaja.getText() + "," + txtCodProveedor.getText() + ",'" + txtReciboD.getText()
-                                + "','" + Fecha.formatoFecha(txtFechaFachada.getText().trim()) + "','" + Fecha.darHora() + "'," + txtTotal.getText().replace("Gs.", "").replace(".", "").replace(",", "") +","+ txtMontoDepositado.getText().replace(".", "").replace(",", "") + ",'S','" + usuario + "')";
+                                + "','" + Fecha.formatoFecha(txtFechaFachada.getText().trim()) + "','" + Fecha.darHora() + "'," + txtTotal.getText().replace("Gs.", "").replace(".", "").replace(",", "")
+                                + "," + txtMontoDepositado.getText().replace(".", "").replace(",", "") + ",'S','" + usuario + "','" + txtBoleta.getText() + "')";
                         st.executeUpdate(sql);
                         int fila = tbDetalle.getRowCount();
                         for (int j = 0; j < fila; j++) {
@@ -1658,16 +1705,7 @@ dcFHasta.addCommitListener(new datechooser.events.CommitListener() {
         // TODO add your handling code here:
         int rpta = Mensajes.confirmar("¿Seguro que desea Cancelar la Compra?");
         if (rpta == 0) {
-            limpiarCampos();
-            btnBuscarFacturas.setEnabled(false);
-            dcFDesde.setEnabled(false);
-            dcFHasta.setEnabled(false);
-            btnNuevo.setEnabled(true);
-            btnGuardar.setEnabled(false);
-            btnCancelar.setEnabled(false);
-            cbProveedores.setEnabled(false);
-            btnSalir.setEnabled(true);
-            cant();
+            Cancelar();
         }
     }//GEN-LAST:event_btnCancelarActionPerformed
 
@@ -1771,6 +1809,23 @@ dcFHasta.addCommitListener(new datechooser.events.CommitListener() {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtMontoDepositadoActionPerformed
 
+    private void txtReciboDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtReciboDActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtReciboDActionPerformed
+
+    private void txtBoletaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBoletaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtBoletaActionPerformed
+
+    private void txtBoletaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBoletaKeyPressed
+        // TODO add your handling code here:
+        validarCampos.soloDecimales(txtBoleta);
+    }//GEN-LAST:event_txtBoletaKeyPressed
+
+    private void txtBoletaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBoletaKeyReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtBoletaKeyReleased
+
     /**
      * @param args the command line arguments
      */
@@ -1853,6 +1908,7 @@ dcFHasta.addCommitListener(new datechooser.events.CommitListener() {
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -1883,6 +1939,7 @@ dcFHasta.addCommitListener(new datechooser.events.CommitListener() {
     public static javax.swing.JTable tbDetalle;
     public static javax.swing.JTextField txtAbono;
     public static javax.swing.JTextField txtAbono1;
+    public static javax.swing.JTextField txtBoleta;
     public static javax.swing.JTextField txtCaja;
     public static javax.swing.JTextField txtCod;
     public static javax.swing.JTextField txtCodProveedor;

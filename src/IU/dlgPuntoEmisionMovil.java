@@ -8,6 +8,7 @@ import Componentes.cargarComboBox;
 import Componentes.cargarComboBoxMovil;
 import Componentes.validarCampos;
 import Controladores.CabecerasTablas;
+import Controladores.ControlLogeo;
 import Controladores.controlPuntoEmisionMovil;
 import Datos.GestionarPuntoEmisionMovil;
 import java.awt.HeadlessException;
@@ -1041,35 +1042,20 @@ public class dlgPuntoEmisionMovil extends javax.swing.JDialog {
             String cod = tbPuntoEmision.getValueAt(fila, 0).toString();
             System.out.println(cod);
             String itTimbrado = tbPuntoEmision.getValueAt(fila, 1).toString();
-            System.out.println("ID Timbrado: " + itTimbrado);
             String establecimiento = tbPuntoEmision.getValueAt(fila, 3).toString();
-            System.out.println("Establecimiento: " + establecimiento);
             String puntoEmision = tbPuntoEmision.getValueAt(fila, 4).toString();
-            System.out.println("Punto emision: " + puntoEmision);
             String direccion = tbPuntoEmision.getValueAt(fila, 5).toString();
-            System.out.println("Direccion: " + direccion);
             String fi = tbPuntoEmision.getValueAt(fila, 6).toString();
-            System.out.println("Factura Inicio: " + fi);
             String ff = tbPuntoEmision.getValueAt(fila, 7).toString();
-            System.out.println("Factura Fin: " + ff);
             String fa = tbPuntoEmision.getValueAt(fila, 8).toString();
-            System.out.println("Factura Actual: " + fa);
             String nv = tbPuntoEmision.getValueAt(fila, 9).toString();
-            System.out.println("Numero Venta: " + nv);
             String tipo = tbPuntoEmision.getValueAt(fila, 10).toString();
-            System.out.println("Tipo: " + tipo);
             String tipo2 = tbPuntoEmision.getValueAt(fila, 11).toString();
-            System.out.println("Tipo2: " + tipo2);
             String ip = tbPuntoEmision.getValueAt(fila, 12).toString();
-            System.out.println("IP: " + ip);
             String estado = tbPuntoEmision.getValueAt(fila, 13).toString();
-            System.out.println("Estado: " + estado);
             int idboca = Integer.parseInt(tbPuntoEmision.getValueAt(fila, 14).toString());
-            System.out.println("ID boca de cobranza:" + idboca);
             String boca = tbPuntoEmision.getValueAt(fila, 15).toString();
-            System.out.println("Boca de cobranza: " + boca);
             String impresora = tbPuntoEmision.getValueAt(fila, 16).toString();
-            System.out.println("Impresora: " + impresora);
 
             txtCod.setText(cod);
             modcboTimbrado(itTimbrado);
@@ -1320,6 +1306,7 @@ public class dlgPuntoEmisionMovil extends javax.swing.JDialog {
         // TODO add your handling code here:
         int rpta = Mensajes.confirmar("¿Seguro que desea salir del formulario?");
         if (rpta == 0) {
+            ControlLogeo.Timbrado_Ticket();
             this.dispose();
         }
     }//GEN-LAST:event_rSButtonIconOne1ActionPerformed

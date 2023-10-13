@@ -18,6 +18,18 @@ public class Fecha {
         return fechas;
     }
     
+    public static String soloAnho(){
+        String fechas = null;
+        try {
+            Date hoy = new Date();
+            SimpleDateFormat fe = new SimpleDateFormat("yyyy");
+            fechas = fe.format(hoy);
+        } catch (Exception e) {
+            System.out.println("Error al ver la fecha");
+        }
+        return fechas;
+    }
+    
     public static String fechaCFormulario(String fecha){
         String fechas = null;
         try {

@@ -12,6 +12,7 @@ import Controladores.ControlGasto;
 import java.awt.HeadlessException;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
+import java.sql.SQLException;
 import java.text.DecimalFormat;
 import javax.swing.JOptionPane;
 
@@ -79,7 +80,6 @@ public class dlgGastos extends javax.swing.JDialog {
         cbDetalleGasto.requestFocus();
         cbDetalleGasto.setPopupVisible(true);
     }*/
-
     public void Volver() {
         dlgGestGastos.txtGL.setText("0");
         dlgGestGastos.txtGA.setText("0");
@@ -115,6 +115,7 @@ public class dlgGastos extends javax.swing.JDialog {
         txtFuncionario = new javax.swing.JTextField();
         jPanel1 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
+        btnCalcular = new RSMaterialComponent.RSButtonIconOne();
         txtCaja = new javax.swing.JTextField();
         dcFecha = new datechooser.beans.DateChooserCombo();
         jLabel1 = new javax.swing.JLabel();
@@ -358,6 +359,28 @@ public class dlgGastos extends javax.swing.JDialog {
         jLabel6.setText("Mov. N°");
         jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 13, 82, 23));
 
+        btnCalcular.setBackground(new java.awt.Color(255, 255, 255));
+        btnCalcular.setForeground(new java.awt.Color(51, 51, 51));
+        btnCalcular.setToolTipText("ALT+F4");
+        btnCalcular.setBackgroundHover(new java.awt.Color(204, 102, 0));
+        btnCalcular.setForegroundText(new java.awt.Color(204, 102, 0));
+        btnCalcular.setIcons(rojeru_san.efectos.ValoresEnum.ICONS.EXPOSURE);
+        btnCalcular.setOpaque(true);
+        btnCalcular.setPreferredSize(new java.awt.Dimension(20, 20));
+        btnCalcular.setRequestFocusEnabled(false);
+        btnCalcular.setTypeBorder(RSMaterialComponent.RSButtonIconOne.TYPEBORDER.CIRCLE);
+        btnCalcular.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCalcularActionPerformed(evt);
+            }
+        });
+        btnCalcular.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                btnCalcularKeyPressed(evt);
+            }
+        });
+        jPanel1.add(btnCalcular, new org.netbeans.lib.awtextra.AbsoluteConstraints(667, 43, 23, 23));
+
         txtCaja.setEditable(false);
         txtCaja.setBackground(new java.awt.Color(255, 255, 255));
         txtCaja.setFont(new java.awt.Font("Roboto", 0, 11)); // NOI18N
@@ -516,7 +539,7 @@ public class dlgGastos extends javax.swing.JDialog {
             cboOtorgadoKeyPressed(evt);
         }
     });
-    jPanel1.add(cboOtorgado, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 43, 260, 23));
+    jPanel1.add(cboOtorgado, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 43, 235, 23));
 
     cbGenerado.setForeground(new java.awt.Color(0, 0, 0));
     cbGenerado.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "ORIGEN DEL GASTO:", "1- SALÓN DE VENTA", "2- ADMINISTRACIÓN" }));
@@ -715,21 +738,25 @@ public class dlgGastos extends javax.swing.JDialog {
                 lbOtorgado.setVisible(false);
                 cboOtorgado.setVisible(false);
                 txtMotivo.setText("");
+                btnCalcular.setVisible(false);
             }
             case 1 -> {
                 lbOtorgado.setVisible(false);
                 cboOtorgado.setVisible(false);
                 txtMotivo.setText("1");
+                btnCalcular.setVisible(false);
             }
             case 2 -> {
                 lbOtorgado.setVisible(true);
                 cboOtorgado.setVisible(true);
                 txtMotivo.setText("2");
+                btnCalcular.setVisible(true);
             }
             case 3 -> {
                 lbOtorgado.setVisible(true);
                 cboOtorgado.setVisible(true);
                 txtMotivo.setText("3");
+                btnCalcular.setVisible(true);
             }
             default -> {
             }
@@ -751,8 +778,12 @@ public class dlgGastos extends javax.swing.JDialog {
         // TODO add your handling code here:
         if (cboOtorgado.getSelectedIndex() == 0) {
             txtFuncionario.setText("0");
+            txtImporte.setText("0");
+            txtImporteL.setText("0");
         } else {
             txtFuncionario.setText(cargarComboBox.getCodidgo(cboOtorgado));
+            txtImporte.setText("0");
+            txtImporteL.setText("0");
         }
     }//GEN-LAST:event_cboOtorgadoActionPerformed
 
@@ -780,6 +811,34 @@ public class dlgGastos extends javax.swing.JDialog {
     private void cbGeneradoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cbGeneradoKeyPressed
         // TODO add your handling code here:
     }//GEN-LAST:event_cbGeneradoKeyPressed
+
+    private void btnCalcularActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCalcularActionPerformed
+        // TODO add your handling code here:
+        if(cboOtorgado.getSelectedIndex() == 0){
+            Mensajes.Sistema("No es posible abrir el gestor de consulta.\nIdentifique el funcionario y vuelva a intentarlo.");
+        }else{
+            try {
+
+                dlgReporteGastos gastos = new dlgReporteGastos(null, true);
+                String sueldo = generarCodigos.getFecha("SELECT ven_sueldo FROM vendedor WHERE ven_codigo=" + txtFuncionario.getText());
+                dlgReporteGastos.txtCod.setText(txtFuncionario.getText());
+                dlgReporteGastos.txtNombre.setText(cboOtorgado.getSelectedItem().toString());
+                DecimalFormat df = new DecimalFormat("#,###");
+                dlgReporteGastos.lbSueldo.setText(df.format(Integer.valueOf(sueldo)));
+                gastos.setLocationRelativeTo(this);
+                gastos.setVisible(true);
+            } catch (NumberFormatException | SQLException e) {
+                Mensajes.informacion("Servidor no esta activo: " + e.getMessage());
+            } 
+        }
+        
+
+    }//GEN-LAST:event_btnCalcularActionPerformed
+
+    private void btnCalcularKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_btnCalcularKeyPressed
+        // TODO add your handling code here:
+
+    }//GEN-LAST:event_btnCalcularKeyPressed
 
     /**
      * @param args the command line arguments
@@ -829,6 +888,7 @@ public class dlgGastos extends javax.swing.JDialog {
     private javax.swing.JSeparator Separador1;
     private javax.swing.JSeparator Separador3;
     private javax.swing.JSeparator Separador4;
+    private RSMaterialComponent.RSButtonIconOne btnCalcular;
     private RSMaterialComponent.RSButtonIconUno btnCancelar;
     private RSMaterialComponent.RSButtonIconUno btnGuardar;
     private RSMaterialComponent.RSButtonIconUno btnNuevo;

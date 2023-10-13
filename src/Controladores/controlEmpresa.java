@@ -60,6 +60,7 @@ public class controlEmpresa {
         msg = GestionarEmpresa.actEmpresa(e);
         if (msg == null) {
             Mensajes.informacion("Empresa Actualizada");
+            ControlLogeo.Empresa();
         } else {
             Mensajes.error(msg);
         }
