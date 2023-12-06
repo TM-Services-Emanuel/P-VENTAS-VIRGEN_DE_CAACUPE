@@ -4,6 +4,7 @@ import Componentes.DataSourceService1;
 import Componentes.Fecha;
 import Componentes.Login;
 import Componentes.Mensajes;
+import Componentes.Notif;
 import Datos.GestionarArticulosMovil;
 import IU.dlgArticulosMovil;
 import IU.dlgGestArticulosMovil;
@@ -276,21 +277,36 @@ public class controlArticuloMovil {
         ArticuloMovil art = capturarCampos1();
         msg = GestionarArticulosMovil.addArticulo(art);
         if (msg == null) {
-            Mensajes.informacion("Artículo Registrado");
+           // Mensajes.informacion("Artículo Registrado");
+            Notif.NotifySuccess("Notificación del sistema", "Artículo Registrado");
         } else {
-            Mensajes.error(msg);
+            Notif.NotifyError("Notificación del sistema", "Error agregando producto: "+msg);
+            //Mensajes.error(msg);
         }
         return msg;
     }
 
     public static String actArticulo() {
         String msg;
+        String msgg;
         ArticuloMovil art = capturarCampos();
         msg = GestionarArticulosMovil.actArticulo(art);
         if (msg == null) {
-            Mensajes.informacion("Artículo Modifcado");
+            //Mensajes.informacion("Artículo Modifcado");
+            Notif.NotifySuccess("Notificación del sistema", "Artículo Modifcado");
+           
         } else {
-            Mensajes.error(msg);
+            Notif.NotifyError("Notificación del sistema", "Error actualizando producto: "+msg);
+            //Mensajes.error(msg);
+        }
+        
+        msgg = GestionarArticulosMovil.actArticuloDependencia(art);
+        if (msgg == null) {
+             Notif.NotifyInformation("Notificación del sistema", "DEPENDENCIAS APLICADAS SATISFACTORIAMENTE!\r\nSi existen Acticulos que dependen directamente de este item, las mismas seras actualizadas automáticamente.");
+            //Mensajes.Sistema("DEPENDENCIAS APLICADAS SATISFACTORIAMENTE!\nSi existen Acticulos que dependen directamente de este item, las mismas seras actualizadas automáticamente.");
+        } else {
+            Notif.NotifyError("Notificación del sistema","Error actualizando dependencias: "+msgg);
+            //Mensajes.error(msgg);
         }
         return msg;
     }
@@ -308,9 +324,11 @@ public class controlArticuloMovil {
         String User = Login.getUsuarioLogueado();
         msg = GestionarArticulosMovil.delArticulo(cod, User);
         if (msg == null) {
-            Mensajes.informacion("Artículo Eliminado");
+            Notif.NotifySuccess("Notificación del sistema", "Artículo Eliminado");
+            //Mensajes.informacion("Artículo Eliminado");
         } else {
-            Mensajes.error(msg);
+            Notif.NotifyError("Notificación del sistema", "Error eliminando producto: "+msg);
+            //Mensajes.error(msg);
         }
         return msg;
     }

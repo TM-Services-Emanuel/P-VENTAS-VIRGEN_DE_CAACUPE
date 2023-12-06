@@ -3,6 +3,7 @@ package Controladores;
 import Componentes.Fecha;
 import Componentes.Login;
 import Componentes.Mensajes;
+import Componentes.Notif;
 import Componentes.Redondeo;
 import Datos.ArregloFactura;
 import Datos.ArregloTransferencia;
@@ -37,7 +38,7 @@ import javax.swing.table.DefaultTableModel;
 public class controlFactura {
 
     static ClienteMovil cl;
-    static ArticuloMovil art;
+    //static ArticuloMovil art;
     static DetalleFactura dfa;
     static DetalleTransferencia dtran;
     static ArregloFactura array = new ArregloFactura();
@@ -46,7 +47,7 @@ public class controlFactura {
     public static void selecArticulo() {
         int x = dlgBuscarArticuloVenta.tbDetalle.getSelectedRow();
         String cod = dlgBuscarArticuloVenta.tbDetalle.getValueAt(x, 0).toString();
-        art = GestionarArticulosMovil.busArticulo(cod);
+        ArticuloMovil art = GestionarArticulosMovil.busArticulo(cod);
         dlgVentas.txtCodArticulo.setText(String.valueOf(art.getIdproducto()));
         dlgVentas.txtArt.setText(art.getDescripcion());
         dlgVentas.txtCant.setText("1");
@@ -56,7 +57,7 @@ public class controlFactura {
     public static void selecArticuloT() {
         int x = dlgBuscarArticuloVenta1.tbDetalle.getSelectedRow();
         String cod = dlgBuscarArticuloVenta1.tbDetalle.getValueAt(x, 0).toString();
-        art = GestionarArticulosMovil.busArticulo(cod);
+        ArticuloMovil art = GestionarArticulosMovil.busArticulo(cod);
         dlgGestTransferencias.txtCodArticulo.setText(String.valueOf(art.getIdproducto()));
         dlgGestTransferencias.txtArt.setText(art.getDescripcion());
         dlgGestTransferencias.txtCant.setText("1");
@@ -65,7 +66,7 @@ public class controlFactura {
     public static void selecArticuloTR() {
         int x = dlgBuscarArticuloTransferencia.tbDetalle.getSelectedRow();
         String cod = dlgBuscarArticuloTransferencia.tbDetalle.getValueAt(x, 0).toString();
-        art = GestionarArticulosMovil.busArticulo(cod);
+        ArticuloMovil art = GestionarArticulosMovil.busArticulo(cod);
         dlgGestTransferencias.txtCodArticulo.setText(String.valueOf(art.getIdproducto()));
         dlgGestTransferencias.txtArt.setText(art.getDescripcion());
         dlgGestTransferencias.txtCant.setText("1");
@@ -195,7 +196,9 @@ public class controlFactura {
         DefaultTableModel tb = (DefaultTableModel) dlgVentas.tbDetalle.getModel();
         int fila = tb.getRowCount();
         for (int i = 0; i < fila; i++) {
-            total += Integer.parseInt(String.valueOf(dlgVentas.tbDetalle.getModel().getValueAt(i, 12)).replace(".", "").replace(",", ""));
+            if (Integer.parseInt(dlgVentas.tbDetalle.getModel().getValueAt(i, 0).toString()) != 194) {
+                total += Integer.parseInt(String.valueOf(dlgVentas.tbDetalle.getModel().getValueAt(i, 12)).replace(".", "").replace(",", ""));
+            }
         }
         return (total);
     }
@@ -212,14 +215,14 @@ public class controlFactura {
 
     public static int calCulosT() {
         int total = Integer.parseInt(dlgVentas.txtTotalL.getText());
-        int abono = Integer.parseInt(dlgVentas.txtAbonoTL.getText());
+        int abono = Integer.parseInt(dlgVentas.txtAbonoT.getText().replace(".", "").replace(",", ""));
         int vuelto = abono - total;
         return (vuelto);
     }
 
     public static int calCulosF() {
         int total = Integer.parseInt(dlgVentas.txtTotalL.getText());
-        int abono = Integer.parseInt(dlgVentas.txtAbonoL.getText());
+        int abono = Integer.parseInt(dlgVentas.txtAbonoF.getText().replace(".", "").replace(",", ""));
         int vuelto = abono - total;
         return (vuelto);
     }
@@ -328,8 +331,9 @@ public class controlFactura {
         return sumaSTk;
     }
 
-    public static void addTabla(JTable tabla) {
+    public static void addTabla(JTable tabla, String cod) {
         try {
+            ArticuloMovil art = GestionarArticulosMovil.busArticulo(cod);
             String dependecia = art.getDependencia();
             String MensajePromocion;
             if (dependecia.equals("S")) {
@@ -339,11 +343,12 @@ public class controlFactura {
 
                 ArticuloMovil ar = GestionarArticulosMovil.busArticulo(iddep);
                 double StockDepencencia = ar.getStock();
-
                 double StockT = sumaSTDEp(iddep);
 
                 if ((StockT + Double.parseDouble(dlgVentas.txtCant.getText().trim())) > StockDepencencia) {
                     Mensajes.error("ERROR:\nLa cantidad que estas intentando vender supera el stock actual del producto.");
+                    dlgVentas.txtCant.setText(String.valueOf(StockDepencencia - StockT));
+                    dlgVentas.txtCant.selectAll();
                 } else if ((StockT + Double.parseDouble(dlgVentas.txtCant.getText().trim())) <= 0) {
                     Mensajes.error("ERROR:\nAcabas de ingresar un número que dara como resultado: " + (StockT + Double.parseDouble(dlgVentas.txtCant.getText().trim())));
                 } else {
@@ -351,51 +356,51 @@ public class controlFactura {
                     String desc = art.getDescripcion();
                     double cant = Double.parseDouble(dlgVentas.txtCant.getText().trim());
                     int precio;
-                    int costo = art.getPrecio_costo();
+                    int costo = ar.getPrecio_costo();
                     int monto;
                     int montocosto;
 
-                    if (art.getProm().equals("S")) {
-                        if (cant >= art.getCant_prom()) {
-                            MensajePromocion = "- PROMOCIÓN HABILITADO (-" + art.getPorc_prom() + "%)";
-                            precio = art.getPrecio_prom();
+                    if (ar.getProm().equals("S")) {
+                        if (cant >= ar.getCant_prom()) {
+                            MensajePromocion = "- PROMOCIÓN HABILITADO (-" + ar.getPorc_prom() + "%)";
+                            precio = ar.getPrecio_prom();
                             monto = (int) (cant * precio);
                             montocosto = (int) (cant * costo);
                         } else {
-                            if (art.getVentam().equals("SI")) {
-                                if (cant < art.getCantm()) {
+                            if (ar.getVentam().equals("SI")) {
+                                if (cant < ar.getCantm()) {
                                     MensajePromocion = " ";
-                                    precio = art.getPreciominorista();
+                                    precio = ar.getPreciominorista();
                                     monto = (int) (cant * precio);
                                     montocosto = (int) (cant * costo);
                                 } else {
                                     MensajePromocion = " ";
-                                    precio = art.getPrecio_venta();
+                                    precio = ar.getPrecio_venta();
                                     monto = (int) (cant * precio);
                                     montocosto = (int) (cant * costo);
                                 }
                             } else {
                                 MensajePromocion = " ";
-                                precio = art.getPreciominorista();
+                                precio = ar.getPreciominorista();
                                 monto = (int) (cant * precio);
                                 montocosto = (int) (cant * costo);
                             }
                         }
-                    } else if (art.getVentam().equals("SI")) {
-                        if (cant < art.getCantm()) {
+                    } else if (ar.getVentam().equals("SI")) {
+                        if (cant < ar.getCantm()) {
                             MensajePromocion = " ";
-                            precio = art.getPreciominorista();
+                            precio = ar.getPreciominorista();
                             monto = (int) (cant * precio);
                             montocosto = (int) (cant * costo);
                         } else {
                             MensajePromocion = " ";
-                            precio = art.getPrecio_venta();
+                            precio = ar.getPrecio_venta();
                             monto = (int) (cant * precio);
                             montocosto = (int) (cant * costo);
                         }
                     } else {
                         MensajePromocion = " ";
-                        precio = art.getPreciominorista();
+                        precio = ar.getPreciominorista();
                         monto = (int) (cant * precio);
                         montocosto = (int) (cant * costo);
                     }
@@ -404,43 +409,42 @@ public class controlFactura {
                     if (array.busca(dfac.getCodArticulo()) != -1) {
                         int Nfila = array.busca(dfac.getCodArticulo());
                         double cantTabla = Double.parseDouble(dlgVentas.tbDetalle.getValueAt(Nfila, 5).toString());
-
-                        if (art.getProm().equals("S")) {
-                            if (cantTabla + cant >= art.getCant_prom()) {
-                                MensajePromocion = "- PROMOCIÓN HABILITADO (-" + art.getPorc_prom() + "%)";
-                                precio = art.getPrecio_prom();
-                                costo = art.getPrecio_costo();
+                        if (ar.getProm().equals("S")) {
+                            if (cantTabla + cant >= ar.getCant_prom()) {
+                                MensajePromocion = "- PROMOCIÓN HABILITADO (-" + ar.getPorc_prom() + "%)";
+                                precio = ar.getPrecio_prom();
+                                costo = ar.getPrecio_costo();
                             } else {
-                                if (art.getVentam().equals("SI")) {
-                                    if (cantTabla + cant < art.getCantm()) {
+                                if (ar.getVentam().equals("SI")) {
+                                    if (cantTabla + cant < ar.getCantm()) {
                                         MensajePromocion = " ";
-                                        precio = art.getPreciominorista();
-                                        costo = art.getPrecio_costo();
+                                        precio = ar.getPreciominorista();
+                                        costo = ar.getPrecio_costo();
                                     } else {
                                         MensajePromocion = " ";
-                                        precio = art.getPrecio_venta();
-                                        costo = art.getPrecio_costo();
+                                        precio = ar.getPrecio_venta();
+                                        costo = ar.getPrecio_costo();
                                     }
                                 } else {
                                     MensajePromocion = " ";
-                                    precio = art.getPreciominorista();
-                                    costo = art.getPrecio_costo();
+                                    precio = ar.getPreciominorista();
+                                    costo = ar.getPrecio_costo();
                                 }
                             }
-                        } else if (art.getVentam().equals("SI")) {
-                            if (cantTabla + cant < art.getCantm()) {
+                        } else if (ar.getVentam().equals("SI")) {
+                            if (cantTabla + cant < ar.getCantm()) {
                                 MensajePromocion = " ";
-                                precio = art.getPreciominorista();
-                                costo = art.getPrecio_costo();
+                                precio = ar.getPreciominorista();
+                                costo = ar.getPrecio_costo();
                             } else {
                                 MensajePromocion = " ";
-                                precio = art.getPrecio_venta();
-                                costo = art.getPrecio_costo();
+                                precio = ar.getPrecio_venta();
+                                costo = ar.getPrecio_costo();
                             }
                         } else {
                             MensajePromocion = " ";
-                            precio = art.getPreciominorista();
-                            costo = art.getPrecio_costo();
+                            precio = ar.getPreciominorista();
+                            costo = ar.getPrecio_costo();
                         }
                         addmismoItemFactura(Nfila, cantTabla, iva, cant, precio, costo, MensajePromocion);
                         String total = String.valueOf(getTotal());
@@ -495,10 +499,10 @@ public class controlFactura {
                 String codB = art.getCodBarra();
                 String desc = art.getDescripcion();
                 double cant = Double.parseDouble(dlgVentas.txtCant.getText().trim());
-                int precio = 0;
+                int precio;
                 int costo = art.getPrecio_costo();
-                int monto = 0;
-                int montocosto = 0;
+                int monto;
+                int montocosto;
                 if (art.getProm().equals("S")) {
                     if (cant >= art.getCant_prom()) {
                         MensajePromocion = "- PROMOCIÓN HABILITADO (-" + art.getPorc_prom() + "%)";
@@ -635,9 +639,10 @@ public class controlFactura {
         }
     }
 
-    public static void addTablaTR(JTable tabla) {
+    public static void addTablaTR(JTable tabla, String cod) {
         try {
             //int f = dlgBuscarArticuloVenta.tbDetalle.getSelectedRow();
+            ArticuloMovil art = GestionarArticulosMovil.busArticulo(cod);
             int codA = art.getIdproducto();
             String codB = art.getCodinterno();
             String desc = art.getDescripcion();
@@ -676,9 +681,10 @@ public class controlFactura {
         }
     }
 
-    public static void addTablaT(JTable tabla) {
+    public static void addTablaT(JTable tabla, String cod) {
         try {
             //int f = dlgBuscarArticuloVenta.tbDetalle.getSelectedRow();
+            ArticuloMovil art = GestionarArticulosMovil.busArticulo(cod);
             int codA = art.getIdproducto();
             String codB = art.getCodinterno();
             String desc = art.getDescripcion();
@@ -850,6 +856,10 @@ public class controlFactura {
             fila[17].toString();
             fila[18].toString();
             fila[19].toString();
+            fila[20].toString();
+            fila[21].toString();
+            fila[22].toString();
+            fila[23].toString();
             tb.addRow(fila);
         }
     }
@@ -889,6 +899,10 @@ public class controlFactura {
             fila[17].toString();
             fila[18].toString();
             fila[19].toString();
+            fila[20].toString();
+            fila[21].toString();
+            fila[22].toString();
+            fila[23].toString();
             tb.addRow(fila);
         }
     }
@@ -1147,7 +1161,7 @@ public class controlFactura {
 
     public static void listFacturasCredito(JTable tabla, String cliente)//Lista las facturas realizadas
     {
-        List lista = null;
+        List lista;
         lista = GestionarFactura.listFacturasCredito(cliente);
         for (int i = 1; i < lista.size(); i++) {
             DefaultTableModel tb = (DefaultTableModel) tabla.getModel();
@@ -1174,7 +1188,7 @@ public class controlFactura {
 
     public static void listFacturasCreditoPendiente(JTable tabla, String cliente)//Lista las facturas realizadas
     {
-        List lista = null;
+        List lista;
         lista = GestionarFactura.listFacturasCreditoPendiente(cliente);
         for (int i = 1; i < lista.size(); i++) {
             DefaultTableModel tb = (DefaultTableModel) tabla.getModel();
@@ -1201,7 +1215,7 @@ public class controlFactura {
 
     public static void listFacturasCreditoActivo(JTable tabla, String cliente)//Lista las facturas realizadas
     {
-        List lista = null;
+        List lista;
         lista = GestionarFactura.listFacturasCreditoActivo(cliente);
         for (int i = 1; i < lista.size(); i++) {
             DefaultTableModel tb = (DefaultTableModel) tabla.getModel();
@@ -1228,7 +1242,7 @@ public class controlFactura {
 
     public static void listFacturasCreditoPendienteActivo(JTable tabla, String cliente)//Lista las facturas realizadas
     {
-        List lista = null;
+        List lista;
         lista = GestionarFactura.listFacturasCreditoPendienteActivo(cliente);
         for (int i = 1; i < lista.size(); i++) {
             DefaultTableModel tb = (DefaultTableModel) tabla.getModel();
@@ -1273,7 +1287,7 @@ public class controlFactura {
     {
         int x = dlgConsultarFacturas.tblFactura.getSelectedRow();
         String cod = dlgConsultarFacturas.tblFactura.getValueAt(x, 0).toString();
-        List lista = null;
+        List lista;
         lista = GestionarFactura.listDetalles(cod);
         for (int i = 1; i < lista.size(); i++) {
             DefaultTableModel tb = (DefaultTableModel) tabla.getModel();
@@ -1286,7 +1300,7 @@ public class controlFactura {
     {
         int x = dlgConsultarFacturas.tblFactura.getSelectedRow();
         String cod = dlgConsultarFacturas.tblFactura.getValueAt((x - 1), 0).toString();
-        List lista = null;
+        List lista;
         lista = GestionarFactura.listDetalles(cod);
         for (int i = 1; i < lista.size(); i++) {
             DefaultTableModel tb = (DefaultTableModel) tabla.getModel();
@@ -1314,6 +1328,20 @@ public class controlFactura {
         dlgConsultarFacturas.txtVendedor.setText(ven.getNombreV());
     }
 
+    public static void selecDatosFactura() {
+        int x = dlgConsultarFacturas.tblFactura.getSelectedRow();
+        String metodo_pago = dlgConsultarFacturas.tblFactura.getValueAt(x, 20).toString();
+        String boleta = dlgConsultarFacturas.tblFactura.getValueAt(x, 21).toString();
+        int abonado = Integer.parseInt(dlgConsultarFacturas.tblFactura.getValueAt(x, 22).toString());
+        int vuelto = Integer.parseInt(dlgConsultarFacturas.tblFactura.getValueAt(x, 23).toString());
+        DecimalFormat df = new DecimalFormat("#,###");
+                
+        dlgConsultarFacturas.txtMet_pago.setText(metodo_pago);
+        dlgConsultarFacturas.txtBoleta.setText(boleta);
+        dlgConsultarFacturas.txtAbonado.setText(df.format(abonado));
+        dlgConsultarFacturas.txtVuelto.setText(df.format(vuelto));
+    }
+
     public static void fillCliente(JTable tabla, String nom) {
         List lista;
         lista = GestionarFactura.fillCliente(nom);
@@ -1332,10 +1360,12 @@ public class controlFactura {
         String usuario = Login.getUsuarioLogueado();
         msg = GestionarFactura.actFactura(cod, usuario);
         if (msg == null) {
-            Mensajes.informacion("Venta Anulada");
+            Notif.NotifySuccess("Notificación del sistema", "Venta Anulada");
+            //Mensajes.informacion("Venta Anulada");
             controlFactura.actStockEliminarFactura();
         } else {
-            Mensajes.error(msg);
+            Notif.NotifyError("Notificación del sistema", "Error anulando factura: \r\n" + msg);
+            //Mensajes.error(msg);
         }
         return msg;
     }
@@ -1349,9 +1379,11 @@ public class controlFactura {
         //String usuario = UsuarioL = Login.getUsuarioLogueado();
         msg = GestionarFactura.actFacturaMovil(cod, idemision);
         if (msg == null) {
-            Mensajes.informacion("Venta Móvil Anulada");
+            //Mensajes.informacion("Venta Móvil Anulada");
+            Notif.NotifySuccess("Notificación del sistema", "Venta Móvil Anulada");
         } else {
-            Mensajes.error(msg);
+            //Mensajes.error(msg);
+            Notif.NotifyError("Notificación del sistema", "Error anulando venta móvil: \r\n" + msg);
         }
         return msg;
     }
@@ -1365,9 +1397,11 @@ public class controlFactura {
         //String usuario = UsuarioL = Login.getUsuarioLogueado();
         msg = GestionarFactura.actFacturaMovil1(cod, idemision);
         if (msg == null) {
-            Mensajes.informacion("Venta Móvil Anulada");
+            // Mensajes.informacion("Venta Móvil Anulada");
+            Notif.NotifySuccess("Notificación del sistema", "Venta Móvil Anulada");
         } else {
-            Mensajes.error(msg);
+            //Mensajes.error(msg);
+            Notif.NotifyError("Notificación del sistema", "Error anulando venta móvil: \r\n" + msg);
         }
         return msg;
     }
@@ -1393,9 +1427,11 @@ public class controlFactura {
 
         }
         if (msg == null) {
-            Mensajes.informacion("Stock Actualizado");
+            Notif.NotifySuccess("Notificación del sistema", "Stock Actualizado");
+            //Mensajes.informacion("Stock Actualizado");
         } else {
-            Mensajes.error(msg);
+            Notif.NotifyError("Notificación del sistema", "Error actualizando stock: \r\n" + msg);
+            //Mensajes.error(msg);
         }
         return msg;
     }
@@ -1403,97 +1439,192 @@ public class controlFactura {
     public static void actCantidad(JTable tabla) {
         try {
             int fila = tabla.getSelectedRow();
-            String MensajePromocion;
-            String cod = (tabla.getValueAt(fila, 0).toString());
-            double ca = Double.parseDouble(tabla.getValueAt(fila, 5).toString());
-            int pre;/*= Integer.parseInt(tabla.getValueAt(fila, 4).toString().replace(".", "").replace(",", ""));*/
-            int monto;/* = (int) (pre*cant);*/
-            int costo;
-            double cant = (Mensajes.ingresarNumerosV(cod, ca));
-            ArticuloMovil ar;
-            ar = GestionarArticulosMovil.busArticulo(cod);
-            if (ar.getProm().equals("S")) {
-                if (cant >= ar.getCant_prom()) {
-                    MensajePromocion = "- PROMOCIÓN HABILITADO (-" + ar.getPorc_prom() + "%)";
-                    pre = ar.getPrecio_prom();
-                    monto = (int) (cant * pre);
-                    costo = (int) (cant * ar.getPrecio_costo());
-                } else {
-                    if (ar.getVentam().equals("SI")) {
-                        if (cant < ar.getCantm()) {
+            if (tabla.getValueAt(fila, 1).toString().equals("S")) {
+                String MensajePromocion;
+                String cod = (tabla.getValueAt(fila, 2).toString());
+                double ca = Double.parseDouble(tabla.getValueAt(fila, 5).toString());
+                int pre;
+                int monto;
+                int costo;
+                ArticuloMovil ar = GestionarArticulosMovil.busArticulo(cod);
+                double cant = (Mensajes.ingresarNumerosV(cod, ca));
+
+                if (ar.getProm().equals("S")) {
+                    if (cant >= ar.getCant_prom()) {
+                        MensajePromocion = "- PROMOCIÓN HABILITADO (-" + ar.getPorc_prom() + "%)";
+                        pre = ar.getPrecio_prom();
+                        monto = (int) (cant * pre);
+                        costo = (int) (cant * ar.getPrecio_costo());
+                    } else {
+                        if (ar.getVentam().equals("SI")) {
+                            if (cant < ar.getCantm()) {
+                                MensajePromocion = " ";
+                                pre = ar.getPreciominorista();
+                                monto = (int) (cant * pre);
+                                costo = (int) (cant * ar.getPrecio_costo());
+                            } else {
+                                MensajePromocion = " ";
+                                pre = ar.getPrecio_venta();
+                                monto = (int) (cant * pre);
+                                costo = (int) (cant * ar.getPrecio_costo());
+                            }
+                        } else {
                             MensajePromocion = " ";
                             pre = ar.getPreciominorista();
                             monto = (int) (cant * pre);
                             costo = (int) (cant * ar.getPrecio_costo());
-                        } else {
-                            MensajePromocion = " ";
-                            pre = ar.getPrecio_venta();
-                            monto = (int) (cant * pre);
-                            costo = (int) (cant * ar.getPrecio_costo());
                         }
-                    } else {
+                    }
+                } else if (ar.getVentam().equals("SI")) {
+                    if (cant < ar.getCantm()) {
                         MensajePromocion = " ";
                         pre = ar.getPreciominorista();
                         monto = (int) (cant * pre);
                         costo = (int) (cant * ar.getPrecio_costo());
+                    } else {
+                        MensajePromocion = " ";
+                        pre = ar.getPrecio_venta();
+                        monto = (int) (cant * pre);
+                        costo = (int) (cant * ar.getPrecio_costo());
                     }
-                }
-            } else if (ar.getVentam().equals("SI")) {
-                if (cant < ar.getCantm()) {
+                } else {
                     MensajePromocion = " ";
                     pre = ar.getPreciominorista();
                     monto = (int) (cant * pre);
                     costo = (int) (cant * ar.getPrecio_costo());
+                }
+
+                tabla.setValueAt(String.valueOf(cant), fila, 5);
+                tabla.setValueAt(String.valueOf(pre), fila, 6);
+                int iva = Integer.parseInt(tabla.getValueAt(fila, 11).toString());
+
+                switch (iva) {
+                    case 3 -> {
+                        tabla.setValueAt(String.valueOf(monto), fila, 9);
+                    }
+                    case 2 -> {
+                        tabla.setValueAt(String.valueOf(monto), fila, 8);
+                    }
+                    case 1 -> {
+                        tabla.setValueAt(String.valueOf(monto), fila, 7);
+                    }
+                }
+
+                tabla.setValueAt(String.valueOf(monto), fila, 10);
+                tabla.setValueAt(String.valueOf(costo), fila, 12);
+                tabla.setValueAt(MensajePromocion, fila, 13);
+
+                //int Gan = CalcGanancia();
+                //dlgCompras1.tbDetalle.setValueAt(String.valueOf(Gan), fila, 16);
+                String total = String.valueOf(getTotal());
+                String totalCosto = String.valueOf(getTotalCosto());
+                String exentas = String.valueOf(getExcetas());
+                String iva5 = String.valueOf(get5());
+                String iva10 = String.valueOf(get10());
+                DecimalFormat df = new DecimalFormat("#,###");
+                dlgVentas.txtExentaL.setText(exentas);
+                dlgVentas.txtExenta.setText(df.format(Integer.parseInt(exentas.trim().replace(".", "").replace(",", ""))));
+                dlgVentas.txt5L.setText(iva5);
+                dlgVentas.txt5.setText(df.format(Integer.parseInt(iva5.replace(".", "").replace(",", ""))));
+                dlgVentas.txt10L.setText(iva10);
+                dlgVentas.txt10.setText(df.format(Integer.parseInt(iva10.replace(".", "").replace(",", ""))));
+                dlgVentas.txtTotalL.setText(total);
+                dlgVentas.txtTotal.setText(df.format(Integer.parseInt(total.replace(".", "").replace(",", ""))));
+                dlgVentas.txtTotalCosto.setText(totalCosto);
+            } else {
+                String MensajePromocion;
+                String cod = (tabla.getValueAt(fila, 0).toString());
+                double ca = Double.parseDouble(tabla.getValueAt(fila, 5).toString());
+                int pre;
+                int monto;
+                int costo;
+                double cant = (Mensajes.ingresarNumerosV(cod, ca));
+                ArticuloMovil ar;
+                ar = GestionarArticulosMovil.busArticulo(cod);
+                if (ar.getProm().equals("S")) {
+                    if (cant >= ar.getCant_prom()) {
+                        MensajePromocion = "- PROMOCIÓN HABILITADO (-" + ar.getPorc_prom() + "%)";
+                        pre = ar.getPrecio_prom();
+                        monto = (int) (cant * pre);
+                        costo = (int) (cant * ar.getPrecio_costo());
+                    } else {
+                        if (ar.getVentam().equals("SI")) {
+                            if (cant < ar.getCantm()) {
+                                MensajePromocion = " ";
+                                pre = ar.getPreciominorista();
+                                monto = (int) (cant * pre);
+                                costo = (int) (cant * ar.getPrecio_costo());
+                            } else {
+                                MensajePromocion = " ";
+                                pre = ar.getPrecio_venta();
+                                monto = (int) (cant * pre);
+                                costo = (int) (cant * ar.getPrecio_costo());
+                            }
+                        } else {
+                            MensajePromocion = " ";
+                            pre = ar.getPreciominorista();
+                            monto = (int) (cant * pre);
+                            costo = (int) (cant * ar.getPrecio_costo());
+                        }
+                    }
+                } else if (ar.getVentam().equals("SI")) {
+                    if (cant < ar.getCantm()) {
+                        MensajePromocion = " ";
+                        pre = ar.getPreciominorista();
+                        monto = (int) (cant * pre);
+                        costo = (int) (cant * ar.getPrecio_costo());
+                    } else {
+                        MensajePromocion = " ";
+                        pre = ar.getPrecio_venta();
+                        monto = (int) (cant * pre);
+                        costo = (int) (cant * ar.getPrecio_costo());
+                    }
                 } else {
                     MensajePromocion = " ";
-                    pre = ar.getPrecio_venta();
+                    pre = ar.getPreciominorista();
                     monto = (int) (cant * pre);
                     costo = (int) (cant * ar.getPrecio_costo());
                 }
-            } else {
-                MensajePromocion = " ";
-                pre = ar.getPreciominorista();
-                monto = (int) (cant * pre);
-                costo = (int) (cant * ar.getPrecio_costo());
+
+                tabla.setValueAt(String.valueOf(cant), fila, 5);
+                tabla.setValueAt(String.valueOf(pre), fila, 6);
+                int iva = Integer.parseInt(tabla.getValueAt(fila, 11).toString());
+
+                switch (iva) {
+                    case 3 -> {
+                        tabla.setValueAt(String.valueOf(monto), fila, 9);
+                    }
+                    case 2 -> {
+                        tabla.setValueAt(String.valueOf(monto), fila, 8);
+                    }
+                    case 1 -> {
+                        tabla.setValueAt(String.valueOf(monto), fila, 7);
+                    }
+                }
+
+                tabla.setValueAt(String.valueOf(monto), fila, 10);
+                tabla.setValueAt(String.valueOf(costo), fila, 12);
+                tabla.setValueAt(MensajePromocion, fila, 13);
+
+                //int Gan = CalcGanancia();
+                //dlgCompras1.tbDetalle.setValueAt(String.valueOf(Gan), fila, 16);
+                String total = String.valueOf(getTotal());
+                String totalCosto = String.valueOf(getTotalCosto());
+                String exentas = String.valueOf(getExcetas());
+                String iva5 = String.valueOf(get5());
+                String iva10 = String.valueOf(get10());
+                DecimalFormat df = new DecimalFormat("#,###");
+                dlgVentas.txtExentaL.setText(exentas);
+                dlgVentas.txtExenta.setText(df.format(Integer.parseInt(exentas.trim().replace(".", "").replace(",", ""))));
+                dlgVentas.txt5L.setText(iva5);
+                dlgVentas.txt5.setText(df.format(Integer.parseInt(iva5.replace(".", "").replace(",", ""))));
+                dlgVentas.txt10L.setText(iva10);
+                dlgVentas.txt10.setText(df.format(Integer.parseInt(iva10.replace(".", "").replace(",", ""))));
+                dlgVentas.txtTotalL.setText(total);
+                dlgVentas.txtTotal.setText(df.format(Integer.parseInt(total.replace(".", "").replace(",", ""))));
+                dlgVentas.txtTotalCosto.setText(totalCosto);
             }
 
-            tabla.setValueAt(String.valueOf(cant), fila, 5);
-            tabla.setValueAt(String.valueOf(pre), fila, 6);
-            int iva = Integer.parseInt(tabla.getValueAt(fila, 11).toString());
-
-            switch (iva) {
-                case 3 -> {
-                    tabla.setValueAt(String.valueOf(monto), fila, 9);
-                }
-                case 2 -> {
-                    tabla.setValueAt(String.valueOf(monto), fila, 8);
-                }
-                case 1 -> {
-                    tabla.setValueAt(String.valueOf(monto), fila, 7);
-                }
-            }
-
-            tabla.setValueAt(String.valueOf(monto), fila, 10);
-            tabla.setValueAt(String.valueOf(costo), fila, 12);
-            tabla.setValueAt(MensajePromocion, fila, 13);
-
-            //int Gan = CalcGanancia();
-            //dlgCompras1.tbDetalle.setValueAt(String.valueOf(Gan), fila, 16);
-            String total = String.valueOf(getTotal());
-            String totalCosto = String.valueOf(getTotalCosto());
-            String exentas = String.valueOf(getExcetas());
-            String iva5 = String.valueOf(get5());
-            String iva10 = String.valueOf(get10());
-            DecimalFormat df = new DecimalFormat("#,###");
-            dlgVentas.txtExentaL.setText(exentas);
-            dlgVentas.txtExenta.setText(df.format(Integer.parseInt(exentas.trim().replace(".", "").replace(",", ""))));
-            dlgVentas.txt5L.setText(iva5);
-            dlgVentas.txt5.setText(df.format(Integer.parseInt(iva5.replace(".", "").replace(",", ""))));
-            dlgVentas.txt10L.setText(iva10);
-            dlgVentas.txt10.setText(df.format(Integer.parseInt(iva10.replace(".", "").replace(",", ""))));
-            dlgVentas.txtTotalL.setText(total);
-            dlgVentas.txtTotal.setText(df.format(Integer.parseInt(total.replace(".", "").replace(",", ""))));
-            dlgVentas.txtTotalCosto.setText(totalCosto);
         } catch (NumberFormatException e) {
             Mensajes.error("Seleccione una fila de la tabla");
         }

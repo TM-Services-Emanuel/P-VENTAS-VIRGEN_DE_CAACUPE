@@ -22,9 +22,9 @@ public class DataSourceService {
             basicDataSource.setUsername(user);
             basicDataSource.setPassword(pass);
             basicDataSource.setUrl(url);
-            basicDataSource.setMaxTotal(200);
-            basicDataSource.setMinIdle(50);
-            basicDataSource.setMaxIdle(100);
+            basicDataSource.setMaxTotal(2000);
+            basicDataSource.setMinIdle(500);
+            basicDataSource.setMaxIdle(1000);
         }
     }
 

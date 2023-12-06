@@ -194,7 +194,7 @@ public class dlgBuscarCaja extends javax.swing.JDialog {
                 Mensajes.Alerta("La Fecha seleccionada no posee Movimiento de Caja.\nPor ende, no se registraron movimientos de entrada y salida.");
             } else {
                 try {
-                    dlgCajaDia1 baf = new dlgCajaDia1(null, true);
+                    dlgCajaDia2 baf = new dlgCajaDia2(null, true);
                     baf.setLocationRelativeTo(null);
                     //baf.setLocation(125, 365);
                     baf.setVisible(true);

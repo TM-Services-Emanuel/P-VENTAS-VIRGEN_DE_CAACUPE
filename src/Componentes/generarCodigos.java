@@ -62,6 +62,24 @@ public class generarCodigos {
 
         return codgen;
     }
+    
+    public static String ObtenerCodigo2(String sql) {
+        String codgen = null;
+        try {
+            try (Connection conexion = dss.getDataSource().getConnection(); Statement sentencia = conexion.createStatement(); ResultSet resultado = sentencia.executeQuery(sql);) {
+                resultado.first();
+                codgen = String.valueOf(resultado.getString(1));
+                resultado.close();
+                sentencia.close();
+                conexion.close();
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            System.out.println("Tabla vacía*");
+        }
+
+        return codgen;
+    }
 
     public static String getCantidad(String sql) {
         String codgen;

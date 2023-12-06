@@ -5,6 +5,7 @@ import Componentes.DataSourceService1;
 import Componentes.Fecha;
 import Componentes.Login;
 import Componentes.Mensajes;
+import Componentes.Notif;
 import Componentes.RenderDecimal1;
 import Componentes.RenderDecimalconPuntos;
 import Componentes.Reporte;
@@ -1473,12 +1474,14 @@ public final class dlgCompras1 extends javax.swing.JDialog {
                             stTransaccionMovil.close();
                             con.close();
                             conMovil.close();
-                            Mensajes.informacion("La Compra con factura N°:" + txtFactura.getText() + " ha sido regitrada exitosamente");
+                            //Mensajes.informacion("La Compra con factura N°:" + txtFactura.getText() + " ha sido regitrada exitosamente");
+                            Notif.NotifySuccess("Notificación del sistema", "La Compra con factura N°:" + txtFactura.getText() + " ha sido regitrada exitosamente");
                         } catch (SQLException e) {
                             try {
                                 con.rollback();
                                 conMovil.rollback();
-                                Mensajes.error("TRANSACCIÓN FALLIDA: La compra no fue registrada en el sistema.\nError:ADD_C: " + e.getMessage().toUpperCase());
+                               // Mensajes.error("TRANSACCIÓN FALLIDA: La compra no fue registrada en el sistema.\nError:ADD_C: " + e.getMessage().toUpperCase());
+                                Notif.NotifyError("Notificación del sistema", "TRANSACCIÓN FALLIDA: La compra no fue registrada en el sistema.\nError:ADD_C: " + e.getMessage());
                                 stTransaccion.close();
                                 stTransaccionMovil.close();
                                 con.close();

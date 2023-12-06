@@ -7,18 +7,8 @@ import java.awt.Color;
 import java.text.DecimalFormat;
 import java.sql.*;
 
-/**
- *
- * @author TM-SERVICES
- */
 public class dlgGestionarArqueo extends javax.swing.JDialog {
 
-    /**
-     * Creates new form dlgGestionarArqueo
-     *
-     * @param parent
-     * @param modal
-     */
     public dlgGestionarArqueo(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
@@ -133,7 +123,7 @@ public class dlgGestionarArqueo extends javax.swing.JDialog {
             lbResultadoNeto.setText("");
         }
     }
-    
+
     private void ComprasContado() {
         try {
             StringBuilder sql = new StringBuilder("SELECT IFNULL((SELECT SUM(com_total) FROM compra WHERE com_condpago='CONTADO'");
@@ -146,7 +136,7 @@ public class dlgGestionarArqueo extends javax.swing.JDialog {
             txtCompraContado.setText("0");
         }
     }
-    
+
     private void PagosCreditos() {
         try {
             StringBuilder sql = new StringBuilder("SELECT IFNULL((SELECT SUM(monto_pago) FROM pagos_proveedor");
@@ -159,7 +149,7 @@ public class dlgGestionarArqueo extends javax.swing.JDialog {
             txtPagosCreditos.setText("0");
         }
     }
-    
+
     private void CaluclarPagosGeneral() {
         try {
             long resultado = (Long.parseLong(txtCompraContado.getText().replace(".", "").replace(",", "")) + Long.parseLong(txtPagosCreditos.getText().replace(".", "").replace(",", "")));
@@ -591,13 +581,13 @@ public class dlgGestionarArqueo extends javax.swing.JDialog {
 
     private void btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActionPerformed
         // TODO add your handling code here:
-        if(txtFDesde.getText().isEmpty()){
+        if (txtFDesde.getText().isEmpty()) {
             Mensajes.Sistema("Para generar el reporte es necesario parametrizar la fecha inicio.");
-        }else if (txtFHasta.getText().isEmpty()){
+        } else if (txtFHasta.getText().isEmpty()) {
             Mensajes.Sistema("Para generar el reporte es necesario parametrizar la fecha hasta.");
-        }else if(Date.valueOf(txtFDesdeR.getText()).after(Date.valueOf(txtFHastaR.getText()))){
+        } else if (Date.valueOf(txtFDesdeR.getText()).after(Date.valueOf(txtFHastaR.getText()))) {
             Mensajes.Sistema("El parametro de inicio seleccionado es una fecha posterior a la fecha hasta.\nPor favor, corrija los parametros y vuelva a generar el reporte.");
-        }else{
+        } else {
             ValoresPrecioVentaFechas();
             ValoresPrecioCostoFechas();
             CaluclarValorBruto();
@@ -610,7 +600,7 @@ public class dlgGestionarArqueo extends javax.swing.JDialog {
             PagosCreditos();
             CaluclarPagosGeneral();
         }
-        
+
 
     }//GEN-LAST:event_btnActionPerformed
 

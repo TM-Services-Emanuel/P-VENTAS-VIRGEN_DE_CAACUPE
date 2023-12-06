@@ -70,6 +70,26 @@ public class GestionarArticulosMovil {
         msg = OperacionMovil.exeOperacion(sql.toString());
         return msg;
     }
+    
+    public static String actArticuloDependencia(ArticuloMovil art) {
+        String msg;
+        StringBuilder sql = new StringBuilder("UPDATE productos SET precio_costo=");
+        sql.append(art.getPrecio_costo()).append(", ganancia=");
+        sql.append(art.getGanancia()).append(", precio_venta=");
+        sql.append(art.getPrecio_venta()).append(", ventam='");
+        sql.append(art.getVentam()).append("', cantm=");
+        sql.append(art.getCantm()).append(", preciominorista=");
+        sql.append(art.getPreciominorista()).append(", gananciaminorista=");
+        sql.append(art.getGananciaminorista()).append(", prom='");
+        sql.append(art.getProm()).append("', cant_prom=");
+        sql.append(art.getCant_prom()).append(", precio_prom=");
+        sql.append(art.getPrecio_prom()).append(", porc_prom='");
+        sql.append(art.getPorc_prom()).append("' ");
+        sql.append("WHERE dependencia='S' and iddependencia=").append(art.getIdproducto()).append("");
+        msg = OperacionMovil.exeOperacion(sql.toString());
+        return msg;
+    }
+    
     public static String actStock(ArticuloMovil art) {
         String msg;
         StringBuilder sql = new StringBuilder("UPDATE productos SET stock=");

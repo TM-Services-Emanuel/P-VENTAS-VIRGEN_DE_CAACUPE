@@ -3,6 +3,7 @@ package Controladores;
 import Componentes.Fecha;
 import Componentes.Login;
 import Componentes.Mensajes;
+import Componentes.Notif;
 import Componentes.Redondeo;
 import Datos.ArregloCompras;
 import Datos.ArregloPago;
@@ -587,10 +588,12 @@ public class controlCompra {
         String usuario = Login.getUsuarioLogueado();
         msg = GestionarCompra.delCompra(cod, usuario);
         if (msg == null) {
-            Mensajes.informacion("Compra Anulada");
+            //Mensajes.informacion("Compra Anulada");
+            Notif.NotifySuccess("Notificación del sistema", "Compra Anulada");
             controlCompra.actStockEliminarCompra();
         } else {
-            Mensajes.error(msg);
+            //Mensajes.error(msg);
+            Notif.NotifyError("Notificación del sistema", "Error anulando compra: \r\n" + msg);
         }
         return msg;
     }
@@ -620,9 +623,11 @@ public class controlCompra {
             msg = GestionarArticulosMovil.actStockMENOS(a);
         }
         if (msg == null) {
-            Mensajes.informacion("Stock Actualizado");
+            Notif.NotifySuccess("Notificación del sistema", "Stock Actualizado");
+            //Mensajes.informacion("Stock Actualizado");
         } else {
-            Mensajes.error(msg);
+            //Mensajes.error(msg);
+            Notif.NotifySuccess("Notificación del sistema", "Error actualizandp stock:\r\n" + msg);
         }
         return msg;
     }
@@ -694,7 +699,7 @@ public class controlCompra {
             int cant = Integer.parseInt(dlgCompras.tbDetalle.getValueAt(fila, 4).toString());
             int pre = Integer.parseInt(dlgCompras.tbDetalle.getValueAt(fila, 6).toString());
             String precio = String.valueOf(Mensajes.ingresarPrecioC(pre));
-            costo = Integer.valueOf(precio);
+            costo = Integer.parseInt(precio);
             int iva = Integer.parseInt(dlgCompras.tbDetalle.getValueAt(fila, 7).toString());
             String PCIVA = String.valueOf(CalcCostoIVAC(iva));
             int pv = art.getPrecioVenta();

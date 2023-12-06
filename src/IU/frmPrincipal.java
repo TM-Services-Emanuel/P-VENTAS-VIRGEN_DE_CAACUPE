@@ -7,10 +7,13 @@ import Componentes.ReporteMovil;
 import Componentes.Mensajes;
 import Componentes.Reloj;
 import Componentes.Software;
+import Componentes.Timbrado;
 import Componentes.generarCodigos;
 import Componentes.traerIP;
 import Controladores.ControlLogeo;
+import Datos.GestionarCaja;
 import Datos.GestionarImagen;
+import Modelo.Caja;
 import Modelo.Imagen;
 import java.awt.BorderLayout;
 import java.awt.Toolkit;
@@ -30,12 +33,12 @@ public final class frmPrincipal extends javax.swing.JFrame {
 
     public frmPrincipal() {
         ControlLogeo.Empresa();
-        ControlLogeo.Timbrado_Ticket();
         initComponents();
         titulo();
         Iniciar();
         cargarIcono();
         cargarTapiz();
+        ControlLogeo.Timbrado_Ticket();
         informacionGral();
         mnNCProveedor.setVisible(false);
         mnPagoProveedor.setVisible(false);
@@ -124,6 +127,7 @@ public final class frmPrincipal extends javax.swing.JFrame {
         } catch (Exception e) {
             System.out.println("Informacion Gral: " + e.getMessage());
         }
+        lbIp.setText("HOST IP : " + traerIP.getIP());
     }
 
     @SuppressWarnings("unchecked")
@@ -144,6 +148,7 @@ public final class frmPrincipal extends javax.swing.JFrame {
         btnSalidaP = new javax.swing.JButton();
         btnTransferencia = new javax.swing.JButton();
         btnGestionarVentasMovil = new javax.swing.JButton();
+        btnREG_VALORES = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
@@ -234,6 +239,8 @@ public final class frmPrincipal extends javax.swing.JFrame {
         divisor3 = new javax.swing.JMenu();
         mnCaja = new javax.swing.JMenu();
         mnIniciarCaja = new javax.swing.JMenuItem();
+        jSeparator31 = new javax.swing.JPopupMenu.Separator();
+        mnRegistroValores = new javax.swing.JMenuItem();
         jSeparator30 = new javax.swing.JPopupMenu.Separator();
         mnBuscarCaja = new javax.swing.JMenuItem();
         jSeparator15 = new javax.swing.JPopupMenu.Separator();
@@ -516,6 +523,21 @@ public final class frmPrincipal extends javax.swing.JFrame {
             }
         });
 
+        btnREG_VALORES.setBackground(new java.awt.Color(255, 255, 255));
+        btnREG_VALORES.setFont(new java.awt.Font("Roboto Black", 1, 11)); // NOI18N
+        btnREG_VALORES.setForeground(new java.awt.Color(0, 102, 102));
+        btnREG_VALORES.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/BILLETA_70.png"))); // NOI18N
+        btnREG_VALORES.setText("REG. DE VALORES");
+        btnREG_VALORES.setBorderPainted(false);
+        btnREG_VALORES.setFocusPainted(false);
+        btnREG_VALORES.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnREG_VALORES.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnREG_VALORES.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnREG_VALORESActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panelFondoLayout = new javax.swing.GroupLayout(panelFondo);
         panelFondo.setLayout(panelFondoLayout);
         panelFondoLayout.setHorizontalGroup(
@@ -523,14 +545,17 @@ public final class frmPrincipal extends javax.swing.JFrame {
             .addGroup(panelFondoLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panelFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnIMD, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(panelFondoLayout.createSequentialGroup()
+                        .addComponent(btnIMD, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnREG_VALORES, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(panelFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addComponent(btnClientes, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(btnGestionarVentas, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(btnGestionarVentasMovil, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(btnGestionarCompras, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(btnCMD, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 537, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 381, Short.MAX_VALUE)
                 .addGroup(panelFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnProductos, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnVentas, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -549,7 +574,8 @@ public final class frmPrincipal extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(panelFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(btnIMD, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnProductos, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnProductos, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnREG_VALORES, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(btnCMD, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -570,7 +596,7 @@ public final class frmPrincipal extends javax.swing.JFrame {
                 .addGroup(panelFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnRepartos, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnClientes, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(34, Short.MAX_VALUE))
+                .addContainerGap(27, Short.MAX_VALUE))
         );
 
         jLabel11.setFont(new java.awt.Font("SansSerif", 1, 30)); // NOI18N
@@ -1284,6 +1310,17 @@ public final class frmPrincipal extends javax.swing.JFrame {
             }
         });
         mnCaja.add(mnIniciarCaja);
+        mnCaja.add(jSeparator31);
+
+        mnRegistroValores.setFont(new java.awt.Font("Roboto", 0, 11)); // NOI18N
+        mnRegistroValores.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/billete.png"))); // NOI18N
+        mnRegistroValores.setText("Registro de Valores");
+        mnRegistroValores.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnRegistroValoresActionPerformed(evt);
+            }
+        });
+        mnCaja.add(mnRegistroValores);
         mnCaja.add(jSeparator30);
 
         mnBuscarCaja.setFont(new java.awt.Font("Roboto", 0, 11)); // NOI18N
@@ -2175,6 +2212,27 @@ public final class frmPrincipal extends javax.swing.JFrame {
         }
     }
 
+    void abrirRegistroValores() {
+        try {
+            dlgRegistroValores rv = new dlgRegistroValores(this, true);
+            rv.setLocationRelativeTo(null);
+            String caja = generarCodigos.ObtenerCodigo("SELECT ca_id from caja where ca_indicador='S' ORDER BY ca_id DESC LIMIT 1");
+            Caja caj = GestionarCaja.busCaja(caja);
+            dlgRegistroValores.txtCaja.setText(caja);
+            dlgRegistroValores.txtFechaCaja.setText(Fecha.formatoFechaFF(caj.getFechaI()));
+            if (caj.getIndicador().equals("S")) {
+                dlgRegistroValores.txtEstado.setText("ABIERTO");
+            } else {
+                dlgRegistroValores.txtEstado.setText("CERRADO");
+            }
+            rv.setVisible(true);
+
+        } catch (Exception e) {
+            Mensajes.informacion("Servidor no esta activo");
+            System.out.println("Error abriendo Registro de valores: " + e.getMessage());
+        }
+    }
+
     void abrirTransferencias() {
         try {
             //dlgGestTransferencias transf = new dlgGestTransferencias(this, true);
@@ -2345,7 +2403,19 @@ public final class frmPrincipal extends javax.swing.JFrame {
             if (!fe.equals(Fecha.fechaCorrecta())) {
                 Mensajes.informacion("La caja del día aún no ha sido inicializada.\n\nPara poder comenzar a vender sera necesario hacerlo.\nLa apertura puede realizarse con los perfiles ADMINISTRADOR y VENTAS.");
             } else {
-                abrirFactura();
+                try {
+                    String caja = generarCodigos.getFecha("SELECT ca_id FROM caja where ca_indicador='S' and ca_fechainicio='" + Fecha.fechaCorrecta() + "'");
+                    String cierre = generarCodigos.ObtenerCodigo2("SELECT concepto FROM arreglo_caja_2 WHERE idcaja=" + caja + " AND idboca=" + Timbrado.getIdBoca() + " AND concepto='C' AND estado='S'");
+                    System.out.println("Cierre: " + cierre);
+                    if (cierre == null) {
+                        abrirFactura();
+                    } else {
+                        Mensajes.informacion("La caja del día \"se encuentra inicializada\" pero esta boca de cobranza ya ha aplicado el CIERRE DE VALORES.\n\nPara continuar con la venta sera necesario anular el cierre.\nLa anulación del cierre de valores lo puede realizar el ADMINISTRADOR del sistema.");
+                    }
+
+                } catch (Exception e) {
+                    System.out.println("Error obteniendo caja y cierre para habilitar facturación: " + e.getMessage());
+                }
             }
         } catch (Exception e) {
             Mensajes.error("Error obteniendo fecha de caja: " + e.getMessage());
@@ -2927,6 +2997,35 @@ public final class frmPrincipal extends javax.swing.JFrame {
             Mensajes.informacion("Servidor no esta activo");
         }
     }//GEN-LAST:event_jMenuItem58ActionPerformed
+
+    private void mnRegistroValoresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnRegistroValoresActionPerformed
+        // TODO add your handling code here:
+        try {
+            String fe = generarCodigos.getFecha("SELECT ca_fechainicio FROM caja where ca_indicador='S' ORDER BY ca_id DESC LIMIT 1");
+            if (!fe.equals(Fecha.fechaCorrecta())) {
+                Mensajes.informacion("La caja del día aún no ha sido inicializada.\n\nPara poder comenzar a registrar valores sera necesario hacerlo.\nLa apertura puede realizarse con los perfiles ADMINISTRADOR y VENTAS.");
+            } else {
+                abrirRegistroValores();
+            }
+        } catch (Exception e) {
+            Mensajes.error("Error obteniendo fecha de caja: " + e.getMessage());
+        }
+    }//GEN-LAST:event_mnRegistroValoresActionPerformed
+
+    private void btnREG_VALORESActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnREG_VALORESActionPerformed
+        // TODO add your handling code here:
+        try {
+            String fe = generarCodigos.getFecha("SELECT ca_fechainicio FROM caja where ca_indicador='S' ORDER BY ca_id DESC LIMIT 1");
+            if (!fe.equals(Fecha.fechaCorrecta())) {
+                Mensajes.informacion("La caja del día aún no ha sido inicializada.\n\nPara poder comenzar a registrar valores sera necesario hacerlo.\nLa apertura puede realizarse con los perfiles ADMINISTRADOR y VENTAS.");
+            } else {
+                abrirRegistroValores();
+            }
+        } catch (Exception e) {
+            Mensajes.error("Error obteniendo fecha de caja: " + e.getMessage());
+        }
+
+    }//GEN-LAST:event_btnREG_VALORESActionPerformed
     void abrirProveedor() {
         try {
             dlgProveedores proveedor = new dlgProveedores(this, true);
@@ -3013,6 +3112,7 @@ public final class frmPrincipal extends javax.swing.JFrame {
     public static javax.swing.JButton btnGestionarVentasMovil;
     public static javax.swing.JButton btnIMD;
     public static javax.swing.JButton btnProductos;
+    public static javax.swing.JButton btnREG_VALORES;
     public static javax.swing.JButton btnRepartos;
     public static javax.swing.JButton btnSalidaP;
     private RSMaterialComponent.RSButtonIconOne btnSalir;
@@ -3105,6 +3205,7 @@ public final class frmPrincipal extends javax.swing.JFrame {
     private javax.swing.JPopupMenu.Separator jSeparator29;
     private javax.swing.JToolBar.Separator jSeparator3;
     private javax.swing.JPopupMenu.Separator jSeparator30;
+    private javax.swing.JPopupMenu.Separator jSeparator31;
     private javax.swing.JPopupMenu.Separator jSeparator4;
     private javax.swing.JPopupMenu.Separator jSeparator5;
     private javax.swing.JPopupMenu.Separator jSeparator6;
@@ -3113,7 +3214,7 @@ public final class frmPrincipal extends javax.swing.JFrame {
     private javax.swing.JPopupMenu.Separator jSeparator9;
     private javax.swing.JToolBar jToolBar1;
     public static javax.swing.JLabel lbEmpresa;
-    private javax.swing.JLabel lbIp;
+    private static javax.swing.JLabel lbIp;
     public static javax.swing.JLabel lbPerfil;
     public static javax.swing.JLabel lbRUC;
     public static javax.swing.JLabel lbSucursal;
@@ -3167,6 +3268,7 @@ public final class frmPrincipal extends javax.swing.JFrame {
     public static javax.swing.JMenu mnPagos;
     public static javax.swing.JMenu mnProductos;
     public static javax.swing.JMenu mnProveedores;
+    private javax.swing.JMenuItem mnRegistroValores;
     public static javax.swing.JMenu mnReparto;
     public static javax.swing.JMenu mnSeguridad;
     public static javax.swing.JMenu mnSistema;

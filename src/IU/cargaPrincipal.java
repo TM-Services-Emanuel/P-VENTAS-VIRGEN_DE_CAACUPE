@@ -145,6 +145,7 @@ public class cargaPrincipal extends javax.swing.JFrame {
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         PanelContenedor1.setImagen(new javax.swing.ImageIcon(getClass().getResource("/Recursos/CONTENEDOR2.png"))); // NOI18N
+        PanelContenedor1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         btn.setBackground(new java.awt.Color(255, 255, 255));
         btn.setBackgroundHover(new java.awt.Color(0, 153, 153));
@@ -157,44 +158,21 @@ public class cargaPrincipal extends javax.swing.JFrame {
                 btnActionPerformed(evt);
             }
         });
+        PanelContenedor1.add(btn, new org.netbeans.lib.awtextra.AbsoluteConstraints(25, 11, 50, 50));
 
         Separador1.setForeground(new java.awt.Color(204, 204, 204));
+        PanelContenedor1.add(Separador1, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 66, 76, 3));
 
         LabelTitulo1.setFont(new java.awt.Font("Roboto", 1, 11)); // NOI18N
         LabelTitulo1.setForeground(new java.awt.Color(0, 102, 102));
         LabelTitulo1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         LabelTitulo1.setText("NUEVO");
+        PanelContenedor1.add(LabelTitulo1, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 73, 76, -1));
 
-        javax.swing.GroupLayout PanelContenedor1Layout = new javax.swing.GroupLayout(PanelContenedor1);
-        PanelContenedor1.setLayout(PanelContenedor1Layout);
-        PanelContenedor1Layout.setHorizontalGroup(
-            PanelContenedor1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(PanelContenedor1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(PanelContenedor1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(Separador1)
-                    .addComponent(LabelTitulo1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
-            .addGroup(PanelContenedor1Layout.createSequentialGroup()
-                .addGap(27, 27, 27)
-                .addComponent(btn, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(28, Short.MAX_VALUE))
-        );
-        PanelContenedor1Layout.setVerticalGroup(
-            PanelContenedor1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(PanelContenedor1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(btn, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(8, 8, 8)
-                .addComponent(Separador1, javax.swing.GroupLayout.PREFERRED_SIZE, 3, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(2, 2, 2)
-                .addComponent(LabelTitulo1)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        jPanel1.add(PanelContenedor1, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 3, 100, -1));
+        jPanel1.add(PanelContenedor1, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 3, 100, 100));
 
         PanelContenedor2.setImagen(new javax.swing.ImageIcon(getClass().getResource("/Recursos/CONTENEDOR2.png"))); // NOI18N
+        PanelContenedor2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         btN2.setBackground(new java.awt.Color(255, 255, 255));
         btN2.setBackgroundHover(new java.awt.Color(204, 102, 0));
@@ -207,44 +185,21 @@ public class cargaPrincipal extends javax.swing.JFrame {
                 btN2ActionPerformed(evt);
             }
         });
+        PanelContenedor2.add(btN2, new org.netbeans.lib.awtextra.AbsoluteConstraints(25, 11, 50, 50));
 
         Separador2.setForeground(new java.awt.Color(204, 204, 204));
+        PanelContenedor2.add(Separador2, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 66, 76, 3));
 
         LabelTitulo2.setFont(new java.awt.Font("Roboto", 1, 11)); // NOI18N
         LabelTitulo2.setForeground(new java.awt.Color(0, 102, 102));
         LabelTitulo2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         LabelTitulo2.setText("MODIFICAR");
+        PanelContenedor2.add(LabelTitulo2, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 73, 76, -1));
 
-        javax.swing.GroupLayout PanelContenedor2Layout = new javax.swing.GroupLayout(PanelContenedor2);
-        PanelContenedor2.setLayout(PanelContenedor2Layout);
-        PanelContenedor2Layout.setHorizontalGroup(
-            PanelContenedor2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(PanelContenedor2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(PanelContenedor2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(Separador2)
-                    .addComponent(LabelTitulo2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, PanelContenedor2Layout.createSequentialGroup()
-                .addContainerGap(29, Short.MAX_VALUE)
-                .addComponent(btN2, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(26, 26, 26))
-        );
-        PanelContenedor2Layout.setVerticalGroup(
-            PanelContenedor2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(PanelContenedor2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(btN2, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(8, 8, 8)
-                .addComponent(Separador2, javax.swing.GroupLayout.PREFERRED_SIZE, 3, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(2, 2, 2)
-                .addComponent(LabelTitulo2)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        jPanel1.add(PanelContenedor2, new org.netbeans.lib.awtextra.AbsoluteConstraints(102, 3, 100, -1));
+        jPanel1.add(PanelContenedor2, new org.netbeans.lib.awtextra.AbsoluteConstraints(102, 3, 100, 100));
 
         PanelContenedor3.setImagen(new javax.swing.ImageIcon(getClass().getResource("/Recursos/CONTENEDOR2.png"))); // NOI18N
+        PanelContenedor3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         btn3.setBackground(new java.awt.Color(255, 255, 255));
         btn3.setBackgroundHover(new java.awt.Color(0, 102, 0));
@@ -257,44 +212,21 @@ public class cargaPrincipal extends javax.swing.JFrame {
                 btn3ActionPerformed(evt);
             }
         });
+        PanelContenedor3.add(btn3, new org.netbeans.lib.awtextra.AbsoluteConstraints(25, 11, 50, 50));
 
         Separador3.setForeground(new java.awt.Color(204, 204, 204));
+        PanelContenedor3.add(Separador3, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 66, 76, 3));
 
         LabelTitulo3.setFont(new java.awt.Font("Roboto", 1, 11)); // NOI18N
         LabelTitulo3.setForeground(new java.awt.Color(0, 102, 102));
         LabelTitulo3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         LabelTitulo3.setText("REGISTRAR");
+        PanelContenedor3.add(LabelTitulo3, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 73, 76, -1));
 
-        javax.swing.GroupLayout PanelContenedor3Layout = new javax.swing.GroupLayout(PanelContenedor3);
-        PanelContenedor3.setLayout(PanelContenedor3Layout);
-        PanelContenedor3Layout.setHorizontalGroup(
-            PanelContenedor3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(PanelContenedor3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(PanelContenedor3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(Separador3)
-                    .addComponent(LabelTitulo3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
-            .addGroup(PanelContenedor3Layout.createSequentialGroup()
-                .addGap(27, 27, 27)
-                .addComponent(btn3, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(28, Short.MAX_VALUE))
-        );
-        PanelContenedor3Layout.setVerticalGroup(
-            PanelContenedor3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(PanelContenedor3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(btn3, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(8, 8, 8)
-                .addComponent(Separador3, javax.swing.GroupLayout.PREFERRED_SIZE, 3, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(2, 2, 2)
-                .addComponent(LabelTitulo3)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        jPanel1.add(PanelContenedor3, new org.netbeans.lib.awtextra.AbsoluteConstraints(199, 3, 100, -1));
+        jPanel1.add(PanelContenedor3, new org.netbeans.lib.awtextra.AbsoluteConstraints(199, 3, 100, 100));
 
         PanelContenedor4.setImagen(new javax.swing.ImageIcon(getClass().getResource("/Recursos/CONTENEDOR2.png"))); // NOI18N
+        PanelContenedor4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         btn4.setBackground(new java.awt.Color(255, 255, 255));
         btn4.setBackgroundHover(new java.awt.Color(255, 0, 0));
@@ -307,44 +239,21 @@ public class cargaPrincipal extends javax.swing.JFrame {
                 btn4ActionPerformed(evt);
             }
         });
+        PanelContenedor4.add(btn4, new org.netbeans.lib.awtextra.AbsoluteConstraints(25, 11, 50, 50));
 
         Separador4.setForeground(new java.awt.Color(204, 204, 204));
+        PanelContenedor4.add(Separador4, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 66, 76, 3));
 
         LabelTitulo4.setFont(new java.awt.Font("Roboto", 1, 11)); // NOI18N
         LabelTitulo4.setForeground(new java.awt.Color(0, 102, 102));
         LabelTitulo4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         LabelTitulo4.setText("CANCELAR");
+        PanelContenedor4.add(LabelTitulo4, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 73, 76, -1));
 
-        javax.swing.GroupLayout PanelContenedor4Layout = new javax.swing.GroupLayout(PanelContenedor4);
-        PanelContenedor4.setLayout(PanelContenedor4Layout);
-        PanelContenedor4Layout.setHorizontalGroup(
-            PanelContenedor4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(PanelContenedor4Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(PanelContenedor4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(Separador4)
-                    .addComponent(LabelTitulo4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, PanelContenedor4Layout.createSequentialGroup()
-                .addContainerGap(29, Short.MAX_VALUE)
-                .addComponent(btn4, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(26, 26, 26))
-        );
-        PanelContenedor4Layout.setVerticalGroup(
-            PanelContenedor4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(PanelContenedor4Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(btn4, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(8, 8, 8)
-                .addComponent(Separador4, javax.swing.GroupLayout.PREFERRED_SIZE, 3, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(2, 2, 2)
-                .addComponent(LabelTitulo4)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        jPanel1.add(PanelContenedor4, new org.netbeans.lib.awtextra.AbsoluteConstraints(296, 3, 100, -1));
+        jPanel1.add(PanelContenedor4, new org.netbeans.lib.awtextra.AbsoluteConstraints(296, 3, 100, 100));
 
         PanelContenedor.setImagen(new javax.swing.ImageIcon(getClass().getResource("/Recursos/CONTENEDOR2.png"))); // NOI18N
+        PanelContenedor.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         btn5.setBackground(new java.awt.Color(255, 255, 255));
         btn5.setBackgroundHover(new java.awt.Color(51, 51, 51));
@@ -357,42 +266,18 @@ public class cargaPrincipal extends javax.swing.JFrame {
                 btn5ActionPerformed(evt);
             }
         });
+        PanelContenedor.add(btn5, new org.netbeans.lib.awtextra.AbsoluteConstraints(25, 11, 50, 50));
 
         Separador.setForeground(new java.awt.Color(204, 204, 204));
+        PanelContenedor.add(Separador, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 66, 76, 3));
 
         LabelTitulo.setFont(new java.awt.Font("Roboto", 1, 11)); // NOI18N
         LabelTitulo.setForeground(new java.awt.Color(0, 102, 102));
         LabelTitulo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         LabelTitulo.setText("ELIMINAR");
+        PanelContenedor.add(LabelTitulo, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 73, 76, -1));
 
-        javax.swing.GroupLayout PanelContenedorLayout = new javax.swing.GroupLayout(PanelContenedor);
-        PanelContenedor.setLayout(PanelContenedorLayout);
-        PanelContenedorLayout.setHorizontalGroup(
-            PanelContenedorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(PanelContenedorLayout.createSequentialGroup()
-                .addGap(28, 28, 28)
-                .addComponent(btn5, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(27, Short.MAX_VALUE))
-            .addGroup(PanelContenedorLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(PanelContenedorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(LabelTitulo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(Separador))
-                .addContainerGap())
-        );
-        PanelContenedorLayout.setVerticalGroup(
-            PanelContenedorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(PanelContenedorLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(btn5, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(8, 8, 8)
-                .addComponent(Separador, javax.swing.GroupLayout.PREFERRED_SIZE, 3, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(2, 2, 2)
-                .addComponent(LabelTitulo)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        jPanel1.add(PanelContenedor, new org.netbeans.lib.awtextra.AbsoluteConstraints(393, 3, 100, -1));
+        jPanel1.add(PanelContenedor, new org.netbeans.lib.awtextra.AbsoluteConstraints(393, 3, 100, 100));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 260, 500, 110));
 

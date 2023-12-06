@@ -814,7 +814,7 @@ public class dlgGestTransferencias extends javax.swing.JDialog {
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
         // TODO add your handling code here:
         if (lbOpcionOrigen.getText().trim().equals("L")) {
-            controlFactura.addTablaT(dlgGestTransferencias.tbDetalle);
+            controlFactura.addTablaT(dlgGestTransferencias.tbDetalle, txtCodArticulo.getText());
             Renders();
             txtCodArticulo.setText("");
             txtArt.setText("");
@@ -823,7 +823,7 @@ public class dlgGestTransferencias extends javax.swing.JDialog {
             habilitarCANT();
             btnBuscarArticuloActionPerformed(null);
         } else if (lbOpcionOrigen.getText().trim().equals("R")) {
-            controlFactura.addTablaTR(dlgGestTransferencias.tbDetalle);
+            controlFactura.addTablaTR(dlgGestTransferencias.tbDetalle, txtCodArticulo.getText());
             Renders();
             txtCodArticulo.setText("");
             txtArt.setText("");

@@ -6,6 +6,7 @@ import Componentes.Empresa;
 import Componentes.Fecha;
 import Componentes.Login;
 import Componentes.Mensajes;
+import Componentes.Notif;
 import Componentes.Tickets;
 import Componentes.Timbrado;
 import Componentes.traerIP;
@@ -22,10 +23,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ControlLogeo {
-
-    //static Timer timer;
-    //int cont;
-    //public static final int ONE_SECOND=2;
     static Usuario u;
     static String user;
     static String pass;
@@ -120,7 +117,7 @@ public class ControlLogeo {
                     System.out.println("IMPRESORA: " + Timbrado.getImpresora());
                     Timbrado.setHabilitado("SI");
                     System.out.println("FACTURA LEGAL HABILITADO: " + Timbrado.getHabilitado());
-                   
+
                     try {
                         SimpleDateFormat fe = new SimpleDateFormat("dd/MM/yyyy");
                         Date FechaA = fe.parse(Fecha.fechaFormulario());
@@ -131,7 +128,8 @@ public class ControlLogeo {
                         } else if (FechaA.after(FechaT)) {
                             Timbrado.setValidado("NO");
                             System.out.println("TIMBRADO VALIDADO: " + Timbrado.getValidado());
-                            Mensajes.Sistema("EMISIÓN DE FACTURA LEGAL NO HABILITADO:\nEl Timbrado actual ha expirado.\nPara retomar las facturaciones legales sera necesario configurar un nuevo Timbrado.");
+                            Notif.NotifyWarning("Notificación del sistema", "EMISIÓN DE FACTURA LEGAL NO HABILITADO:\nEl Timbrado actual ha expirado.\nPara retomar las facturaciones legales sera necesario configurar un nuevo Timbrado.");
+                            //Mensajes.Sistema("EMISIÓN DE FACTURA LEGAL NO HABILITADO:\nEl Timbrado actual ha expirado.\nPara retomar las facturaciones legales sera necesario configurar un nuevo Timbrado.");
                         } else if (FechaA.before(FechaT)) {
                             Timbrado.setValidado("SI");
                             System.out.println("TIMBRADO VALIDADO: " + Timbrado.getValidado());
@@ -139,16 +137,17 @@ public class ControlLogeo {
                     } catch (ParseException es) {
                         System.out.println("Error comparando validez de timbrado: " + es.getMessage());
                     }
-                     System.out.println("-------------------------------------------------------");
+                    System.out.println("-------------------------------------------------------");
 
                 } else {
-                    Mensajes.Sistema("EMISIÓN DE FACTURA LEGAL NO HABILITADO:\nNo se encuentra Punto de expedición para la emisión de facturas legales.");
+                    //Mensajes.Sistema("EMISIÓN DE FACTURA LEGAL NO HABILITADO:\nNo se encuentra Punto de expedición para la emisión de facturas legales.");
+                    Notif.NotifyFail("Notificación del sistema", "EMISIÓN DE FACTURA LEGAL NO HABILITADO:\nNo se encuentra Punto de expedición para la emisión de facturas legales.");
                     Timbrado.setHabilitado("NO");
                     System.out.println("FACTURA LEGAL HABILITADO: " + Timbrado.getHabilitado());
                     Timbrado.setValidado("NO");
                     System.out.println("TIMBRADO VALIDADO: " + Timbrado.getValidado());
                     System.out.println("-------------------------------------------------------");
-                    
+
                 }
                 rs.close();
                 st.close();
@@ -175,7 +174,8 @@ public class ControlLogeo {
                     System.out.println("TICKET HABILITADO: " + Tickets.getHabilitado());
                     System.out.println("-------------------------------------------------------");
                 } else {
-                    Mensajes.Sistema("EMISIÓN DE TICKET NO HABILITADO:\nNo se encuentra un Punto de expedición para emisión de tickets.");
+                    Notif.NotifyFail("Notificación del sistema", "EMISIÓN DE TICKET NO HABILITADO:\nNo se encuentra un Punto de expedición para emisión de tickets.");
+                    //Mensajes.Sistema("EMISIÓN DE TICKET NO HABILITADO:\nNo se encuentra un Punto de expedición para emisión de tickets.");
                     Tickets.setHabilitado("NO");
                     System.out.println("TICKET HABILITADO: " + Tickets.getHabilitado());
                     System.out.println("-------------------------------------------------------");

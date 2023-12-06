@@ -19,6 +19,7 @@ public final class CabecerasTablas {
     static String reparto[] = {"ID", "CODINT", "DESCRIPCION", "PRECIO", "RA", "C", "T", "CARGA TOTAL", "MCARGA", "RECAMBIOS", "MRECAMBIO", "VENDIDOS", "MVENDIDO", "MCOSTO", "DEVUELTOS", "MDEVUELTO", "WE"};
     static String todosReparts[] = {"ID", "MOV.", "REFERENCIA", "TOTAL", "RECAMBIO", "DEVUELTO", "ENTREGAR", "ENTREGADO", "DIF."};
     static String reporteComision[] = {"ID.REPAR", "MOV.N°", "FECHA", "COMISIÓN"};
+    static String Cierre[] = {"ID", "IDCAJA", "IDBOCA","BOCA DE COBRANZA", "FECHA","HORA","CONCEPTO","50","100","500","1.000","2.000","5.000","10.000","20.000","50.000","100.000","TOTAL"};
     String familia[] = {"ID", "FAMILIA", "%", "I.V.A."};
     String laboratorio[] = {"ID", "MARCAS"};
     String empresa[] = {"ID", "RAZÓN SOCIAL", "R.U.C.", "DIRECCIÓN", "TELÉFONO", "ESTADO", "IDCIUDAD", "CIUDAD"};
@@ -48,7 +49,7 @@ public final class CabecerasTablas {
     String categoria[] = {"CODIGO", "CATEGORIA"};
     String presupuestos[] = {"Cant.", "Cod.", "Descripción", "Precio", "Total"};
     String ventasContaduria[] = {"NÚMERO DE IDENTIFICACIÓN DEL COMPRADOR", "NOMBRE O RAZÓN SOCIAL DEL COMPRADOR", "FECHA DE EMISIÓN DEL COMPROBANTE", "NÚMERO DE TIMBRADO", "NÚMERO DEL COMPROBANTE", "MONTO GRAVADO AL 10% (IVA INCLUIDO)", "MONTO GRAVADO AL 5% (IVA INCLUIDO)", "MONTO NO GRAVADO O EXENTO", "MONTO TOTAL DEL COMPROBANTE", "CONDICIÓN DE VENTA"};
-    String conFactura[] = {"OPERACIÓN", "IDEMISION", "RAZÓN SOCIAL", "FECHA", "HORA", "COD CLI", "MOV.CAJA", "TIPO", "COMPROBANTE N°", "CONDICION", "PAGO", "TOTAL", "CODVENDE", "ESTADO", "EXENTA", "CINCO", "DIEZ", "TIMBRADO", "DESDE", "HASTA"};
+    String conFactura[] = {"OPERACIÓN", "IDEMISION", "RAZÓN SOCIAL", "FECHA", "HORA", "COD CLI", "MOV.CAJA", "TIPO", "COMPROBANTE N°", "CONDICION", "PAGO", "TOTAL", "CODVENDE", "ESTADO", "EXENTA", "CINCO", "DIEZ", "TIMBRADO", "DESDE", "HASTA","METODO PAGO","BOLETA NRO","ABONADO","VUELTO"};
     String detalleFactura[] = {"CANT", "DEP", "IDDEP", "ID", "CÓD.BARRA", "DESCRIPCIÓN", "PRECIO", "TOTAL", "PROMO", "IVA", "EXENTA", "CINTO", "DIEZ"};
     String consPresupuesto[] = {"N°", "Fecha", "Razon Social", "Cód. Clie", "Desc", "Total"};
     String detallePresupuestoF[] = {"Cant.", "Código", "Descripción", "Precio", "Total"};
@@ -95,6 +96,7 @@ public final class CabecerasTablas {
     static String datosconsDetalleCompras[][] = {};
     static String datosDP[][] = {};
     static String datosCQ[][] = {};
+    static String datosCierre[][] = {};
     private static DefaultTableModel modelo;
     private static DefaultTableModel modeloAJSK;
     private static DefaultTableModel modeloDependencia;
@@ -117,6 +119,7 @@ public final class CabecerasTablas {
     private static DefaultTableModel modeloGastosReporte;
     private static DefaultTableModel modeloDP;
     private static DefaultTableModel modeloCQ;
+    private static DefaultTableModel modeloCierre;
     private static TableColumn colum = null;
 
     public static void limpiarTablasconsDetalleCompras(JTable tabla) {
@@ -132,6 +135,14 @@ public final class CabecerasTablas {
         int filas = tabla.getRowCount();
         for (int i = 0; i < filas; i++) {
             modelo.removeRow(0);
+        }
+    }
+    
+    public static void limpiarTablasCierre(JTable tabla) {
+        tabla.setModel(modeloCierre);
+        int filas = tabla.getRowCount();
+        for (int i = 0; i < filas; i++) {
+            modeloCierre.removeRow(0);
         }
     }
 
@@ -1102,6 +1113,26 @@ public final class CabecerasTablas {
         colum.setMinWidth(0);
         colum.setPreferredWidth(0);
         colum = tabla.getColumnModel().getColumn(19);
+        colum.setPreferredWidth(70);
+        colum.setMaxWidth(0);
+        colum.setMinWidth(0);
+        colum.setPreferredWidth(0);
+        colum = tabla.getColumnModel().getColumn(20);
+        colum.setPreferredWidth(120);
+        colum.setMaxWidth(0);
+        colum.setMinWidth(0);
+        colum.setPreferredWidth(0);
+        colum = tabla.getColumnModel().getColumn(21);
+        colum.setPreferredWidth(70);
+        colum.setMaxWidth(0);
+        colum.setMinWidth(0);
+        colum.setPreferredWidth(0);
+        colum = tabla.getColumnModel().getColumn(22);
+        colum.setPreferredWidth(70);
+        colum.setMaxWidth(0);
+        colum.setMinWidth(0);
+        colum.setPreferredWidth(0);
+        colum = tabla.getColumnModel().getColumn(23);
         colum.setPreferredWidth(70);
         colum.setMaxWidth(0);
         colum.setMinWidth(0);
@@ -2451,6 +2482,157 @@ public final class CabecerasTablas {
         colum = tabla.getColumnModel().getColumn(15);
         colum.setPreferredWidth(45);
     }
+    
+    public static void TablaCierre(JTable tabla) {
+        modeloCierre = new DefaultTableModel(datosCierre, Cierre){
+            boolean[] canEdit = new boolean[]{
+                false, false, false, false, false, false, false, false, false,
+                false, false, false, false, false, false, false, false, false
+            };
+
+            @Override
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit[columnIndex];
+            }
+        };
+        tabla.setModel(modeloCierre);
+        colum = tabla.getColumnModel().getColumn(0);
+        colum.setPreferredWidth(70);
+        colum.setMaxWidth(0);
+        colum.setMinWidth(0);
+        colum.setPreferredWidth(0);
+        colum = tabla.getColumnModel().getColumn(1);
+        colum.setPreferredWidth(90);
+        colum.setMaxWidth(0);
+        colum.setMinWidth(0);
+        colum.setPreferredWidth(0);
+        colum = tabla.getColumnModel().getColumn(2);
+        colum.setPreferredWidth(90);
+        colum.setMaxWidth(0);
+        colum.setMinWidth(0);
+        colum.setPreferredWidth(0);
+        colum = tabla.getColumnModel().getColumn(3);
+        colum.setPreferredWidth(400);
+        colum = tabla.getColumnModel().getColumn(4);
+        colum.setPreferredWidth(100);
+        colum = tabla.getColumnModel().getColumn(5);
+        colum.setPreferredWidth(80);
+        colum = tabla.getColumnModel().getColumn(6);
+        colum.setPreferredWidth(250);
+        colum = tabla.getColumnModel().getColumn(7);
+        colum.setPreferredWidth(60);
+        colum.setMaxWidth(0);
+        colum.setMinWidth(0);
+        colum.setPreferredWidth(0);
+        colum = tabla.getColumnModel().getColumn(8);
+        colum.setPreferredWidth(60);
+        colum.setMaxWidth(0);
+        colum.setMinWidth(0);
+        colum.setPreferredWidth(0);
+        colum = tabla.getColumnModel().getColumn(9);
+        colum.setPreferredWidth(60);
+        colum.setMaxWidth(0);
+        colum.setMinWidth(0);
+        colum.setPreferredWidth(0);
+        colum = tabla.getColumnModel().getColumn(10);
+        colum.setPreferredWidth(60);
+        colum.setMaxWidth(0);
+        colum.setMinWidth(0);
+        colum.setPreferredWidth(0);
+        colum = tabla.getColumnModel().getColumn(11);
+        colum.setPreferredWidth(60);
+        colum.setMaxWidth(0);
+        colum.setMinWidth(0);
+        colum.setPreferredWidth(0);
+        colum = tabla.getColumnModel().getColumn(12);
+        colum.setPreferredWidth(60);
+        colum.setMaxWidth(0);
+        colum.setMinWidth(0);
+        colum.setPreferredWidth(0);
+        colum = tabla.getColumnModel().getColumn(13);
+        colum.setPreferredWidth(60);
+        colum.setMaxWidth(0);
+        colum.setMinWidth(0);
+        colum.setPreferredWidth(0);
+        colum = tabla.getColumnModel().getColumn(14);
+        colum.setPreferredWidth(60);
+        colum.setMaxWidth(0);
+        colum.setMinWidth(0);
+        colum.setPreferredWidth(0);
+        colum = tabla.getColumnModel().getColumn(15);
+        colum.setPreferredWidth(60);
+        colum.setMaxWidth(0);
+        colum.setMinWidth(0);
+        colum.setPreferredWidth(0);
+        colum = tabla.getColumnModel().getColumn(16);
+        colum.setPreferredWidth(60);
+        colum.setMaxWidth(0);
+        colum.setMinWidth(0);
+        colum.setPreferredWidth(0);
+        colum = tabla.getColumnModel().getColumn(17);
+        colum.setPreferredWidth(90);
+    }
+    
+    public static void TablaCierreDetallado(JTable tabla) {
+        modeloCierre = new DefaultTableModel(datosCierre, Cierre){
+            boolean[] canEdit = new boolean[]{
+                false, false, false, false, false, false, false, false, false,
+                false, false, false, false, false, false, false, false, false
+            };
+
+            @Override
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit[columnIndex];
+            }
+        };
+        tabla.setModel(modeloCierre);
+        colum = tabla.getColumnModel().getColumn(0);
+        colum.setPreferredWidth(70);
+        colum.setMaxWidth(0);
+        colum.setMinWidth(0);
+        colum.setPreferredWidth(0);
+        colum = tabla.getColumnModel().getColumn(1);
+        colum.setPreferredWidth(90);
+        colum.setMaxWidth(0);
+        colum.setMinWidth(0);
+        colum.setPreferredWidth(0);
+        colum = tabla.getColumnModel().getColumn(2);
+        colum.setPreferredWidth(90);
+        colum.setMaxWidth(0);
+        colum.setMinWidth(0);
+        colum.setPreferredWidth(0);
+        colum = tabla.getColumnModel().getColumn(3);
+        colum.setPreferredWidth(250);
+        colum = tabla.getColumnModel().getColumn(4);
+        colum.setPreferredWidth(100);
+        colum = tabla.getColumnModel().getColumn(5);
+        colum.setPreferredWidth(80);
+        colum = tabla.getColumnModel().getColumn(6);
+        colum.setPreferredWidth(150);
+        colum = tabla.getColumnModel().getColumn(7);
+        colum.setPreferredWidth(60);
+        colum = tabla.getColumnModel().getColumn(8);
+        colum.setPreferredWidth(60);
+        colum = tabla.getColumnModel().getColumn(9);
+        colum.setPreferredWidth(60);
+        colum = tabla.getColumnModel().getColumn(10);
+        colum.setPreferredWidth(60);
+        colum = tabla.getColumnModel().getColumn(11);
+        colum.setPreferredWidth(60);
+        colum = tabla.getColumnModel().getColumn(12);
+        colum.setPreferredWidth(60);
+        colum = tabla.getColumnModel().getColumn(13);
+        colum.setPreferredWidth(60);
+        colum = tabla.getColumnModel().getColumn(14);
+        colum.setPreferredWidth(60);
+        colum = tabla.getColumnModel().getColumn(15);
+        colum.setPreferredWidth(60);
+        colum = tabla.getColumnModel().getColumn(16);
+        colum.setPreferredWidth(60);
+        colum = tabla.getColumnModel().getColumn(17);
+        colum.setPreferredWidth(90);
+    }
+
 
     public void familia(JTable tabla) {
         modelo = new DefaultTableModel(datos, familia);

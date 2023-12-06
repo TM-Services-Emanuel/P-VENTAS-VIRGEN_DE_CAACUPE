@@ -5,10 +5,8 @@ import Componentes.DataSourceService1;
 import Componentes.Fecha;
 import Componentes.Login;
 import Componentes.Mensajes;
-import Componentes.Notif;
 import Componentes.Reporte;
 import Componentes.Software;
-import Componentes.Timbrado;
 import Componentes.generarCodigos;
 import Componentes.validarCampos;
 import Controladores.CabecerasTablas;
@@ -26,7 +24,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
-public final class dlgCajaDia extends javax.swing.JDialog {
+public final class dlgCajaDia2 extends javax.swing.JDialog {
 
     public static String NCaja;
     public int ING;
@@ -38,7 +36,7 @@ public final class dlgCajaDia extends javax.swing.JDialog {
     static DataSourceService dss = new DataSourceService();
     CabecerasTablas cabe = new CabecerasTablas();
 
-    public dlgCajaDia(java.awt.Frame parent, boolean modal) throws SQLException {
+    public dlgCajaDia2(java.awt.Frame parent, boolean modal) throws SQLException {
         super(parent, modal);
         initComponents();
         jasper = new Reporte();
@@ -48,7 +46,8 @@ public final class dlgCajaDia extends javax.swing.JDialog {
         txtHasta.setText(Fecha.formatoFecha(dcHasta.getText()));
 
         try {
-            NCaja = (generarCodigos.ObtenerCodigo("SELECT ca_id from caja where ca_indicador='S' ORDER BY ca_id DESC LIMIT 1"));
+            //NCaja = (generarCodigos.ObtenerCodigo("SELECT ca_id from caja where ca_indicador='S' ORDER BY ca_id DESC LIMIT 1"));
+            NCaja = dlgBuscarCaja.txtCaja.getText().trim();
             System.out.println("N CAja hoy: " + NCaja);
             Caja caj = GestionarCaja.busCaja(NCaja);
             DecimalFormat df = new DecimalFormat("#,###");
@@ -1865,7 +1864,7 @@ public final class dlgCajaDia extends javax.swing.JDialog {
                 int resp = JOptionPane.showConfirmDialog(this, "¿Seguro que desea Cerrar la Caja y Finalizar las Operaciones?", "CIERRE GENERAL DE LOS MOVIMIENTOS DEL DÍA", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
                 if (resp == JOptionPane.YES_OPTION) {
                     try {
-                        ControlCaja.CerrarCaja();
+                        ControlCaja.CerrarCaja1();
                         btnCerrar.setEnabled(false);
                         //btnImprimir.setEnabled(true);
                         txtEntregado.setEnabled(false);
@@ -1906,12 +1905,12 @@ public final class dlgCajaDia extends javax.swing.JDialog {
     private void btN2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btN2ActionPerformed
         // TODO add your handling code here:
         try {
-            String fe = generarCodigos.getFecha("SELECT ca_fechainicio FROM caja where ca_indicador='S' ORDER BY ca_id DESC LIMIT 1");
-            if (!fe.equals(Fecha.fechaCorrecta())) {
-                Mensajes.informacion("La caja del día aún no ha sido inicializada.\n\nPara poder comenzar a registrar valores sera necesario hacerlo.\nLa apertura puede realizarse con los perfiles ADMINISTRADOR y VENTAS.");
-            } else {
+            //String fe = generarCodigos.getFecha("SELECT ca_fechainicio FROM caja where ca_indicador='S' ORDER BY ca_id DESC LIMIT 1");
+            //if (!fe.equals(Fecha.fechaCorrecta())) {
+                //Mensajes.informacion("La caja del día aún no ha sido inicializada.\n\nPara poder comenzar a registrar valores sera necesario hacerlo.\nLa apertura puede realizarse con los perfiles ADMINISTRADOR y VENTAS.");
+            //} else {
                 abrirRegistroValores();
-            }
+            //}
         } catch (Exception e) {
             Mensajes.error("Error obteniendo fecha de caja: " + e.getMessage());
         }
@@ -1931,8 +1930,9 @@ public final class dlgCajaDia extends javax.swing.JDialog {
                 }
             }
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(dlgCajaDia.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(dlgCajaDia2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         //</editor-fold>
@@ -1940,7 +1940,7 @@ public final class dlgCajaDia extends javax.swing.JDialog {
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(() -> {
             try {
-                dlgCajaDia dialog = new dlgCajaDia(new javax.swing.JFrame(), true);
+                dlgCajaDia2 dialog = new dlgCajaDia2(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
@@ -1949,7 +1949,7 @@ public final class dlgCajaDia extends javax.swing.JDialog {
                 });
                 dialog.setVisible(true);
             } catch (SQLException ex) {
-                Logger.getLogger(dlgCajaDia.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(dlgCajaDia2.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
     }

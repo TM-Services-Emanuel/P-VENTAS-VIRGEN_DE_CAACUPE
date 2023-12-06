@@ -2,6 +2,7 @@ package IU;
 
 import Componentes.Fecha;
 import Componentes.Mensajes;
+import Componentes.Notif;
 import Componentes.RenderDecimal2;
 import Componentes.RenderDecimalconPuntos;
 import Componentes.RenderDecimalconPuntos1;
@@ -718,7 +719,8 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
     void modArticulo() {
         int x = tbProductos.getSelectedRow();
         if (x < 0) {
-            Mensajes.informacion("Seleccione una fila de la tabla");
+            Notif.NotifyError("Notificación del sistema", "No es posible desplegar el formulario ABM de productos.\r\nSeleccione un item en la tabla de productos.");
+           // Mensajes.informacion("Seleccione una fila de la tabla");
         } else {
             try {
                 dlgGestArticulosMovil a = new dlgGestArticulosMovil(null, true);
@@ -751,7 +753,7 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
     void delArticulo() {
         try {
             int x = tbProductos.getSelectedRow();
-            String desc = tbProductos.getValueAt(x, 4).toString();
+            String desc = tbProductos.getValueAt(x, 5).toString();
             int rpta = Mensajes.confirmar("Desea realmente eliminar " + desc + " de la lista");
             if (rpta == 0) {
                 controlArticuloMovil.delArticulo();
@@ -770,7 +772,8 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
                 txtBuscar.requestFocus();
             }
         } catch (Exception e) {
-            Mensajes.error("Seleccione una fila de la tabla");
+            //Mensajes.error("Seleccione una fila de la tabla");
+            Notif.NotifyError("Notificación del sistema", "No es posible procesar la eliminación.\r\nSeleccione un item en la tabla de productos.");
         }
     }
     private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
@@ -976,6 +979,7 @@ public class dlgArticulosMovil extends javax.swing.JDialog {
         }
         txtBuscar.setText("");
         txtBuscar.requestFocus();
+        Notif.NotifyInformation("Notificación de sistema", "Lista de productos actualizado!");
     }//GEN-LAST:event_btnActualizarActionPerformed
 
     private void ckStockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ckStockActionPerformed

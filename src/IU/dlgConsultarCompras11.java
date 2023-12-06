@@ -1,6 +1,7 @@
 package IU;
 
 import Componentes.Mensajes;
+import Componentes.Notif;
 import Componentes.RenderDecimal2;
 import Componentes.RenderDecimal1;
 import Componentes.RenderDecimalconPuntos;
@@ -31,7 +32,7 @@ public class dlgConsultarCompras11 extends javax.swing.JDialog {
         txtCodProveedor.setVisible(false);
 
     }
-    
+
     private void AccesoRapido(int n) {
         switch (n) {
             case KeyEvent.VK_ALT | KeyEvent.VK_F4 ->
@@ -599,7 +600,8 @@ public class dlgConsultarCompras11 extends javax.swing.JDialog {
     private void btnFiltrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFiltrarActionPerformed
         // TODO add your handling code here:
         if (txtCodProveedor.getText().trim().isEmpty()) {
-            Mensajes.Sistema("No es posible cargar la tabla.\nSeleccione el proveedor para inicial el filtrado de las facturas.");
+            //Mensajes.Sistema("No es posible cargar la tabla.\nSeleccione el proveedor para inicial el filtrado de las facturas.");
+            Notif.NotifyFail("Notificación del sistema", "No es posible cargar la tabla.\nSeleccione el proveedor para inicial el filtrado de las facturas.");
         } else {
             CabecerasTablas.limpiarTablas(tbCompra);
             CabecerasTablas.limpiarTablasconsDetalleCompras(tbDetalleCompra);
@@ -608,7 +610,6 @@ public class dlgConsultarCompras11 extends javax.swing.JDialog {
             controlCompra.listarComprasFiltro(tbCompra, Integer.parseInt(txtCodProveedor.getText().trim()));
             cant();
             DecimalFormat df = new DecimalFormat("#,###");
-            //lbSaldo.setText(String.valueOf("DEUDA TOTAL: Gs " + df.format(controlCompra.getSaldoCompras())));
             Renders();
             txtCodCompra.setText("");
             txtmov.setText("");
@@ -622,14 +623,13 @@ public class dlgConsultarCompras11 extends javax.swing.JDialog {
 
     private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
         // TODO add your handling code here:
-        CabecerasTablas.limpiarTablas(tbCompra);
+        /*CabecerasTablas.limpiarTablas(tbCompra);
         CabecerasTablas.limpiarTablasconsDetalleCompras(tbDetalleCompra);
         cabe.consCompras(tbCompra);
         CabecerasTablas.consDetalleCompras(tbDetalleCompra);
         controlCompra.listarCompras(tbCompra);
         cant();
         DecimalFormat df = new DecimalFormat("#,###");
-        //lbSaldo.setText(String.valueOf("DEUDA TOTAL: Gs " + df.format(controlCompra.getSaldoCompras())));
         cargarComboBox.cargar(cbProveedores, "SELECT pro_codigo, pro_razonsocial FROM proveedor WHERE pro_indicador='S'");
         Renders();
         txtCodCompra.setText("");
@@ -637,19 +637,49 @@ public class dlgConsultarCompras11 extends javax.swing.JDialog {
         txtFechaCompra.setText("");
         txtProveedor.setText("");
         lbInformacion.setText("");
-        txtTotal.setText("");
+        txtTotal.setText("");*/
+        if (ckHabilitar.isSelected()) {
+            if (txtCodProveedor.getText().trim().isEmpty()) {
+                //Mensajes.Sistema("No es posible cargar la tabla.\nSeleccione el proveedor para inicial el filtrado de las facturas.");
+                Notif.NotifyFail("Notificación del sistema", "No es posible cargar la tabla.\nSeleccione el proveedor para inicial el filtrado de las facturas.");
+            } else {
+                CabecerasTablas.limpiarTablas(tbCompra);
+                CabecerasTablas.limpiarTablasconsDetalleCompras(tbDetalleCompra);
+                cabe.consCompras(tbCompra);
+                CabecerasTablas.consDetalleCompras(tbDetalleCompra);
+                controlCompra.listarComprasFiltro(tbCompra, Integer.parseInt(txtCodProveedor.getText().trim()));
+                cant();
+                DecimalFormat df = new DecimalFormat("#,###");
+                Renders();
+                Notif.NotifyInformation("Notificación del sistema", "Tabla de compras actualizada!");
+            }
+
+        } else {
+            CabecerasTablas.limpiarTablas(tbCompra);
+            CabecerasTablas.limpiarTablasconsDetalleCompras(tbDetalleCompra);
+            cabe.consCompras(tbCompra);
+            CabecerasTablas.consDetalleCompras(tbDetalleCompra);
+            controlCompra.listarCompras(tbCompra);
+            cant();
+            DecimalFormat df = new DecimalFormat("#,###");
+            Renders();
+            Notif.NotifyInformation("Notificación del sistema", "Tabla de compras actualizada!");
+        }
+        
     }//GEN-LAST:event_btnActualizarActionPerformed
 
     private void btnAnularActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnularActionPerformed
         // TODO add your handling code here:
         if (dlgConsultarCompras11.tbCompra.getSelectedRow() < 0) {
-            Mensajes.error("Seleccione una fila de la tabla");
+            //Mensajes.error("Seleccione una fila de la tabla");
+            Notif.NotifyFail("Notificación del sistema", "No es posible procesar la petición.\r\nSeleccione en la tabla la compra que desea anular");
         } else {
             int x = dlgConsultarCompras11.tbCompra.getSelectedRow();
             String estado = dlgConsultarCompras11.tbCompra.getValueAt(x, 11).toString();
             String tipo = dlgConsultarCompras11.tbCompra.getValueAt(x, 2).toString();
             if (estado.equals("ANULADO")) {
-                Mensajes.informacion("Esta compra ya fue anulada");
+                Notif.NotifyFail("Notificación del sistema", "No es posible procesar la petición.\r\nEsta compra ya fue anulada");
+                //Mensajes.informacion("Esta compra ya fue anulada");
             } else {
                 if (tipo.equals("L")) {
                     try {
@@ -658,7 +688,9 @@ public class dlgConsultarCompras11 extends javax.swing.JDialog {
                         if (rpta == 0) {
                             msg = controlCompra.anularCompra();
                             if (msg == null) {
-                                if (ckHabilitar.isSelected()) {
+                                btnActualizarActionPerformed(null);
+                            }
+                                /*if (ckHabilitar.isSelected()) {
                                     if (txtCodProveedor.getText().trim().isEmpty()) {
                                         Mensajes.Sistema("No es posible cargar la tabla.\nSeleccione el proveedor para inicial el filtrado de las facturas.");
                                     } else {
@@ -669,8 +701,6 @@ public class dlgConsultarCompras11 extends javax.swing.JDialog {
                                         controlCompra.listarComprasFiltro(tbCompra, Integer.parseInt(txtCodProveedor.getText().trim()));
                                         cant();
                                         DecimalFormat df = new DecimalFormat("#,###");
-                                        //lbSaldo.setText(String.valueOf("DEUDA TOTAL: Gs " + df.format(controlCompra.getSaldoCompras())));
-                                        //cargarComboBox.cargar(cbProveedores, "SELECT pro_codigo, pro_razonsocial FROM proveedor WHERE pro_indicador='S'");
                                         Renders();
                                     }
 
@@ -682,18 +712,17 @@ public class dlgConsultarCompras11 extends javax.swing.JDialog {
                                     controlCompra.listarCompras(tbCompra);
                                     cant();
                                     DecimalFormat df = new DecimalFormat("#,###");
-                                   // lbSaldo.setText(String.valueOf("DEUDA TOTAL: Gs " + df.format(controlCompra.getSaldoCompras())));
-                                    //cargarComboBox.cargar(cbProveedores, "SELECT pro_codigo, pro_razonsocial FROM proveedor WHERE pro_indicador='S'");
                                     Renders();
                                 }
 
-                            }
+                            }*/
                         }
                     } catch (Exception e) {
-                        Mensajes.informacion("Seleccione la fila a eliminar:" + e.getMessage());
+                        // Mensajes.informacion("Seleccione la fila a eliminar:" + e.getMessage());
                     }
 
-                } else {
+                }
+                /*else {
                     try {
                         String msg;
                         int rpta = Mensajes.confirmar("Seguro que desea Anular esta Compra para Reparto?");
@@ -711,8 +740,6 @@ public class dlgConsultarCompras11 extends javax.swing.JDialog {
                                         controlCompra.listarComprasFiltro(tbCompra, Integer.parseInt(txtCodProveedor.getText().trim()));;
                                         cant();
                                         DecimalFormat df = new DecimalFormat("#,###");
-                                        //lbSaldo.setText(String.valueOf("DEUDA TOTAL: Gs " + df.format(controlCompra.getSaldoCompras())));
-                                        //cargarComboBox.cargar(cbProveedores, "SELECT pro_codigo, pro_razonsocial FROM proveedor WHERE pro_indicador='S'");
                                         Renders();
                                     }
                                 } else {
@@ -723,8 +750,6 @@ public class dlgConsultarCompras11 extends javax.swing.JDialog {
                                     controlCompra.listarCompras(tbCompra);
                                     cant();
                                     DecimalFormat df = new DecimalFormat("#,###");
-                                    //lbSaldo.setText(String.valueOf("DEUDA TOTAL: Gs " + df.format(controlCompra.getSaldoCompras())));
-                                    //cargarComboBox.cargar(cbProveedores, "SELECT pro_codigo, pro_razonsocial FROM proveedor WHERE pro_indicador='S'");
                                     Renders();
                                 }
 
@@ -733,7 +758,7 @@ public class dlgConsultarCompras11 extends javax.swing.JDialog {
                     } catch (Exception e) {
                         Mensajes.informacion("Seleccione la fila a eliminar:" + e.getMessage());
                     }
-                }
+                }*/
             }
         }
     }//GEN-LAST:event_btnAnularActionPerformed

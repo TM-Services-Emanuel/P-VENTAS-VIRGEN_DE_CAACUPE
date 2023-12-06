@@ -25,6 +25,22 @@ public class cargarComboBox {
             System.out.println("Algunos formularios no estan activos, para actualizarse, o no hay conexión");
         }
     }
+    
+    public static void cargarBocaCobranza(JComboBox cb, String sql) {
+        try (Connection con = dss.getDataSource().getConnection(); Statement st = con.createStatement(); ResultSet rs = (ResultSet) st.executeQuery(sql)) {
+            modeloCombo = new DefaultComboBoxModel();
+            modeloCombo.addElement("TODAS LAS BOCAS DE COBRANZAS");
+            while (rs.next()) {
+                modeloCombo.addElement(new Combo(Integer.parseInt(rs.getString(1)), rs.getString(2)));
+            }
+            cb.setModel(modeloCombo);
+            rs.close();
+            st.close();
+            con.close();
+        } catch (NumberFormatException | SQLException e) {
+            System.out.println("Algunos formularios no estan activos, para actualizarse, o no hay conexión");
+        }
+    }
 
     public static void cargar2(JComboBox cb, String sql) {
         try (Connection con = dss.getDataSource().getConnection(); Statement st = con.createStatement(); ResultSet rs = (ResultSet) st.executeQuery(sql)) {
