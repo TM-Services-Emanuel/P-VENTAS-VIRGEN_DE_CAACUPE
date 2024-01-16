@@ -3,7 +3,7 @@
   <dontWrapJar>false</dontWrapJar>
   <headerType>gui</headerType>
   <jar>D:\Trabajos\Proyectos Java SE\PUNTO DE VENTA\SOFTWARE PUNTO DE VENTA\DISTRIBUIDORA VIRGEN DE CAACUPE\P-VENTAS-VIRGEN_DE_CAACUPE\.exe\pv.jar</jar>
-  <outfile>D:\Trabajos\Proyectos Java SE\PUNTO DE VENTA\SOFTWARE PUNTO DE VENTA\DISTRIBUIDORA VIRGEN DE CAACUPE\P-VENTAS-VIRGEN_DE_CAACUPE\.exe\pv.exe</outfile>
+  <outfile>D:\Trabajos\Proyectos Java SE\PUNTO DE VENTA\SOFTWARE PUNTO DE VENTA\DISTRIBUIDORA VIRGEN DE CAACUPE\P-VENTAS-VIRGEN_DE_CAACUPE\pv.exe</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
   <chdir>.</chdir>

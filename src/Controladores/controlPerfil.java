@@ -106,7 +106,7 @@ public class controlPerfil {
             frmPrincipal.divisor4.setVisible(false);
             frmPrincipal.S7.setVisible(false);
             frmPrincipal.mnReparto.setVisible(false);
-            frmPrincipal.btnIMD.setVisible(false);
+            frmPrincipal.btnIMD.setVisible(true);
             frmPrincipal.btnCMD.setVisible(false);
             frmPrincipal.btnGestionarCompras.setVisible(false);
             frmPrincipal.btnSalidaP.setVisible(false);

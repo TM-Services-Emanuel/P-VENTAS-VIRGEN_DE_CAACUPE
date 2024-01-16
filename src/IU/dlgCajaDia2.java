@@ -71,6 +71,7 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
 
         totalVentasCont();
         totalVentasContOtros();
+        totalVentasContOtros1();
         totalVentasCred();
         totalCompraCont();
         totalCompraCred();
@@ -238,6 +239,8 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
         jSeparator1 = new javax.swing.JSeparator();
         jLabel32 = new javax.swing.JLabel();
         txtTotalVentasOtros = new javax.swing.JTextField();
+        jLabel34 = new javax.swing.JLabel();
+        txtTotalVentasOtros1 = new javax.swing.JTextField();
         jPanel11 = new javax.swing.JPanel();
         jLabel22 = new javax.swing.JLabel();
         jLabel23 = new javax.swing.JLabel();
@@ -924,7 +927,7 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
         txtTotalIngreso.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         txtTotalIngreso.setText("0");
         txtTotalIngreso.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
-        jPanel2.add(txtTotalIngreso, new org.netbeans.lib.awtextra.AbsoluteConstraints(193, 66, 100, 23));
+        jPanel2.add(txtTotalIngreso, new org.netbeans.lib.awtextra.AbsoluteConstraints(193, 92, 100, 23));
 
         jLabel5.setFont(new java.awt.Font("Roboto", 0, 12)); // NOI18N
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
@@ -934,12 +937,12 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
         jLabel8.setFont(new java.awt.Font("Roboto", 0, 12)); // NOI18N
         jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabel8.setText("Valor de los otros ingresos:");
-        jPanel2.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 66, 180, 23));
+        jPanel2.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 92, 180, 23));
 
         jLabel14.setFont(new java.awt.Font("Roboto", 1, 12)); // NOI18N
         jLabel14.setForeground(new java.awt.Color(0, 102, 0));
         jLabel14.setText("TOTAL  DE INGRESOS DEL DÍA:");
-        jPanel2.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 92, 180, 23));
+        jPanel2.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 121, 180, 23));
 
         txtIngresoT.setEditable(false);
         txtIngresoT.setBackground(new java.awt.Color(0, 102, 0));
@@ -953,7 +956,7 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
                 txtIngresoTActionPerformed(evt);
             }
         });
-        jPanel2.add(txtIngresoT, new org.netbeans.lib.awtextra.AbsoluteConstraints(193, 92, 100, 23));
+        jPanel2.add(txtIngresoT, new org.netbeans.lib.awtextra.AbsoluteConstraints(193, 121, 100, 23));
 
         txtTotalVentasC.setEditable(false);
         txtTotalVentasC.setBackground(new java.awt.Color(255, 255, 255));
@@ -962,19 +965,19 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
         txtTotalVentasC.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         txtTotalVentasC.setText("0");
         txtTotalVentasC.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
-        jPanel2.add(txtTotalVentasC, new org.netbeans.lib.awtextra.AbsoluteConstraints(193, 126, 100, 23));
+        jPanel2.add(txtTotalVentasC, new org.netbeans.lib.awtextra.AbsoluteConstraints(193, 156, 100, 23));
 
         jLabel10.setFont(new java.awt.Font("Roboto", 0, 12)); // NOI18N
         jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabel10.setText("Valor de ventas a Crédito:");
-        jPanel2.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 126, 175, 23));
+        jPanel2.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 156, 175, 23));
 
         jSeparator1.setForeground(new java.awt.Color(204, 204, 204));
-        jPanel2.add(jSeparator1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 120, 283, -1));
+        jPanel2.add(jSeparator1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 150, 283, -1));
 
         jLabel32.setFont(new java.awt.Font("Roboto", 0, 12)); // NOI18N
         jLabel32.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jLabel32.setText("Valores otros metodos de pagos:");
+        jLabel32.setText("Valores Transferencia Bancaria:");
         jPanel2.add(jLabel32, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, 180, 23));
 
         txtTotalVentasOtros.setEditable(false);
@@ -984,6 +987,19 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
         txtTotalVentasOtros.setText("0");
         txtTotalVentasOtros.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
         jPanel2.add(txtTotalVentasOtros, new org.netbeans.lib.awtextra.AbsoluteConstraints(193, 40, 100, 23));
+
+        jLabel34.setFont(new java.awt.Font("Roboto", 0, 12)); // NOI18N
+        jLabel34.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jLabel34.setText("Valores Tarjetas / QR:");
+        jPanel2.add(jLabel34, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 66, 180, 23));
+
+        txtTotalVentasOtros1.setEditable(false);
+        txtTotalVentasOtros1.setBackground(new java.awt.Color(255, 255, 255));
+        txtTotalVentasOtros1.setFont(new java.awt.Font("Roboto", 1, 12)); // NOI18N
+        txtTotalVentasOtros1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtTotalVentasOtros1.setText("0");
+        txtTotalVentasOtros1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
+        jPanel2.add(txtTotalVentasOtros1, new org.netbeans.lib.awtextra.AbsoluteConstraints(193, 66, 100, 23));
 
         javax.swing.GroupLayout BlancoLayout = new javax.swing.GroupLayout(Blanco);
         Blanco.setLayout(BlancoLayout);
@@ -1006,9 +1022,9 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
             .addGroup(BlancoLayout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(3, 3, 3)
-                .addGroup(BlancoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(BlancoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
             .addComponent(jPanel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
@@ -1310,11 +1326,21 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
 
     void totalVentasContOtros() {
         try {
-            String TotalVenta = (generarCodigos.getDecimales("SELECT IFNULL((select SUM(fac_totalfinal) from factura where caja_ca_id = " + NCaja + " and fac_indicador='S' and fac_tipoventa='CONTADO' and f_pago!=1),0)"));
+            String TotalVenta = (generarCodigos.getDecimales("SELECT IFNULL((select SUM(fac_totalfinal) from factura where caja_ca_id = " + NCaja + " and fac_indicador='S' and fac_tipoventa='CONTADO' and f_pago=2),0)"));
             DecimalFormat df = new DecimalFormat("#,###");
             txtTotalVentasOtros.setText(df.format(Integer.valueOf((TotalVenta.trim().replace(".", "").replace(",", "")))));
         } catch (NumberFormatException e) {
             txtTotalVentasOtros.setText("0");
+        }
+    }
+    
+    void totalVentasContOtros1() {
+        try {
+            String TotalVenta = (generarCodigos.getDecimales("SELECT IFNULL((select SUM(fac_totalfinal) from factura where caja_ca_id = " + NCaja + " and fac_indicador='S' and fac_tipoventa='CONTADO' and f_pago=3),0)"));
+            DecimalFormat df = new DecimalFormat("#,###");
+            txtTotalVentasOtros1.setText(df.format(Integer.valueOf((TotalVenta.trim().replace(".", "").replace(",", "")))));
+        } catch (NumberFormatException e) {
+            txtTotalVentasOtros1.setText("0");
         }
     }
 
@@ -1395,7 +1421,7 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
     void ingresoTotal() {
         try {
             DecimalFormat df = new DecimalFormat("#,###");
-            int IG = Integer.parseInt(txtTotalVentas.getText().replace(",", "").replace(".", "")) + Integer.parseInt(txtTotalVentasOtros.getText().replace(",", "").replace(".", "")) + (Integer.parseInt(txtTotalIngreso.getText().replace(",", "").replace(".", "")));
+            int IG = Integer.parseInt(txtTotalVentas.getText().replace(",", "").replace(".", "")) + Integer.parseInt(txtTotalVentasOtros.getText().replace(",", "").replace(".", "")) + Integer.parseInt(txtTotalVentasOtros1.getText().replace(",", "").replace(".", "")) + (Integer.parseInt(txtTotalIngreso.getText().replace(",", "").replace(".", "")));
             ING = IG;
             txtIngresoT.setText(df.format(IG));
         } catch (NumberFormatException e) {
@@ -1995,6 +2021,7 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel31;
     private javax.swing.JLabel jLabel32;
     private javax.swing.JLabel jLabel33;
+    private javax.swing.JLabel jLabel34;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
@@ -2057,5 +2084,6 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
     private javax.swing.JTextField txtTotalVentas;
     private javax.swing.JTextField txtTotalVentasC;
     private javax.swing.JTextField txtTotalVentasOtros;
+    private javax.swing.JTextField txtTotalVentasOtros1;
     // End of variables declaration//GEN-END:variables
 }

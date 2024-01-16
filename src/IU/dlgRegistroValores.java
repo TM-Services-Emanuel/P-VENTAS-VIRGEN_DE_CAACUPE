@@ -1096,6 +1096,8 @@ public static void imprimirTicket() {
         Ticket += "RESUMEN GASTOS:          " + txtGastos.getText() + "\n";
         Ticket += "RESUMEN RETIROS:         " + txtRetiros.getText() + "\n";
         Ticket += "CIERRE:                  " + txtCierres.getText() + "\n";
+        int resumen = Integer.parseInt(txtRetiros.getText().replace(".", "").replace(",", ""))+Integer.parseInt(txtCierres.getText().replace(".", "").replace(",", ""));
+        Ticket += "RETIROS+CIERRE:          " + formateador.format(resumen) + "\n";
         Ticket += "===============================================\n";
         Ticket += "CAJA NRO: " + txtCaja.getText().trim() + "\n";
         Ticket += "FECHA DE LA CAJA: " + txtFechaCaja.getText() + "\n";
