@@ -4,30 +4,32 @@ import Componentes.Fecha;
 import Componentes.Login;
 import Componentes.Mensajes;
 import Componentes.Software;
+import Componentes.generarCodigos;
 import Componentes.validarCampos;
 import Controladores.ControlCaja;
 import java.text.DecimalFormat;
 import javax.swing.JOptionPane;
 
 public class dlgCaja extends javax.swing.JDialog {
-static String UsuarioL="";
-    
+
+    static String UsuarioL = "";
+
     public dlgCaja(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         titulo();
-        UsuarioL=Login.getUsuarioLogueado();
+        UsuarioL = Login.getUsuarioLogueado();
         lbUsuario.setText(UsuarioL);
         lbFecha.setText(Fecha.formatoFechaFF(Fecha.fechaCorrecta()));
         lbHora.setText(Fecha.FormatoHoraSinSSString(Fecha.darHora()));
         btnIniciar.setVisible(false);
     }
-    
-    final void titulo(){
-        if(Software.getSoftware().equals("null")){
+
+    final void titulo() {
+        if (Software.getSoftware().equals("null")) {
             this.setTitle("Cargar valor inicial de la caja");
-        }else{
-            this.setTitle(Software.getSoftware()+" - Cargar valor inicial de la caja");
+        } else {
+            this.setTitle(Software.getSoftware() + " - Cargar valor inicial de la caja");
         }
     }
 
@@ -213,11 +215,17 @@ static String UsuarioL="";
 
     private void btnIniciarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIniciarActionPerformed
         // TODO add your handling code here:
-        int resp = JOptionPane.showConfirmDialog(this, "¿El monto con que se iniciara es el correcto?", "Iniciar Caja", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-        if (resp == JOptionPane.YES_OPTION) {
-            ControlCaja.addCaja();
-            this.dispose();
+        String fe = generarCodigos.getFecha("SELECT ca_fechainicio FROM caja WHERE ca_indicador='S' ORDER BY ca_id DESC LIMIT 1");
+        if (!fe.equals(Fecha.fechaCorrecta())) {
+            int resp = JOptionPane.showConfirmDialog(this, "¿El monto con que se iniciara es el correcto?", "Iniciar Caja", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (resp == JOptionPane.YES_OPTION) {
+                ControlCaja.addCaja();
+                this.dispose();
+            }
+        } else {
+            Mensajes.informacion("La caja ya fue inicializada.\n\nPuede comenzar a registrar compras o realizar ventas\nsin ningún inconveniente.");
         }
+
 
     }//GEN-LAST:event_btnIniciarActionPerformed
 
@@ -246,15 +254,15 @@ static String UsuarioL="";
                 txtCaInicial.setText("0");
                 txtCaInicial.selectAll();
             } else {
-                    btnIniciar.setEnabled(true);
-                    btnIniciar.doClick();
+                btnIniciar.setEnabled(true);
+                btnIniciar.doClick();
 
             }
         } catch (NumberFormatException e) {
             txtCaInicial.setText("0");
             txtCaInicial.selectAll();
         }
-        
+
     }//GEN-LAST:event_txtCaInicialActionPerformed
 
     private void txtCaInicialKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCaInicialKeyPressed
@@ -287,8 +295,8 @@ static String UsuarioL="";
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(dlgCaja.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-    //</editor-fold>
-    
+        //</editor-fold>
+
         //</editor-fold>
 
         /* Create and display the dialog */

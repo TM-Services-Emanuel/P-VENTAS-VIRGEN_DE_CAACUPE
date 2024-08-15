@@ -760,12 +760,18 @@ public class controlCompra {
             fila[3] = Fecha.FormatoHoraSinSSString(fila[3].toString());
             fila[4].toString();
             fila[5].toString();
-            if (fila[6].toString().equals("PE")) {
-                fila[6] = "PAGO PENDIENTE";
-            } else if (fila[6].toString().equals("PA")) {
-                fila[6] = "PAGO PARCIAL";
-            } else if (fila[6].toString().equals("AB")) {
-                fila[6] = "PAGO ABONADO";
+            switch (fila[6].toString()) {
+                case "PE":
+                    fila[6] = "PAGO PENDIENTE";
+                    break;
+                case "PA":
+                    fila[6] = "PAGO PARCIAL";
+                    break;
+                case "AB":
+                    fila[6] = "PAGO ABONADO";
+                    break;
+                default:
+                    break;
             }
             fila[6].toString();
             fila[7].toString();

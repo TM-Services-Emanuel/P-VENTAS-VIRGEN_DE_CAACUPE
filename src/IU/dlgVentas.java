@@ -225,13 +225,13 @@ public final class dlgVentas extends javax.swing.JDialog {
         CabecerasTablas.ventas(tbDetalle);
         controlFactura.canCelar();
         txtAbonoF.setText("0");
-        txtAbonoT.setText("0");
         txtVueltoF.setText("0");
-        txtVueltoT.setText("0");
-        lbEmpleadoT.setText("");
         lbEmpleadoF.setText("");
-        txtBoletaTicket.setText("");
-        txtBoletaFactura.setText("");
+        txtEfectivoLegal.setText("0");
+        txtTransferenciaLegal.setText("0");
+        txtBoletaQRFactura.setText("0");
+        txtQRLegal.setText("0");
+        txtBoletaQRFactura.setText("0");
     }
 
     public static void habilitarCANTCOSTO() {
@@ -242,53 +242,17 @@ public final class dlgVentas extends javax.swing.JDialog {
         }
     }
 
-    // ticketera mtu matricial
-    /*private static void obtenerTIMBRA() {
-        if(Timbrado.getValidado().equals("SI")){
-            Timbrado = rs.getString("timbra");
-                    Desde = rs.getString("fechadesde");
-                    Hasta = rs.getString("fechahasta");
-        }else{
-            
-        }
-        String sql = "SELECT * FROM v_puntoemision3 WHERE ip='" + traerIP.getIP() + "' AND tipo='L' AND estado='Activo'";
-        try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
-            if (rs.getRow() == 0) {
-                Mensajes.error("FACTURA LEGAL NO HABILITADO:\nNo se encuentra un timbrado ni punto de expedición para registras facturas legales.");
-                btnFacturaLegal.setEnabled(false);
-                itemFactura_Legal.setEnabled(false);
-            } else {
-                rs.last();
-                do {
-                    Timbrado = rs.getString("timbra");
-                    Desde = rs.getString("fechadesde");
-                    Hasta = rs.getString("fechahasta");
-                } while (rs.next());
-                SimpleDateFormat fe = new SimpleDateFormat("dd/MM/yyyy");
-                rs.close();
-                try {
-                    Date FechaA = fe.parse(Fecha.fechaFormulario());
-                    Date FechaT = fe.parse(Hasta);
-                    if (FechaA.compareTo(FechaT) > 0) {
-                        Mensajes.Alerta("FACTURA LEGAL NO HABILITADO:\nEl Timbrado actual ha expirado.\nPara retomar las facturaciones legales sera necesario configurar un nuevo Timbrado.");
-                        btnFacturaLegal.setEnabled(false);
-                        itemFactura_Legal.setEnabled(false);
-                    }
-                } catch (ParseException es) {
-                }
-                st.close();
-                cn.close();
-            }
+    private static void SumarMontos() {
+        DecimalFormat df = new DecimalFormat("#,###");
+        int efectivo = Integer.parseInt(txtEfectivoLegal.getText().replace(".", "").replace(",", ""));
+        int bancario = Integer.parseInt(txtTransferenciaLegal.getText().replace(".", "").replace(",", ""));
+        int qr = Integer.parseInt(txtQRLegal.getText().replace(".", "").replace(",", ""));
+        int total = efectivo + bancario + qr;
+        txtAbonoF.setText(df.format(total));
+        int calculos = controlFactura.calCulosF();
+        txtVueltoF.setText(df.format(Integer.parseInt(String.valueOf(calculos).trim().replace(".", "").replace(",", ""))));
+    }
 
-        } catch (SQLException ex) {
-            Mensajes.error("FACTURA LEGAL NO HABILITADO:\nNo se encuentra un timbrado ni punto de expedición para registras facturas legales.");
-            btnFacturaLegal.setEnabled(false);
-            itemFactura_Legal.setEnabled(false);
-            //btnNuevo.setEnabled(false);
-            //itemNuevo.setEnabled(false);
-
-        }
-    }*/
     private static void obtenerNFactura() {
         int facturaactual1;
         String sql = "SELECT * FROM v_puntoemision4 WHERE ip='" + traerIP.getIP() + "' AND tipo='L' AND tipo2='F' AND estado='Activo'";
@@ -322,27 +286,17 @@ public final class dlgVentas extends javax.swing.JDialog {
                         default -> {
                         }
                     }
-
-                    try (Connection cn2 = dss.getDataSource().getConnection(); Statement st2 = cn2.createStatement(); ResultSet rs2 = st2.executeQuery("SELECT * FROM forma_pago WHERE estado='S'")) {
-                        DefaultComboBoxModel modeloCombo = new DefaultComboBoxModel();
-                        while (rs2.next()) {
-                            modeloCombo.addElement(rs2.getString(2));
-                        }
-                        cbFPFactura.setModel(modeloCombo);
-                        rs2.close();
-                        st2.close();
-                        cn2.close();
-                    } catch (Exception e) {
-                        System.out.println("Error levantando formas de pagos: " + e.getMessage());
-                    }
                     OpcionesEmision.dispose();
-                    dlgFinFacturaL.setSize(374, 395);
+                    //dlgFinTicket.setSize(374, 395);
+                    dlgFinFacturaL.setSize(555, 430);
                     dlgFinFacturaL.setLocationRelativeTo(null);
                     dlgFinFacturaL.setModal(true);
                     dlgFinFacturaL.setTitle("CONFIRMAR VENTA");
                     txtCodVendedorF.setText("");
-                    lbBF.setVisible(false);
-                    txtBoletaFactura.setVisible(false);
+                    txtTipo.setText("F");
+                    lbTitulo.setText("FACTURA N°");
+                    //lbBT.setVisible(false);
+                    //txtBoletaTicket.setVisible(false);
                     dlgFinFacturaL.setVisible(true);
                     txtCodVendedorF.requestFocus();
                 } else {
@@ -401,31 +355,26 @@ public final class dlgVentas extends javax.swing.JDialog {
             String NFactura = txtEstablecimiento1.getText().trim() + "-" + txtEmision1.getText().trim() + "-" + txtFacturaN1.getText().trim();
             String cond = lbCond.getText();
             String est;
+            String Tipo = txtTipo.getText();
+            String Efectivo = (txtEfectivoLegal.getText().replace(".", "").replace(",", ""));
+            String Transferencia = (txtTransferenciaLegal.getText().replace(".", "").replace(",", ""));
+            String BoletaTransferencia = (txtBoletaTFactura.getText().replace(".", "").replace(",", ""));
+            String QR = (txtQRLegal.getText().replace(".", "").replace(",", ""));
+            String BoletaQR = (txtBoletaQRFactura.getText().replace(".", "").replace(",", ""));
             if (cond.equals("CONTADO")) {
                 est = "ABONADO";
             } else {
                 est = "PENDIENTE";
             }
-            
-            int f_pago = 0;
-            try (ResultSet rscb = stt.executeQuery("SELECT idf_pago FROM forma_pago WHERE descripcion_pago='" + cbFPFactura.getSelectedItem().toString() + "' AND estado='S'")) {
-                if (rscb != null) {
-                    rscb.first();
-                    f_pago = rscb.getInt(1);
-                    System.out.println("ID Forma de pago: " + f_pago);
-                }
-            } catch (Exception e) {
-                System.out.println("Error obteniendo forma de pago: " + e.getMessage());
-            }
-
             int resp = JOptionPane.showConfirmDialog(dlgFinFacturaL, "¿Seguro que deseas registrar esta Venta al sistema?", "CONFIRMACIÓN DE VENTA", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
             if (resp == JOptionPane.YES_OPTION) {
                 try {
                     con.setAutoCommit(false);
                     conm.setAutoCommit(false);
-                    String sql = "insert into factura values(" + txtCodF.getText().trim() + "," + txtCodVendedorF.getText().trim() + "," + txtCodCliente.getText().trim() + "," + txtCaja.getText().trim() + "," + txtidEmision.getText().trim() + ", 'F','" + NFactura + "','" + lbCond.getText() + "','"
+                    String sql = "insert into factura values(" + txtCodF.getText().trim() + "," + txtCodVendedorF.getText().trim() + "," + txtCodCliente.getText().trim() + "," + txtCaja.getText().trim() + "," + txtidEmision.getText().trim() + ", '" + txtTipo.getText() + "','" + NFactura + "','" + lbCond.getText() + "','"
                             + txtFecha.getText() + "','" + txtHora.getText() + "'," + txtTotalCosto.getText() + "," + txtTotalL.getText() + "," + txtExentaL.getText() + "," + txt5L.getText() + "," + txt10L.getText() + ",'S','" + Login.getUsuarioLogueado() + "','" + est + "'," + txtIdBoca.getText()
-                            + "," + f_pago + "," + txtBoletaFactura.getText() + "," + txtAbonoF.getText().replace(".", "").replace(",", "") + "," + txtVueltoF.getText().replace(".", "").replace(",", "") + ")";
+                            + "," + Efectivo + "," + Transferencia + "," + BoletaTransferencia + "," + QR + "," + BoletaQR
+                            + "," + txtVueltoF.getText().replace(".", "").replace(",", "") + ")";
                     String sql4 = "UPDATE puntoemision set facturaactual=" + Integer.valueOf(txtFacturaN1.getText().trim()) + " WHERE idemision=" + txtidEmision.getText().trim();
                     String sql5 = "UPDATE ref set nventa=" + Integer.valueOf(txtFacturaN1.getText().trim()) + " WHERE idemision=" + txtidEmision.getText().trim();
                     stt.executeUpdate(sql);
@@ -502,7 +451,8 @@ public final class dlgVentas extends javax.swing.JDialog {
 
     public static void obtenerNTicket() {
         String cod = GestionarFactura.getCodigo();
-        txtCodT.setText(cod);
+        //txtCodT.setText(cod);
+        txtCodF.setText(cod);
         String sql = "SELECT * FROM v_puntoemision4 WHERE ip='" + traerIP.getIP() + "' AND tipo='L' AND tipo2='T' AND estado='Activo'";
         try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
             if (rs != null) {
@@ -510,38 +460,27 @@ public final class dlgVentas extends javax.swing.JDialog {
                 do {
                     txtidEmision.setText(String.valueOf(Tickets.getIdEmision()));
                     txtIdBoca.setText(String.valueOf(Timbrado.getIdBoca()));
-                    txtEPE.setText(Tickets.getEstablecimiento() + "-" + Tickets.getPuntoExpedicion());
+                    //txtEPE.setText(Tickets.getEstablecimiento() + "-" + Tickets.getPuntoExpedicion());
+                    txtEstablecimiento1.setText(Tickets.getEstablecimiento());
+                    txtEmision1.setText(Tickets.getPuntoExpedicion());
                     int numero = (rs.getInt("facturaactual") + 1);
-                    txtTicketN.setText(String.valueOf(numero));
+                    //txtTicketN.setText(String.valueOf(numero));
+                    txtFacturaN1.setText(String.valueOf(numero));
                 } while (rs.next());
                 rs.close();
                 st.close();
                 cn.close();
             }
-
-            try (Connection cn2 = dss.getDataSource().getConnection(); Statement st2 = cn2.createStatement(); ResultSet rs2 = st2.executeQuery("SELECT * FROM forma_pago WHERE estado='S'")) {
-                DefaultComboBoxModel modeloCombo = new DefaultComboBoxModel();
-                while (rs2.next()) {
-                    modeloCombo.addElement(rs2.getString(2));
-                }
-                cbFPTicket.setModel(modeloCombo);
-                rs2.close();
-                st2.close();
-                cn2.close();
-            } catch (Exception e) {
-                System.out.println("Error levantando formas de pagos: " + e.getMessage());
-            }
-
             OpcionesEmision.dispose();
-            dlgFinTicket.setSize(374, 395);
-            dlgFinTicket.setLocationRelativeTo(null);
-            dlgFinTicket.setModal(true);
-            dlgFinTicket.setTitle("CONFIRMAR VENTA");
-            txtCodVendedorT.setText("");
-            lbBT.setVisible(false);
-            txtBoletaTicket.setVisible(false);
-            dlgFinTicket.setVisible(true);
-            txtCodVendedorT.requestFocus();
+            dlgFinFacturaL.setSize(555, 430);
+            dlgFinFacturaL.setLocationRelativeTo(null);
+            dlgFinFacturaL.setModal(true);
+            dlgFinFacturaL.setTitle("CONFIRMAR VENTA");
+            txtCodVendedorF.setText("");
+            txtTipo.setText("T");
+            lbTitulo.setText("TICKET N°");
+            dlgFinFacturaL.setVisible(true);
+            txtCodVendedorF.requestFocus();
 
         } catch (SQLException ex) {
             Mensajes.Sistema("OBSERVACIÓN:\nEn estos momentos es imposible emitir Ticket de venta.\nEl Sistema no logra identificar un PUNTO DE EMISIÓN habilitado para esta terminal de venta.Para mayor información comuniquese con el proveedor del Sistema.\n\nOrigen: " + ex.getMessage());
@@ -550,47 +489,49 @@ public final class dlgVentas extends javax.swing.JDialog {
 
     public static void ComprobarNTicket() {
         String cod = GestionarFactura.getCodigo();
-        txtCodT.setText(cod);
+        txtCodF.setText(cod);
         String sqlcnt = "SELECT * FROM v_puntoemision4 WHERE idemision=" + txtidEmision.getText().trim();
         try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sqlcnt); Connection con = dss.getDataSource().getConnection(); Connection conm = dss1.getDataSource().getConnection(); Statement stt = con.createStatement(); Statement sttm = conm.createStatement()) {
             rs.last();
             do {
                 int numero = rs.getInt("facturaactual") + 1;
-                txtEPE.setText(Tickets.getEstablecimiento() + "-" + Tickets.getPuntoExpedicion());
-                txtTicketN.setText(String.valueOf(numero));
+                //txtEPE.setText(Tickets.getEstablecimiento() + "-" + Tickets.getPuntoExpedicion());
+                //txtTicketN.setText(String.valueOf(numero));
+
+                txtEstablecimiento1.setText(Tickets.getEstablecimiento());
+                txtEmision1.setText(Tickets.getPuntoExpedicion());
+                txtFacturaN1.setText(String.valueOf(numero));
 
             } while (rs.next());
             st.close();
             st.close();
             cn.close();
-            String NFactura = txtEPE.getText().trim() + "-" + txtTicketN.getText().trim();
+            String NFactura = txtEstablecimiento1.getText().trim() + "-" + txtEmision1.getText().trim() + "-" + txtFacturaN1.getText().trim();
             String cond = lbCond.getText();
             String est;
+            String Tipo = txtTipo.getText();
+            String Efectivo = (txtEfectivoLegal.getText().replace(".", "").replace(",", ""));
+            String Transferencia = (txtTransferenciaLegal.getText().replace(".", "").replace(",", ""));
+            String BoletaTransferencia = (txtBoletaTFactura.getText().replace(".", "").replace(",", ""));
+            String QR = (txtQRLegal.getText().replace(".", "").replace(",", ""));
+            String BoletaQR = (txtBoletaQRFactura.getText().replace(".", "").replace(",", ""));
+
             if (cond.equals("CONTADO")) {
                 est = "ABONADO";
             } else {
                 est = "PENDIENTE";
             }
-            int f_pago = 0;
-            try (ResultSet rscb = stt.executeQuery("SELECT idf_pago FROM forma_pago WHERE descripcion_pago='" + cbFPTicket.getSelectedItem().toString() + "' AND estado='S'")) {
-                if (rscb != null) {
-                    rscb.first();
-                    f_pago = rscb.getInt(1);
-                    System.out.println("ID Forma de pago: " + f_pago);
-                }
-            } catch (Exception e) {
-                System.out.println("Error obteniendo forma de pago: " + e.getMessage());
-            }
-            int resp = JOptionPane.showConfirmDialog(dlgFinTicket, "¿Seguro que deseas registrar esta Venta al sistema?", "CONFIRMACIÓN DE VENTA", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            int resp = JOptionPane.showConfirmDialog(dlgFinFacturaL, "¿Seguro que deseas registrar esta Venta al sistema?", "CONFIRMACIÓN DE VENTA", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
             if (resp == JOptionPane.YES_OPTION) {
                 try {
                     con.setAutoCommit(false);
                     conm.setAutoCommit(false);
-                    String sql = "insert into factura values(" + txtCodT.getText().trim() + "," + txtCodVendedorT.getText().trim() + "," + txtCodCliente.getText().trim() + "," + txtCaja.getText().trim() + "," + txtidEmision.getText().trim() + ", 'T','" + NFactura + "','" + lbCond.getText() + "','"
-                            + txtFecha.getText() + "','" + txtHora.getText() + "'," + txtTotalCosto.getText() + "," + txtTotalL.getText() + "," + txtExentaL.getText() + "," + txt5L.getText() + "," + txt10L.getText() + ",'S','" + Login.getUsuarioLogueado() + "','" + est + "'," + txtIdBoca.getText()
-                            + "," + f_pago + "," + txtBoletaTicket.getText() + "," + txtAbonoT.getText().replace(".", "").replace(",", "") + "," + txtVueltoT.getText().replace(".", "").replace(",", "") + ")";
-                    String sql4 = "UPDATE puntoemision set facturaactual=" + Integer.valueOf(txtTicketN.getText().trim()) + " WHERE idemision=" + txtidEmision.getText().trim();
-                    String sql5 = "UPDATE ref set nventa=" + Integer.valueOf(txtTicketN.getText().trim()) + " WHERE idemision=" + txtidEmision.getText().trim();
+                    String sql = "insert into factura values(" + txtCodF.getText().trim() + "," + txtCodVendedorF.getText().trim() + "," + txtCodCliente.getText().trim() + "," + txtCaja.getText().trim() + "," + txtidEmision.getText().trim() + ", '" + Tipo + "','" + NFactura + "','" + lbCond.getText() + "','"
+                            + txtFecha.getText() + "','" + txtHora.getText() + "'," + txtTotalCosto.getText() + "," + txtTotalL.getText() + "," + txtExentaL.getText() + "," + txt5L.getText() + "," + txt10L.getText() + ",'S','" + Login.getUsuarioLogueado() + "','" + est + "'," + txtIdBoca.getText() + "," 
+                            + Efectivo + "," + Transferencia + "," + BoletaTransferencia + "," + QR + "," + BoletaQR
+                            + "," + txtVueltoF.getText().replace(".", "").replace(",", "") + ")";
+                    String sql4 = "UPDATE puntoemision set facturaactual=" + Integer.valueOf(txtFacturaN1.getText().trim()) + " WHERE idemision=" + txtidEmision.getText().trim();
+                    String sql5 = "UPDATE ref set nventa=" + Integer.valueOf(txtFacturaN1.getText().trim()) + " WHERE idemision=" + txtidEmision.getText().trim();
                     stt.executeUpdate(sql);
                     sttm.executeUpdate(sql4);
                     sttm.executeUpdate(sql5);
@@ -609,7 +550,7 @@ public final class dlgVentas extends javax.swing.JDialog {
                             tbDetalle.getValueAt(j, 10).toString(),//total  (6)9
                             tbDetalle.getValueAt(j, 13).toString() // promo (7)10
                         };
-                        sql = "insert into detalle_factura values(" + txtCodT.getText() + ", " + filas[0] + ", '" + filas[1] + "', " + filas[2] + ", " + filas[3] + ", " + filas[4] + ", " + filas[5] + ", " + filas[6] + ", " + filas[7] + ", " + filas[8] + ", " + filas[9] + ",'" + filas[10] + "')";
+                        sql = "insert into detalle_factura values(" + txtCodF.getText() + ", " + filas[0] + ", '" + filas[1] + "', " + filas[2] + ", " + filas[3] + ", " + filas[4] + ", " + filas[5] + ", " + filas[6] + ", " + filas[7] + ", " + filas[8] + ", " + filas[9] + ",'" + filas[10] + "')";
                         String sql2 = null;
                         if (filas[1].equals("S")) {
                             sql2 = "UPDATE productos SET stock=(stock-" + filas[4] + "), users='" + Login.getUsuarioLogueado() + "' WHERE  idproducto=" + filas[2];
@@ -629,13 +570,13 @@ public final class dlgVentas extends javax.swing.JDialog {
                     if (rpta == 0) {
                         imprimirTicket();
                     }
-                    dlgFinTicket.dispose();
+                    dlgFinFacturaL.dispose();
                     CabecerasTablas.limpiarTablasVentas(tbDetalle);
                     CabecerasTablas.ventas(tbDetalle);
                     controlFactura.canCelar();
                     Cancelar();
-                    txtAbonoT.setText("0");
-                    txtVueltoT.setText("0");
+                    txtAbonoF.setText("0");
+                    txtVueltoF.setText("0");
                     cant();
                     con.close();
                     conm.close();
@@ -644,10 +585,11 @@ public final class dlgVentas extends javax.swing.JDialog {
                     conm.rollback();
                     Notif.NotifyError("Notificación del sistema", "TRANSACCIÓN FALLIDA: La venta no fue registrada en el sistema.\r\nError:ADD_VT: " + e.getMessage());
                     //Mensajes.error("TRANSACCIÓN FALLIDA: La venta no fue registrada en el sistema.\nError:ADD_V: " + e.getMessage().toUpperCase());
+                    System.out.println(e.getMessage());
                     controlFactura.canCelar();
                     con.close();
                     conm.close();
-                    dlgFinTicket.dispose();
+                    dlgFinFacturaL.dispose();
                 }
             }
         } catch (SQLException ex) {
@@ -667,23 +609,23 @@ public final class dlgVentas extends javax.swing.JDialog {
         int filas = tbDetalle.getRowCount();
         DecimalFormat formateador = new DecimalFormat("#,###");
         String tot = formateador.format(Integer.parseInt(txtTotalL.getText().replace(".", "").replace(",", "")));
-        String Ticket = "         " + Empresa.getEmpresa() + "\n";
-        Ticket += "           VENTAS DE LACTEOS LACTOLANDA\n";
-        Ticket += "                 RUC: " + Empresa.getRUC() + "\n";
-        Ticket += "               CEL: " + Empresa.getCelular() + "\n";
-        Ticket += Empresa.getDireccion() + "\n";
-        Ticket += "     CNEL. OVIEDO - DPTO. DE CAAGUAZU - PY\n";
-        Ticket += "-----------------------------------------------\n";
-        Ticket += "TICKET " + lbCond.getText().trim() + " NRO: " + txtEPE.getText().trim() + "-" + txtTicketN.getText().trim() + "\n";
-        Ticket += "FECHA/HORA: " + txtfechaF.getText().trim() + " " + txtHora.getText().trim() + "\n";
-        Ticket += "VENDEDOR: " + lbEmpleadoT.getText().trim() + "\n";
-        Ticket += "\n";
-        Ticket += "CLIENTE: " + txtRazonS.getText().trim() + "\n";
-        Ticket += "RUC/CI: " + txtRuc.getText().trim() + "\n";
-        Ticket += "-----------------------------------------------\n";
+        String Ticket = "         " + Empresa.getEmpresa() + "\r\n";
+        Ticket += "           VENTAS DE LACTEOS LACTOLANDA\r\n";
+        Ticket += "                 RUC: " + Empresa.getRUC() + "\r\n";
+        Ticket += "               CEL: " + Empresa.getCelular() + "\r\n";
+        Ticket += Empresa.getDireccion() + "\r\n";
+        Ticket += "     CNEL. OVIEDO - DPTO. DE CAAGUAZU - PY\r\n";
+        Ticket += "-----------------------------------------------\r\n";
+        Ticket += "TICKET " + lbCond.getText().trim() + " NRO: " + txtEstablecimiento1.getText().trim() + "-" + txtEmision1.getText().trim() + "-" + txtFacturaN1.getText().trim() + "\r\n";
+        Ticket += "FECHA/HORA: " + txtfechaF.getText().trim() + " " + txtHora.getText().trim() + "\r\n";
+        Ticket += "VENDEDOR: " + lbEmpleadoF.getText().trim() + "\r\n";
+        Ticket += "\r\n";
+        Ticket += "CLIENTE: " + txtRazonS.getText().trim() + "\r\n";
+        Ticket += "RUC/CI: " + txtRuc.getText().trim() + "\r\n";
+        Ticket += "-----------------------------------------------\r\n";
         Ticket += String.format("%1$1s %2$10s %3$1s %4$12s %5$16s", "IVA", "CANT", "", "PRECIO", "   SUBTOTAL");
-        Ticket += "\n";
-        Ticket += "-----------------------------------------------\n";
+        Ticket += "\r\n";
+        Ticket += "-----------------------------------------------\r\n";
         for (int i = 0; i < filas; i++) {
             String codB = tbDetalle.getValueAt(i, 3).toString().trim() + " " + tbDetalle.getValueAt(i, 13).toString().trim();
             String Descripcion = tbDetalle.getValueAt(i, 4).toString().trim();
@@ -704,25 +646,29 @@ public final class dlgVentas extends javax.swing.JDialog {
             }
 
             //Ticket += String.format("%1$1s", codB + "-" + Descripcion + "\n");
-            Ticket += String.format("%1$1s", codB + "\n");
-            Ticket += String.format("%1$1s", Descripcion + "\n");
+            Ticket += String.format("%1$1s", codB + "\r\n");
+            Ticket += String.format("%1$1s", Descripcion + "\r\n");
             Ticket += String.format("%1$-9s %2$-12s %3$-14s %4$-10s", iva, cant, formateador.format(Integer.parseInt(Punit.replace(".", "").replace(",", ""))), formateador.format(Integer.parseInt(Mont.replace(".", "").replace(",", ""))));
         }
-        Ticket += "\n";
-        Ticket += "===============================================\n";
-        Ticket += String.format("%1$5s %2$20s", "TOTAL A PAGAR Gs:", tot) + "\n";
-        Ticket += "===============================================\n";
-        Ticket += "\n";
-        Ticket += "METODO DE PAGO: "+cbFPTicket.getSelectedItem().toString()+"\n";
-        Ticket += "ABONADO: " + txtAbonoT.getText().trim() + "\n";
-        Ticket += "VUELTO:  " + txtVueltoT.getText().trim() + "\n";
-        Ticket += "\n";
-        Ticket += "         " + Empresa.getEmpresa() + "\n";
-        Ticket += "             AGRADECE SU PREFERENCIA\n";
-        Ticket += "\n";
-        Ticket += "\n";
-        Ticket += "\n";
-        Ticket += "\n";
+        Ticket += "\r\n";
+        Ticket += "===============================================\r\n";
+        Ticket += String.format("%1$5s %2$20s", "TOTAL A PAGAR Gs:", tot) + "\r\n";
+        Ticket += "===============================================\r\n";
+        Ticket += "\r\n";
+        Ticket += "DETALLE DE PAGO\r\n";
+        Ticket += "EFECTIVO:         " + txtEfectivoLegal.getText() + "\r\n";
+        Ticket += "TRANSF. BANCARIA: " + txtTransferenciaLegal.getText() + "\r\n";
+        Ticket += "QR:               " + txtQRLegal.getText() + "\r\n";
+        Ticket += "\r\n";
+        Ticket += "TOTAL ABONADO:    " + txtAbonoF.getText().trim() + "\r\n";
+        Ticket += "VUELTO:           " + txtVueltoF.getText().trim() + "\r\n";
+        Ticket += "\r\n";
+        Ticket += "         " + Empresa.getEmpresa() + "\r\n";
+        Ticket += "             AGRADECE SU PREFERENCIA\r\n";
+        Ticket += "\r\n";
+        Ticket += "\r\n";
+        Ticket += "\r\n";
+        Ticket += "\r\n";
 
         //printerService.printString(Ticket);
         //print some stuff
@@ -752,41 +698,28 @@ public final class dlgVentas extends javax.swing.JDialog {
         int filas = tbDetalle.getRowCount();
         DecimalFormat formateador = new DecimalFormat("#,###");
         String tot = formateador.format(Integer.parseInt(txtTotalL.getText().replace(".", "").replace(",", "")));
-        /*String sql = "SELECT * FROM empresa WHERE estado='S'";
-        try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet res = st.executeQuery(sql)) {
-            res.last();
-            empresa = res.getString("razon_social");
-            ruc = res.getString("ruc");
-            celular = res.getString("telefono") + "-" + rs.getString("em_celular");
-            direccion = res.getString("direccion");
-            res.close();
-            st.close();
-            cn.close();
-        } catch (SQLException ex) {
-            Mensajes.error("Error obteniendo datos de la empresa para la impresion de factura.");
-        }*/
-        String Ticket = "         " + Empresa.getEmpresa() + "\n";
-        Ticket += "           VENTAS DE LACTEOS LACTOLANDA\n";
-        Ticket += "                 RUC: " + Empresa.getRUC() + "\n";
-        Ticket += "               CEL: " + Empresa.getCelular() + "\n";
-        Ticket += Empresa.getDireccion() + "\n";
-        Ticket += "     CNEL. OVIEDO - DPTO. DE CAAGUAZU - PY\n";
-        Ticket += "-----------------------------------------------\n";
-        Ticket += "              TIMBRADO: " + Timbrado.getTimbrado() + "\n";
-        Ticket += "  VALIDO DESDE: " + Timbrado.getDesde() + " HASTA: " + Timbrado.getHasta() + "\n";
-        Ticket += "               I.V.A. INCLUIDO\n";
-        Ticket += "----------------------------------------------\n";
+        String Ticket = "         " + Empresa.getEmpresa() + "\r\n";
+        Ticket += "           VENTAS DE LACTEOS LACTOLANDA\r\n";
+        Ticket += "                 RUC: " + Empresa.getRUC() + "\r\n";
+        Ticket += "               CEL: " + Empresa.getCelular() + "\r\n";
+        Ticket += Empresa.getDireccion() + "\r\n";
+        Ticket += "     CNEL. OVIEDO - DPTO. DE CAAGUAZU - PY\r\n";
+        Ticket += "-----------------------------------------------\r\n";
+        Ticket += "              TIMBRADO: " + Timbrado.getTimbrado() + "\r\n";
+        Ticket += "  VALIDO DESDE: " + Timbrado.getDesde() + " HASTA: " + Timbrado.getHasta() + "\r\n";
+        Ticket += "               I.V.A. INCLUIDO\r\n";
+        Ticket += "----------------------------------------------\r\n";
         Ticket += "FACTURA " + lbCond.getText().trim() + " NRO: " + txtEstablecimiento1.getText().trim()
-                + "-" + txtEmision1.getText().trim() + "-" + txtFacturaN1.getText().trim() + "\n";
-        Ticket += "FECHA/HORA: " + txtfechaF.getText().trim() + " " + txtHora.getText().trim() + "\n";
-        Ticket += "VENDEDOR: " + lbEmpleadoF.getText().trim() + "\n";
-        Ticket += "\n";
-        Ticket += "CLIENTE: " + txtRazonS.getText().trim() + "\n";
-        Ticket += "RUC/CI: " + txtRuc.getText().trim() + "\n";
-        Ticket += "----------------------------------------------\n";
+                + "-" + txtEmision1.getText().trim() + "-" + txtFacturaN1.getText().trim() + "\r\n";
+        Ticket += "FECHA/HORA: " + txtfechaF.getText().trim() + " " + txtHora.getText().trim() + "\r\n";
+        Ticket += "VENDEDOR: " + lbEmpleadoF.getText().trim() + "\r\n";
+        Ticket += "\r\n";
+        Ticket += "CLIENTE: " + txtRazonS.getText().trim() + "\r\n";
+        Ticket += "RUC/CI: " + txtRuc.getText().trim() + "\r\n";
+        Ticket += "----------------------------------------------\r\n";
         Ticket += String.format("%1$1s %2$10s %3$1s %4$12s %5$16s", "IVA", "CANT", "", "PRECIO", "   SUBTOTAL");
-        Ticket += "\n";
-        Ticket += "----------------------------------------------\n";
+        Ticket += "\r\n";
+        Ticket += "----------------------------------------------\r\n";
         for (int i = 0; i < filas; i++) {
             String codB = tbDetalle.getValueAt(i, 3).toString().trim() + " " + tbDetalle.getValueAt(i, 13).toString().trim();
             String Descripcion = tbDetalle.getValueAt(i, 4).toString().trim();
@@ -807,45 +740,49 @@ public final class dlgVentas extends javax.swing.JDialog {
             }
 
             //Ticket += String.format("%1$1s", codB + "-" + Descripcion + "\n");
-            Ticket += String.format("%1$1s", codB + "\n");
-            Ticket += String.format("%1$1s", Descripcion + "\n");
+            Ticket += String.format("%1$1s", codB + "\r\n");
+            Ticket += String.format("%1$1s", Descripcion + "\r\n");
             Ticket += String.format("%1$-9s %2$-12s %3$-14s %4$-10s", iva, cant, formateador.format(Integer.parseInt(Punit.replace(".", "").replace(",", ""))), formateador.format(Integer.parseInt(Mont.replace(".", "").replace(",", ""))));
         }
-        Ticket += "\n";
-        Ticket += "==============================================\n";
-        Ticket += String.format("%1$5s %2$20s", "TOTAL A PAGAR Gs:", tot) + "\n";
+        Ticket += "\r\n";
+        Ticket += "==============================================\r\n";
+        Ticket += String.format("%1$5s %2$20s", "TOTAL A PAGAR Gs:", tot) + "\r\n";
         //Ticket += "           TOTAL Gs.:"+tot+"\n";
-        Ticket += "==============================================\n";
+        Ticket += "==============================================\r\n";
         String letras = d.Convertir(tot.replace(".", "").replace(",", ""), true);
-        Ticket += String.format("%1$1s", letras + "\n");
+        Ticket += String.format("%1$1s", letras + "\r\n");
         //Ticket += "\n";
-        Ticket += "==============================================\n";
-        Ticket += "\n";
-        Ticket += "-------------- TOTALES GRAVADA ---------------\n";
+        Ticket += "==============================================\r\n";
+        Ticket += "\r\n";
+        Ticket += "-------------- TOTALES GRAVADA ---------------\r\n";
         Ticket += "EXENTAS     ------>              " + txtExenta.getText().trim() + "\n";
         Ticket += "GRAVADA 5%  ------>              " + txt5libre.getText().trim() + "\n";
         Ticket += "GRAVADA 10% ------>              " + txt10Libre.getText().trim() + "\n";
-        Ticket += "----------- LIQUIDACION DEL I.V.A. -----------\n";
+        Ticket += "----------- LIQUIDACION DEL I.V.A. -----------\r\n";
         Ticket += "I.V.A. 5%   ------>              " + txt5.getText() + "\n";
         Ticket += "I.V.A. 10%  ------>              " + txt10.getText() + "\n";
-        Ticket += "----------------------------------------------\n";
+        Ticket += "----------------------------------------------\r\n";
         String totaliva = String.valueOf(Integer.parseInt(txt5L.getText()) + Integer.parseInt(txt10L.getText()));
         Ticket += String.format("%1$5s %2$23s", "TOTAL I.V.A.", formateador.format(Integer.parseInt(totaliva.replace(".", "").replace(",", "")))) + "\n";
-        Ticket += "----------------------------------------------\n";
-        Ticket += "\n";
-        Ticket += "METODO DE PAGO: "+cbFPFactura.getSelectedItem().toString()+"\n";
-        Ticket += "ABONADO: " + txtAbonoF.getText().trim() + "\n";
-        Ticket += "VUELTO:  " + txtVueltoF.getText().trim() + "\n";
-        Ticket += "\n";
-        Ticket += "ORIGINAL:  CLIENTE\n";
+        Ticket += "----------------------------------------------\r\n";
+        Ticket += "\r\n";
+        Ticket += "DETALLE DE PAGO\r\n";
+        Ticket += "EFECTIVO:         " + txtEfectivoLegal.getText() + "\r\n";
+        Ticket += "TRANSF. BANCARIA: " + txtTransferenciaLegal.getText() + "\r\n";
+        Ticket += "QR:               " + txtQRLegal.getText() + "\r\n";
+        Ticket += "\r\n";
+        Ticket += "TOTAL ABONADO:    " + txtAbonoF.getText().trim() + "\r\n";
+        Ticket += "VUELTO:           " + txtVueltoF.getText().trim() + "\r\n";
+        Ticket += "\r\n";
+        Ticket += "ORIGINAL:  CLIENTE\r\n";
         // Ticket += "DUPLICADO: Archivo Tributario\n";
-        Ticket += "\n";
-        Ticket += "         " + Empresa.getEmpresa() + "\n";
-        Ticket += "             AGRADECE SU PREFERENCIA\n";
-        Ticket += "\n";
-        Ticket += "\n";
-        Ticket += "\n";
-        Ticket += "\n";
+        Ticket += "\r\n";
+        Ticket += "         " + Empresa.getEmpresa() + "\r\n";
+        Ticket += "             AGRADECE SU PREFERENCIA\r\n";
+        Ticket += "\r\n";
+        Ticket += "\r\n";
+        Ticket += "\r\n";
+        Ticket += "\r\n";
 
         //printerService.printString(Ticket);
         //print some stuff
@@ -1035,51 +972,32 @@ public final class dlgVentas extends javax.swing.JDialog {
         txtAbonoF = new javax.swing.JTextField();
         jLabel16 = new javax.swing.JLabel();
         txtVueltoF = new javax.swing.JTextField();
-        cbFPFactura = new javax.swing.JComboBox<>();
         lbBF = new javax.swing.JLabel();
-        txtBoletaFactura = new javax.swing.JTextField();
+        txtBoletaQRFactura = new javax.swing.JTextField();
+        lbBF1 = new javax.swing.JLabel();
+        txtEfectivoLegal = new javax.swing.JTextField();
+        lbBF2 = new javax.swing.JLabel();
+        txtTransferenciaLegal = new javax.swing.JTextField();
+        txtBoletaTFactura = new javax.swing.JTextField();
+        lbBF3 = new javax.swing.JLabel();
+        lbBF4 = new javax.swing.JLabel();
+        txtQRLegal = new javax.swing.JTextField();
         jPanel4 = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
         txtCodVendedorF = new javax.swing.JTextField();
         lbEmpleadoF = new javax.swing.JLabel();
-        jLabel20 = new javax.swing.JLabel();
+        lbTitulo = new javax.swing.JLabel();
         jSeparator6 = new javax.swing.JSeparator();
         txtEstablecimiento1 = new javax.swing.JTextField();
         txtEmision1 = new javax.swing.JTextField();
         txtFacturaN1 = new javax.swing.JTextField();
         txtCodF = new javax.swing.JTextField();
+        txtTipo = new javax.swing.JTextField();
         jMenuBar3 = new javax.swing.JMenuBar();
         jMenu3 = new javax.swing.JMenu();
         jMenuItem3 = new javax.swing.JMenuItem();
         jSeparator9 = new javax.swing.JPopupMenu.Separator();
         itemVolverdeFactura = new javax.swing.JMenuItem();
-        dlgFinTicket = new javax.swing.JDialog();
-        btnConfirmarTicket = new javax.swing.JButton();
-        Blanco2 = new org.edisoncor.gui.panel.PanelImage();
-        jTabbedPane3 = new javax.swing.JTabbedPane();
-        jPanel17 = new javax.swing.JPanel();
-        jPanel18 = new javax.swing.JPanel();
-        jLabel26 = new javax.swing.JLabel();
-        txtAbonoT = new javax.swing.JTextField();
-        jLabel27 = new javax.swing.JLabel();
-        txtVueltoT = new javax.swing.JTextField();
-        cbFPTicket = new javax.swing.JComboBox<>();
-        lbBT = new javax.swing.JLabel();
-        txtBoletaTicket = new javax.swing.JTextField();
-        jPanel6 = new javax.swing.JPanel();
-        jLabel24 = new javax.swing.JLabel();
-        txtCodVendedorT = new javax.swing.JTextField();
-        lbEmpleadoT = new javax.swing.JLabel();
-        jSeparator7 = new javax.swing.JSeparator();
-        jLabel25 = new javax.swing.JLabel();
-        txtEPE = new javax.swing.JTextField();
-        txtTicketN = new javax.swing.JTextField();
-        txtCodT = new javax.swing.JTextField();
-        jMenuBar4 = new javax.swing.JMenuBar();
-        jMenu4 = new javax.swing.JMenu();
-        item_ConfirmarTicket = new javax.swing.JMenuItem();
-        jSeparator8 = new javax.swing.JPopupMenu.Separator();
-        item_VolverdeTicket = new javax.swing.JMenuItem();
         OpcionesEmision = new javax.swing.JDialog();
         Blanco3 = new org.edisoncor.gui.panel.PanelImage();
         btnTicket = new javax.swing.JButton();
@@ -1222,8 +1140,9 @@ public final class dlgVentas extends javax.swing.JDialog {
 
         jLabel15.setFont(new java.awt.Font("Roboto", 1, 18)); // NOI18N
         jLabel15.setText("MONTO");
-        jPanel15.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 14, 124, 25));
+        jPanel15.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 14, 70, 25));
 
+        txtAbonoF.setEditable(false);
         txtAbonoF.setFont(new java.awt.Font("Roboto", 1, 20)); // NOI18N
         txtAbonoF.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         txtAbonoF.setText("0");
@@ -1246,11 +1165,11 @@ public final class dlgVentas extends javax.swing.JDialog {
                 txtAbonoFKeyReleased(evt);
             }
         });
-        jPanel15.add(txtAbonoF, new org.netbeans.lib.awtextra.AbsoluteConstraints(156, 14, 135, 25));
+        jPanel15.add(txtAbonoF, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 14, 135, 25));
 
         jLabel16.setFont(new java.awt.Font("Roboto", 1, 18)); // NOI18N
         jLabel16.setText("VUELTO");
-        jPanel15.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 52, 124, 25));
+        jPanel15.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(265, 14, 75, 25));
 
         txtVueltoF.setEditable(false);
         txtVueltoF.setBackground(new java.awt.Color(255, 255, 255));
@@ -1263,46 +1182,130 @@ public final class dlgVentas extends javax.swing.JDialog {
                 txtVueltoFActionPerformed(evt);
             }
         });
-        jPanel15.add(txtVueltoF, new org.netbeans.lib.awtextra.AbsoluteConstraints(156, 52, 135, 25));
+        jPanel15.add(txtVueltoF, new org.netbeans.lib.awtextra.AbsoluteConstraints(345, 14, 135, 25));
 
-        jPanel14.add(jPanel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(8, 75, 317, 85));
-
-        cbFPFactura.setFont(new java.awt.Font("Roboto", 0, 14)); // NOI18N
-        cbFPFactura.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
-        cbFPFactura.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbFPFacturaActionPerformed(evt);
-            }
-        });
-        cbFPFactura.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                cbFPFacturaKeyPressed(evt);
-            }
-        });
-        jPanel14.add(cbFPFactura, new org.netbeans.lib.awtextra.AbsoluteConstraints(8, 5, 317, 33));
+        jPanel14.add(jPanel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 130, 500, 55));
 
         lbBF.setFont(new java.awt.Font("Roboto", 0, 12)); // NOI18N
         lbBF.setText("BOLETA N°:");
-        jPanel14.add(lbBF, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 45, -1, 23));
+        jPanel14.add(lbBF, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 90, -1, 23));
 
-        txtBoletaFactura.setFont(new java.awt.Font("Roboto", 0, 12)); // NOI18N
-        txtBoletaFactura.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
-        txtBoletaFactura.setEnabled(false);
-        txtBoletaFactura.addActionListener(new java.awt.event.ActionListener() {
+        txtBoletaQRFactura.setFont(new java.awt.Font("Roboto", 0, 12)); // NOI18N
+        txtBoletaQRFactura.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtBoletaQRFactura.setText("0");
+        txtBoletaQRFactura.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
+        txtBoletaQRFactura.setEnabled(false);
+        txtBoletaQRFactura.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtBoletaFacturaActionPerformed(evt);
+                txtBoletaQRFacturaActionPerformed(evt);
             }
         });
-        txtBoletaFactura.addKeyListener(new java.awt.event.KeyAdapter() {
+        txtBoletaQRFactura.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
-                txtBoletaFacturaKeyPressed(evt);
+                txtBoletaQRFacturaKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtBoletaQRFacturaKeyReleased(evt);
             }
         });
-        jPanel14.add(txtBoletaFactura, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 45, 180, 23));
+        jPanel14.add(txtBoletaQRFactura, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 90, 180, 23));
+
+        lbBF1.setFont(new java.awt.Font("Roboto", 0, 12)); // NOI18N
+        lbBF1.setText("EFECTIVO:");
+        jPanel14.add(lbBF1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, 23));
+
+        txtEfectivoLegal.setFont(new java.awt.Font("Roboto", 1, 12)); // NOI18N
+        txtEfectivoLegal.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtEfectivoLegal.setText("0");
+        txtEfectivoLegal.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
+        txtEfectivoLegal.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtEfectivoLegalActionPerformed(evt);
+            }
+        });
+        txtEfectivoLegal.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtEfectivoLegalKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtEfectivoLegalKeyReleased(evt);
+            }
+        });
+        jPanel14.add(txtEfectivoLegal, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 10, 130, 23));
+
+        lbBF2.setFont(new java.awt.Font("Roboto", 0, 12)); // NOI18N
+        lbBF2.setText("TRAN. BANCARIA:");
+        jPanel14.add(lbBF2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 50, -1, 23));
+
+        txtTransferenciaLegal.setFont(new java.awt.Font("Roboto", 1, 12)); // NOI18N
+        txtTransferenciaLegal.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtTransferenciaLegal.setText("0");
+        txtTransferenciaLegal.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
+        txtTransferenciaLegal.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtTransferenciaLegalActionPerformed(evt);
+            }
+        });
+        txtTransferenciaLegal.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtTransferenciaLegalKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtTransferenciaLegalKeyReleased(evt);
+            }
+        });
+        jPanel14.add(txtTransferenciaLegal, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 50, 130, 23));
+
+        txtBoletaTFactura.setFont(new java.awt.Font("Roboto", 0, 12)); // NOI18N
+        txtBoletaTFactura.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtBoletaTFactura.setText("0");
+        txtBoletaTFactura.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
+        txtBoletaTFactura.setEnabled(false);
+        txtBoletaTFactura.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtBoletaTFacturaActionPerformed(evt);
+            }
+        });
+        txtBoletaTFactura.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtBoletaTFacturaKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtBoletaTFacturaKeyReleased(evt);
+            }
+        });
+        jPanel14.add(txtBoletaTFactura, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 50, 180, 23));
+
+        lbBF3.setFont(new java.awt.Font("Roboto", 0, 12)); // NOI18N
+        lbBF3.setText("BOLETA N°:");
+        jPanel14.add(lbBF3, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 50, -1, 23));
+
+        lbBF4.setFont(new java.awt.Font("Roboto", 0, 12)); // NOI18N
+        lbBF4.setText("TARJETA / QR:");
+        jPanel14.add(lbBF4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 90, -1, 23));
+
+        txtQRLegal.setFont(new java.awt.Font("Roboto", 1, 12)); // NOI18N
+        txtQRLegal.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtQRLegal.setText("0");
+        txtQRLegal.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
+        txtQRLegal.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtQRLegalActionPerformed(evt);
+            }
+        });
+        txtQRLegal.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtQRLegalKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtQRLegalKeyReleased(evt);
+            }
+        });
+        jPanel14.add(txtQRLegal, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 90, 130, 23));
 
         jTabbedPane2.addTab("DETALLAR COBRANZA", new javax.swing.ImageIcon(getClass().getResource("/Iconos/billete.png")), jPanel14); // NOI18N
 
-        Blanco1.add(jTabbedPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(11, 119, 338, 210));
+        Blanco1.add(jTabbedPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(11, 119, 520, 240));
 
         jPanel4.setBackground(new java.awt.Color(0, 102, 102));
         jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -1332,13 +1335,13 @@ public final class dlgVentas extends javax.swing.JDialog {
         lbEmpleadoF.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jPanel4.add(lbEmpleadoF, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 39, 330, 21));
 
-        jLabel20.setFont(new java.awt.Font("Roboto", 1, 14)); // NOI18N
-        jLabel20.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel20.setText("FACTURA N°");
-        jPanel4.add(jLabel20, new org.netbeans.lib.awtextra.AbsoluteConstraints(35, 73, -1, 24));
+        lbTitulo.setFont(new java.awt.Font("Roboto", 1, 14)); // NOI18N
+        lbTitulo.setForeground(new java.awt.Color(255, 255, 255));
+        lbTitulo.setText("FACTURA N°");
+        jPanel4.add(lbTitulo, new org.netbeans.lib.awtextra.AbsoluteConstraints(35, 73, -1, 24));
 
         jSeparator6.setForeground(new java.awt.Color(255, 255, 255));
-        jPanel4.add(jSeparator6, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 66, 345, 1));
+        jPanel4.add(jSeparator6, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 66, 528, 1));
 
         txtEstablecimiento1.setEditable(false);
         txtEstablecimiento1.setBackground(new java.awt.Color(255, 255, 255));
@@ -1379,10 +1382,13 @@ public final class dlgVentas extends javax.swing.JDialog {
         });
         jPanel4.add(txtFacturaN1, new org.netbeans.lib.awtextra.AbsoluteConstraints(203, 73, 118, 24));
 
-        Blanco1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 358, 110));
+        Blanco1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 540, 110));
 
         txtCodF.setEditable(false);
         txtCodF.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+
+        txtTipo.setEditable(false);
+        txtTipo.setHorizontalAlignment(javax.swing.JTextField.CENTER);
 
         jMenuBar3.setBackground(new java.awt.Color(255, 255, 255));
         jMenuBar3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
@@ -1427,274 +1433,30 @@ public final class dlgVentas extends javax.swing.JDialog {
         dlgFinFacturaLLayout.setHorizontalGroup(
             dlgFinFacturaLLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(dlgFinFacturaLLayout.createSequentialGroup()
-                .addComponent(Blanco1, javax.swing.GroupLayout.PREFERRED_SIZE, 358, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(dlgFinFacturaLLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnConfirmarFactura, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtCodF))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(Blanco1, javax.swing.GroupLayout.PREFERRED_SIZE, 540, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(35, 35, 35)
+                .addGroup(dlgFinFacturaLLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(txtCodF, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(dlgFinFacturaLLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(dlgFinFacturaLLayout.createSequentialGroup()
+                            .addGap(6, 6, 6)
+                            .addComponent(txtTipo, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(btnConfirmarFactura, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(0, 357, Short.MAX_VALUE))
         );
         dlgFinFacturaLLayout.setVerticalGroup(
             dlgFinFacturaLLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(dlgFinFacturaLLayout.createSequentialGroup()
-                .addGap(7, 7, 7)
-                .addComponent(btnConfirmarFactura)
-                .addGap(42, 42, 42)
-                .addComponent(txtCodF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(dlgFinFacturaLLayout.createSequentialGroup()
-                .addComponent(Blanco1, javax.swing.GroupLayout.PREFERRED_SIZE, 346, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
-
-        dlgFinTicket.setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        dlgFinTicket.setResizable(false);
-        dlgFinTicket.addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowOpened(java.awt.event.WindowEvent evt) {
-                dlgFinTicketWindowOpened(evt);
-            }
-        });
-        dlgFinTicket.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                dlgFinTicketKeyPressed(evt);
-            }
-        });
-
-        btnConfirmarTicket.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/accept.png"))); // NOI18N
-        btnConfirmarTicket.setText("CONFIRMAR");
-        btnConfirmarTicket.setEnabled(false);
-        btnConfirmarTicket.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnConfirmarTicketActionPerformed(evt);
-            }
-        });
-
-        Blanco2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Recursos/fondoBlanco.jpg"))); // NOI18N
-        Blanco2.setPreferredSize(new java.awt.Dimension(690, 418));
-        Blanco2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jPanel17.setOpaque(false);
-        jPanel17.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jPanel18.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
-        jPanel18.setOpaque(false);
-        jPanel18.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel26.setFont(new java.awt.Font("Roboto", 1, 18)); // NOI18N
-        jLabel26.setText("MONTO");
-        jPanel18.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 14, 124, 25));
-
-        txtAbonoT.setFont(new java.awt.Font("Roboto", 1, 20)); // NOI18N
-        txtAbonoT.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        txtAbonoT.setText("0");
-        txtAbonoT.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
-        txtAbonoT.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                txtAbonoTMouseClicked(evt);
-            }
-        });
-        txtAbonoT.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtAbonoTActionPerformed(evt);
-            }
-        });
-        txtAbonoT.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                txtAbonoTKeyPressed(evt);
-            }
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                txtAbonoTKeyReleased(evt);
-            }
-        });
-        jPanel18.add(txtAbonoT, new org.netbeans.lib.awtextra.AbsoluteConstraints(149, 14, 151, 25));
-
-        jLabel27.setFont(new java.awt.Font("Roboto", 1, 18)); // NOI18N
-        jLabel27.setText("VUELTO");
-        jPanel18.add(jLabel27, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 46, 124, 25));
-
-        txtVueltoT.setEditable(false);
-        txtVueltoT.setBackground(new java.awt.Color(255, 255, 255));
-        txtVueltoT.setFont(new java.awt.Font("Roboto", 1, 20)); // NOI18N
-        txtVueltoT.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        txtVueltoT.setText("0");
-        txtVueltoT.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
-        txtVueltoT.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtVueltoTActionPerformed(evt);
-            }
-        });
-        jPanel18.add(txtVueltoT, new org.netbeans.lib.awtextra.AbsoluteConstraints(149, 46, 151, 25));
-
-        jPanel17.add(jPanel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(8, 75, 317, 85));
-
-        cbFPTicket.setFont(new java.awt.Font("Roboto", 0, 14)); // NOI18N
-        cbFPTicket.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
-        cbFPTicket.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbFPTicketActionPerformed(evt);
-            }
-        });
-        cbFPTicket.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                cbFPTicketKeyPressed(evt);
-            }
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                cbFPTicketKeyTyped(evt);
-            }
-        });
-        jPanel17.add(cbFPTicket, new org.netbeans.lib.awtextra.AbsoluteConstraints(8, 5, 317, 33));
-
-        lbBT.setFont(new java.awt.Font("Roboto", 0, 12)); // NOI18N
-        lbBT.setText("BOLETA N°:");
-        jPanel17.add(lbBT, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 45, -1, 23));
-
-        txtBoletaTicket.setFont(new java.awt.Font("Roboto", 0, 12)); // NOI18N
-        txtBoletaTicket.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
-        txtBoletaTicket.setEnabled(false);
-        txtBoletaTicket.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtBoletaTicketActionPerformed(evt);
-            }
-        });
-        txtBoletaTicket.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                txtBoletaTicketKeyPressed(evt);
-            }
-        });
-        jPanel17.add(txtBoletaTicket, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 45, 180, 23));
-
-        jTabbedPane3.addTab("DETALLAR COBRANZA", new javax.swing.ImageIcon(getClass().getResource("/Iconos/billete.png")), jPanel17); // NOI18N
-
-        Blanco2.add(jTabbedPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(11, 119, 338, 210));
-
-        jPanel6.setBackground(new java.awt.Color(0, 102, 102));
-        jPanel6.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel24.setFont(new java.awt.Font("Roboto", 1, 12)); // NOI18N
-        jLabel24.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel24.setText("ID VENDEDOR");
-        jPanel6.add(jLabel24, new org.netbeans.lib.awtextra.AbsoluteConstraints(15, 13, -1, 20));
-
-        txtCodVendedorT.setFont(new java.awt.Font("Roboto", 1, 12)); // NOI18N
-        txtCodVendedorT.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        txtCodVendedorT.setBorder(null);
-        txtCodVendedorT.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtCodVendedorTActionPerformed(evt);
-            }
-        });
-        txtCodVendedorT.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                txtCodVendedorTKeyPressed(evt);
-            }
-        });
-        jPanel6.add(txtCodVendedorT, new org.netbeans.lib.awtextra.AbsoluteConstraints(102, 14, 69, 19));
-
-        lbEmpleadoT.setFont(new java.awt.Font("Roboto", 1, 12)); // NOI18N
-        lbEmpleadoT.setForeground(new java.awt.Color(255, 255, 255));
-        lbEmpleadoT.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jPanel6.add(lbEmpleadoT, new org.netbeans.lib.awtextra.AbsoluteConstraints(19, 39, 331, 21));
-
-        jSeparator7.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
-        jPanel6.add(jSeparator7, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 63, 345, 1));
-
-        jLabel25.setFont(new java.awt.Font("Roboto", 1, 12)); // NOI18N
-        jLabel25.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel25.setText("TICKET N°");
-        jPanel6.add(jLabel25, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 76, -1, 25));
-
-        txtEPE.setEditable(false);
-        txtEPE.setBackground(new java.awt.Color(255, 255, 255));
-        txtEPE.setFont(new java.awt.Font("Roboto", 1, 13)); // NOI18N
-        txtEPE.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        txtEPE.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 102, 102)));
-        txtEPE.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                txtEPEKeyPressed(evt);
-            }
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                txtEPEKeyTyped(evt);
-            }
-        });
-        jPanel6.add(txtEPE, new org.netbeans.lib.awtextra.AbsoluteConstraints(83, 76, 68, 25));
-
-        txtTicketN.setEditable(false);
-        txtTicketN.setBackground(new java.awt.Color(255, 255, 255));
-        txtTicketN.setFont(new java.awt.Font("Roboto", 1, 13)); // NOI18N
-        txtTicketN.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        txtTicketN.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 102, 102)));
-        txtTicketN.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                txtTicketNKeyPressed(evt);
-            }
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                txtTicketNKeyTyped(evt);
-            }
-        });
-        jPanel6.add(txtTicketN, new org.netbeans.lib.awtextra.AbsoluteConstraints(158, 76, 192, 25));
-
-        Blanco2.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 358, 110));
-
-        txtCodT.setEditable(false);
-        txtCodT.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-
-        jMenuBar4.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
-
-        jMenu4.setText("OPCIONES");
-        jMenu4.setFont(new java.awt.Font("Calibri", 1, 12)); // NOI18N
-        jMenu4.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
-
-        item_ConfirmarTicket.setBackground(new java.awt.Color(255, 255, 255));
-        item_ConfirmarTicket.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/baseline_thumb_up_black_24.png"))); // NOI18N
-        item_ConfirmarTicket.setText("Confirmar");
-        item_ConfirmarTicket.setOpaque(true);
-        item_ConfirmarTicket.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                item_ConfirmarTicketActionPerformed(evt);
-            }
-        });
-        jMenu4.add(item_ConfirmarTicket);
-
-        jSeparator8.setForeground(new java.awt.Color(255, 255, 255));
-        jSeparator8.setOpaque(true);
-        jMenu4.add(jSeparator8);
-
-        item_VolverdeTicket.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_ESCAPE, 0));
-        item_VolverdeTicket.setBackground(new java.awt.Color(255, 255, 255));
-        item_VolverdeTicket.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/outline_exit_to_app_black_24.png"))); // NOI18N
-        item_VolverdeTicket.setText("Volver a vender               ");
-        item_VolverdeTicket.setOpaque(true);
-        item_VolverdeTicket.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                item_VolverdeTicketActionPerformed(evt);
-            }
-        });
-        jMenu4.add(item_VolverdeTicket);
-
-        jMenuBar4.add(jMenu4);
-
-        dlgFinTicket.setJMenuBar(jMenuBar4);
-
-        javax.swing.GroupLayout dlgFinTicketLayout = new javax.swing.GroupLayout(dlgFinTicket.getContentPane());
-        dlgFinTicket.getContentPane().setLayout(dlgFinTicketLayout);
-        dlgFinTicketLayout.setHorizontalGroup(
-            dlgFinTicketLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(dlgFinTicketLayout.createSequentialGroup()
-                .addComponent(Blanco2, javax.swing.GroupLayout.PREFERRED_SIZE, 358, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(dlgFinTicketLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(btnConfirmarTicket, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(txtCodT))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        dlgFinTicketLayout.setVerticalGroup(
-            dlgFinTicketLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(dlgFinTicketLayout.createSequentialGroup()
-                .addComponent(btnConfirmarTicket)
-                .addGap(136, 136, 136)
-                .addComponent(txtCodT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(144, Short.MAX_VALUE))
-            .addComponent(Blanco2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addGroup(dlgFinFacturaLLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(dlgFinFacturaLLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(btnConfirmarFactura)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtTipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtCodF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(Blanco1, javax.swing.GroupLayout.PREFERRED_SIZE, 360, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 0, 0))
         );
 
         OpcionesEmision.setResizable(false);
@@ -1971,7 +1733,6 @@ public final class dlgVentas extends javax.swing.JDialog {
         rContado.setFont(new java.awt.Font("Roboto", 1, 11)); // NOI18N
         rContado.setSelected(true);
         rContado.setText("CONTADO");
-        rContado.setOpaque(false);
         rContado.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 rContadoActionPerformed(evt);
@@ -1982,7 +1743,6 @@ public final class dlgVentas extends javax.swing.JDialog {
         buttonGroup1.add(rCredito);
         rCredito.setFont(new java.awt.Font("Roboto", 1, 11)); // NOI18N
         rCredito.setText("CREDITO");
-        rCredito.setOpaque(false);
         rCredito.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 rCreditoActionPerformed(evt);
@@ -2164,9 +1924,7 @@ public final class dlgVentas extends javax.swing.JDialog {
             }
         });
         tbDetalle.setGridColor(new java.awt.Color(204, 204, 204));
-        tbDetalle.setRowHeight(20);
         tbDetalle.setSelectionBackground(new java.awt.Color(0, 102, 102));
-        tbDetalle.setShowVerticalLines(false);
         tbDetalle.getTableHeader().setResizingAllowed(false);
         tbDetalle.getTableHeader().setReorderingAllowed(false);
         tbDetalle.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -2824,16 +2582,17 @@ public final class dlgVentas extends javax.swing.JDialog {
     private void btnConfirmarFacturaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmarFacturaActionPerformed
         // TODO add your handling code here:
         try {
-            if (cbFPFactura.getSelectedIndex() == 1 && txtBoletaFactura.getText().isEmpty()) {
-                Mensajes.Sistema("Ingrese el dato de la Boleta.");
-                cbFPFactura.requestFocus();
-            } else if (cbFPFactura.getSelectedIndex() == 2 && txtBoletaFactura.getText().isEmpty()) {
-                Mensajes.Sistema("Ingrese el dato de la Boleta.");
-                cbFPFactura.requestFocus();
+            if (Integer.parseInt(txtAbonoF.getText().replace(".", "").replace(",", "")) < Integer.parseInt(txtTotal.getText().replace(".", "").replace(",", ""))) {
+                Mensajes.Sistema("El monto abonado no es suficiente para finalizar la venta.\n\rPor favor, verifique los montos ingresados y vuelva a intentarlo.");
+                txtEfectivoLegal.requestFocus();
             } else {
-                comprobarNFactura();
+                if (txtTipo.getText().equals("F")) {
+                    comprobarNFactura();
+                } else if (txtTipo.getText().equals("T")) {
+                    ComprobarNTicket();
+                }
             }
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             Mensajes.Alerta("Error ComprobarNFactura: " + e.getMessage());
         }
 
@@ -2852,8 +2611,9 @@ public final class dlgVentas extends javax.swing.JDialog {
                     Vendedor vn = GestionarVendedor.busVendedorFactura(txtCodVendedorF.getText());
                     lbEmpleadoF.setText(vn.getNombreV());
                     btnConfirmarFactura.setEnabled(true);
-                    cbFPFactura.requestFocus();
-                    cbFPFactura.setPopupVisible(true);
+                    txtEfectivoLegal.requestFocus();
+                    //cbFPFactura.requestFocus();
+                    //cbFPFactura.setPopupVisible(true);
                     //txtAbonoF.requestFocus();
                     //txtAbonoF.selectAll();
                 } catch (Exception e) {
@@ -2961,153 +2721,23 @@ public final class dlgVentas extends javax.swing.JDialog {
         lbEmpleadoF.setText("");
         txtAbonoF.setText("0");
         txtVueltoF.setText("0");
+        txtEfectivoLegal.setText("0");
+        txtTransferenciaLegal.setText("0");
+        txtBoletaTFactura.setText("0");
+        txtBoletaTFactura.setEnabled(false);
+        txtQRLegal.setText("0");
+        txtBoletaQRFactura.setText("0");
+        txtBoletaQRFactura.setEnabled(false);
     }//GEN-LAST:event_itemVolverdeFacturaActionPerformed
 
     private void dlgFinFacturaLWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_dlgFinFacturaLWindowOpened
         // TODO add your handling code here:
+        
     }//GEN-LAST:event_dlgFinFacturaLWindowOpened
 
     private void dlgFinFacturaLKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_dlgFinFacturaLKeyPressed
         // TODO add your handling code here:
     }//GEN-LAST:event_dlgFinFacturaLKeyPressed
-
-    private void btnConfirmarTicketActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmarTicketActionPerformed
-        // TODO add your handling code here:
-        try {
-            if (cbFPTicket.getSelectedIndex() == 1 && txtBoletaTicket.getText().isEmpty()) {
-                Mensajes.Sistema("Ingrese el dato de la Boleta.");
-                txtBoletaTicket.requestFocus();
-            } else if (cbFPTicket.getSelectedIndex() == 2 && txtBoletaTicket.getText().isEmpty()) {
-                Mensajes.Sistema("Ingrese el dato de la Boleta.");
-                txtBoletaTicket.requestFocus();
-            } else {
-                ComprobarNTicket();
-            }
-        } catch (Exception e) {
-            Mensajes.Alerta("Error ComprobarNTicket: " + e.getMessage());
-        }
-
-    }//GEN-LAST:event_btnConfirmarTicketActionPerformed
-
-    private void txtCodVendedorTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCodVendedorTActionPerformed
-        // TODO add your handling code here:
-        try {
-            if (Integer.parseInt(txtCodVendedorT.getText()) <= 0) {
-                Mensajes.error("CODIGO EQUIVOCADO O NO POSEE PERFIL PARA VENTA");
-                btnConfirmarTicket.setEnabled(false);
-                txtCodVendedorT.requestFocus();
-                txtCodVendedorT.selectAll();
-            } else {
-                try {
-                    Vendedor vn = GestionarVendedor.busVendedorTicket(txtCodVendedorT.getText());
-                    lbEmpleadoT.setText(vn.getNombreV());
-                    btnConfirmarTicket.setEnabled(true);
-                    cbFPTicket.requestFocus();
-                    cbFPTicket.setPopupVisible(true);
-                    //txtAbonoT.requestFocus();
-                    //txtAbonoT.selectAll();
-                } catch (Exception e) {
-                }
-
-            }
-        } catch (Exception e) {
-        }
-    }//GEN-LAST:event_txtCodVendedorTActionPerformed
-
-    private void txtCodVendedorTKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCodVendedorTKeyPressed
-        // TODO add your handling code here:
-        validarCampos.soloNumeros(txtCodVendedorT);
-    }//GEN-LAST:event_txtCodVendedorTKeyPressed
-
-    private void txtTicketNKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtTicketNKeyPressed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtTicketNKeyPressed
-
-    private void txtTicketNKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtTicketNKeyTyped
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtTicketNKeyTyped
-
-    private void txtEPEKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtEPEKeyPressed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtEPEKeyPressed
-
-    private void txtEPEKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtEPEKeyTyped
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtEPEKeyTyped
-
-    private void txtAbonoTMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtAbonoTMouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtAbonoTMouseClicked
-
-    private void txtAbonoTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtAbonoTActionPerformed
-        // TODO add your handling code here:
-        if (Integer.parseInt(txtAbonoT.getText().replace(".", "").replace(",", "")) == 0) {
-            txtAbonoT.setText(txtTotal.getText());
-            int calculos = controlFactura.calCulosT();
-            DecimalFormat df = new DecimalFormat("#,###");
-            txtVueltoT.setText(df.format(Integer.parseInt(String.valueOf(calculos).trim().replace(".", "").replace(",", ""))));
-            btnConfirmarTicket.doClick();
-        } else {
-            try {
-                int calculos = controlFactura.calCulosT();
-                DecimalFormat df = new DecimalFormat("#,###");
-                txtVueltoT.setText(df.format(Integer.parseInt(String.valueOf(calculos).trim().replace(".", "").replace(",", ""))));
-                txtVueltoT.requestFocus();
-            } catch (NumberFormatException e) {
-                System.out.println("Error calculando vuelto ticket: " + e.getMessage());
-            }
-        }
-    }//GEN-LAST:event_txtAbonoTActionPerformed
-
-    private void txtAbonoTKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtAbonoTKeyReleased
-        // TODO add your handling code here:
-        try {
-            if (txtAbonoT.getText().trim().length() >= 1) {
-                DecimalFormat df = new DecimalFormat("#,###");
-                txtAbonoT.setText(df.format(Integer.valueOf(txtAbonoT.getText().trim().replace(".", "").replace(",", ""))));
-
-            } else {
-                txtAbonoT.setText("0");
-                txtAbonoT.selectAll();
-
-            }
-        } catch (NumberFormatException e) {
-            System.out.println("c: " + e.getMessage());
-        }
-    }//GEN-LAST:event_txtAbonoTKeyReleased
-
-    private void txtVueltoTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtVueltoTActionPerformed
-        // TODO add your handling code here:
-        if (Integer.parseInt(txtVueltoT.getText().trim().replace(".", "").replace(",", "")) < 0) {
-            txtAbonoT.requestFocus();
-        } else {
-            btnConfirmarTicket.doClick();
-        }
-
-    }//GEN-LAST:event_txtVueltoTActionPerformed
-
-    private void item_ConfirmarTicketActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_item_ConfirmarTicketActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_item_ConfirmarTicketActionPerformed
-
-    private void item_VolverdeTicketActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_item_VolverdeTicketActionPerformed
-        // TODO add your handling code here:
-        dlgFinTicket.dispose();
-        btnConfirmarTicket.setEnabled(false);
-        txtCodVendedorT.setText("");
-        txtCodT.setText("");
-        lbEmpleadoT.setText("");
-        txtAbonoT.setText("0");
-        txtVueltoT.setText("0");
-    }//GEN-LAST:event_item_VolverdeTicketActionPerformed
-
-    private void dlgFinTicketWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_dlgFinTicketWindowOpened
-        // TODO add your handling code here:
-    }//GEN-LAST:event_dlgFinTicketWindowOpened
-
-    private void dlgFinTicketKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_dlgFinTicketKeyPressed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_dlgFinTicketKeyPressed
 
     private void btnTicketActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTicketActionPerformed
         // TODO add your handling code here:
@@ -3259,11 +2889,6 @@ public final class dlgVentas extends javax.swing.JDialog {
         validarCampos.soloNumeros(txtAbonoF);
     }//GEN-LAST:event_txtAbonoFKeyPressed
 
-    private void txtAbonoTKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtAbonoTKeyPressed
-        // TODO add your handling code here:
-        validarCampos.soloNumeros(txtAbonoT);
-    }//GEN-LAST:event_txtAbonoTKeyPressed
-
     private void txtTotalCostoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTotalCostoActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtTotalCostoActionPerformed
@@ -3280,106 +2905,150 @@ public final class dlgVentas extends javax.swing.JDialog {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtCajaActionPerformed
 
-    private void cbFPTicketActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbFPTicketActionPerformed
+    private void txtBoletaQRFacturaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBoletaQRFacturaActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_cbFPTicketActionPerformed
-
-    private void cbFPTicketKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cbFPTicketKeyTyped
-        // TODO add your handling code here:
-
-    }//GEN-LAST:event_cbFPTicketKeyTyped
-
-    private void txtBoletaTicketActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBoletaTicketActionPerformed
-        // TODO add your handling code here:
-        txtAbonoT.requestFocus();
-    }//GEN-LAST:event_txtBoletaTicketActionPerformed
-
-    private void cbFPTicketKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cbFPTicketKeyPressed
-        // TODO add your handling code here:
-        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-            switch (cbFPTicket.getSelectedIndex()) {
-                case 0 -> {
-                    lbBT.setVisible(false);
-                    txtBoletaTicket.setVisible(false);
-                    txtBoletaTicket.setEnabled(false);
-                    txtBoletaTicket.setText("0");
-                    txtAbonoT.requestFocus();
-                    System.out.println("opcion 1");
-                }
-                case 1 -> {
-                    lbBT.setVisible(true);
-                    txtBoletaTicket.setVisible(true);
-                    txtBoletaTicket.setEnabled(true);
-                    txtBoletaTicket.setText("");
-                    txtBoletaTicket.requestFocus();
-                    System.out.println("opcion 2");
-                }
-                case 2 -> {
-                    lbBT.setVisible(true);
-                    txtBoletaTicket.setVisible(true);
-                    txtBoletaTicket.setEnabled(true);
-                    txtBoletaTicket.setText("");
-                    txtBoletaTicket.requestFocus();
-                    System.out.println("opcion 3");
-                }
-                default -> {
-                }
-            }
+        if (!txtBoletaQRFactura.getText().equals("0")) {
+            btnConfirmarFactura.doClick();
+        } else {
+            Mensajes.Sistema("Ingrese el dato de la Boleta.");
         }
-    }//GEN-LAST:event_cbFPTicketKeyPressed
+    }//GEN-LAST:event_txtBoletaQRFacturaActionPerformed
 
-    private void txtBoletaTicketKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBoletaTicketKeyPressed
+    private void txtBoletaQRFacturaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBoletaQRFacturaKeyPressed
         // TODO add your handling code here:
-        validarCampos.soloNumeros(txtBoletaTicket);
-    }//GEN-LAST:event_txtBoletaTicketKeyPressed
+        validarCampos.soloNumeros(txtBoletaQRFactura);
+    }//GEN-LAST:event_txtBoletaQRFacturaKeyPressed
 
-    private void txtBoletaFacturaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBoletaFacturaActionPerformed
+    private void txtEfectivoLegalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtEfectivoLegalActionPerformed
         // TODO add your handling code here:
-        txtAbonoF.requestFocus();
-    }//GEN-LAST:event_txtBoletaFacturaActionPerformed
+        txtTransferenciaLegal.requestFocus();
+    }//GEN-LAST:event_txtEfectivoLegalActionPerformed
 
-    private void txtBoletaFacturaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBoletaFacturaKeyPressed
+    private void txtEfectivoLegalKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtEfectivoLegalKeyPressed
         // TODO add your handling code here:
-        validarCampos.soloNumeros(txtBoletaFactura);
-    }//GEN-LAST:event_txtBoletaFacturaKeyPressed
+        validarCampos.soloNumeros(txtEfectivoLegal);
+    }//GEN-LAST:event_txtEfectivoLegalKeyPressed
 
-    private void cbFPFacturaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cbFPFacturaKeyPressed
+    private void txtTransferenciaLegalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTransferenciaLegalActionPerformed
         // TODO add your handling code here:
-        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-            switch (cbFPFactura.getSelectedIndex()) {
-                case 0 -> {
-                    lbBF.setVisible(false);
-                    txtBoletaFactura.setVisible(false);
-                    txtBoletaFactura.setEnabled(false);
-                    txtBoletaFactura.setText("0");
-                    txtAbonoF.requestFocus();
-                    System.out.println("opcion 1");
-                }
-                case 1 -> {
-                    lbBF.setVisible(true);
-                    txtBoletaFactura.setVisible(true);
-                    txtBoletaFactura.setEnabled(true);
-                    txtBoletaFactura.setText("");
-                    txtBoletaFactura.requestFocus();
-                    System.out.println("opcion 2");
-                }
-                case 2 -> {
-                    lbBF.setVisible(true);
-                    txtBoletaFactura.setVisible(true);
-                    txtBoletaFactura.setEnabled(true);
-                    txtBoletaFactura.setText("");
-                    txtBoletaFactura.requestFocus();
-                    System.out.println("opcion 3");
-                }
-                default -> {
-                }
-            }
+        if (txtTransferenciaLegal.getText().equals("0")) {
+            txtQRLegal.requestFocus();
+        } else {
+            txtBoletaTFactura.setEnabled(true);
+            txtBoletaTFactura.requestFocus();
+            txtBoletaTFactura.selectAll();
         }
-    }//GEN-LAST:event_cbFPFacturaKeyPressed
 
-    private void cbFPFacturaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbFPFacturaActionPerformed
+    }//GEN-LAST:event_txtTransferenciaLegalActionPerformed
+
+    private void txtTransferenciaLegalKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtTransferenciaLegalKeyPressed
         // TODO add your handling code here:
-    }//GEN-LAST:event_cbFPFacturaActionPerformed
+        validarCampos.soloNumeros(txtTransferenciaLegal);
+    }//GEN-LAST:event_txtTransferenciaLegalKeyPressed
+
+    private void txtBoletaTFacturaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBoletaTFacturaActionPerformed
+        // TODO add your handling code here:
+        if (!txtBoletaTFactura.getText().equals("0")) {
+            txtQRLegal.requestFocus();
+        } else {
+            Mensajes.Sistema("Ingrese el dato de la Boleta.");
+        }
+    }//GEN-LAST:event_txtBoletaTFacturaActionPerformed
+
+    private void txtBoletaTFacturaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBoletaTFacturaKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtBoletaTFacturaKeyPressed
+
+    private void txtQRLegalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtQRLegalActionPerformed
+        // TODO add your handling code here:
+        if (txtQRLegal.getText().equals("0")) {
+            btnConfirmarFactura.doClick();
+        } else {
+            txtBoletaQRFactura.setEnabled(true);
+            txtBoletaQRFactura.requestFocus();
+            txtBoletaQRFactura.selectAll();
+        }
+    }//GEN-LAST:event_txtQRLegalActionPerformed
+
+    private void txtQRLegalKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtQRLegalKeyPressed
+        // TODO add your handling code here:
+        validarCampos.soloNumeros(txtQRLegal);
+    }//GEN-LAST:event_txtQRLegalKeyPressed
+
+    private void txtEfectivoLegalKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtEfectivoLegalKeyReleased
+        // TODO add your handling code here:
+        try {
+            if (txtEfectivoLegal.getText().trim().length() >= 1) {
+                DecimalFormat df = new DecimalFormat("#,###");
+                txtEfectivoLegal.setText(df.format(Integer.valueOf(txtEfectivoLegal.getText().trim().replace(".", "").replace(",", ""))));
+
+            } else {
+                txtEfectivoLegal.setText("0");
+                txtEfectivoLegal.selectAll();
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("c: " + e.getMessage());
+        }
+        SumarMontos();
+    }//GEN-LAST:event_txtEfectivoLegalKeyReleased
+
+    private void txtTransferenciaLegalKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtTransferenciaLegalKeyReleased
+        // TODO add your handling code here:
+        try {
+            if (txtTransferenciaLegal.getText().trim().length() >= 1) {
+                DecimalFormat df = new DecimalFormat("#,###");
+                txtTransferenciaLegal.setText(df.format(Integer.valueOf(txtTransferenciaLegal.getText().trim().replace(".", "").replace(",", ""))));
+
+            } else {
+                txtTransferenciaLegal.setText("0");
+                txtTransferenciaLegal.selectAll();
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("c: " + e.getMessage());
+        }
+        SumarMontos();
+    }//GEN-LAST:event_txtTransferenciaLegalKeyReleased
+
+    private void txtQRLegalKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtQRLegalKeyReleased
+        // TODO add your handling code here:
+        try {
+            if (txtQRLegal.getText().trim().length() >= 1) {
+                DecimalFormat df = new DecimalFormat("#,###");
+                txtQRLegal.setText(df.format(Integer.valueOf(txtQRLegal.getText().trim().replace(".", "").replace(",", ""))));
+
+            } else {
+                txtQRLegal.setText("0");
+                txtQRLegal.selectAll();
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("c: " + e.getMessage());
+        }
+        SumarMontos();
+    }//GEN-LAST:event_txtQRLegalKeyReleased
+
+    private void txtBoletaTFacturaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBoletaTFacturaKeyReleased
+        // TODO add your handling code here:
+        try {
+            if (txtBoletaTFactura.getText().trim().length() == 0) {
+                txtBoletaTFactura.setText("0");
+                txtBoletaTFactura.selectAll();
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("c: " + e.getMessage());
+        }
+    }//GEN-LAST:event_txtBoletaTFacturaKeyReleased
+
+    private void txtBoletaQRFacturaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBoletaQRFacturaKeyReleased
+        // TODO add your handling code here:
+        try {
+            if (txtBoletaQRFactura.getText().trim().length() == 0) {
+                txtBoletaQRFactura.setText("0");
+                txtBoletaQRFactura.selectAll();
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("c: " + e.getMessage());
+        }
+    }//GEN-LAST:event_txtBoletaQRFacturaKeyReleased
 
     /**
      * @param args the command line arguments
@@ -3428,7 +3097,6 @@ public final class dlgVentas extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private org.edisoncor.gui.panel.PanelImage Blanco;
     private org.edisoncor.gui.panel.PanelImage Blanco1;
-    private org.edisoncor.gui.panel.PanelImage Blanco2;
     private org.edisoncor.gui.panel.PanelImage Blanco3;
     public static javax.swing.JDialog OpcionesEmision;
     private javax.swing.JButton btnAdd;
@@ -3438,7 +3106,6 @@ public final class dlgVentas extends javax.swing.JDialog {
     public static newscomponents.RSButtonBigIcon_new btnCancelar;
     private javax.swing.JButton btnCant;
     public static javax.swing.JButton btnConfirmarFactura;
-    public static javax.swing.JButton btnConfirmarTicket;
     public static javax.swing.JButton btnFacturaLegal;
     public static newscomponents.RSButtonBigIcon_new btnGuardar;
     public static newscomponents.RSButtonBigIcon_new btnNuevo;
@@ -3446,10 +3113,7 @@ public final class dlgVentas extends javax.swing.JDialog {
     public static newscomponents.RSButtonBigIcon_new btnSalir;
     public static javax.swing.JButton btnTicket;
     private javax.swing.ButtonGroup buttonGroup1;
-    private static javax.swing.JComboBox<String> cbFPFactura;
-    public static javax.swing.JComboBox<String> cbFPTicket;
     public static javax.swing.JDialog dlgFinFacturaL;
-    public static javax.swing.JDialog dlgFinTicket;
     public static javax.swing.JLabel etiCant;
     private static javax.swing.JMenuItem itemBuscarA;
     private static javax.swing.JMenuItem itemBuscarC;
@@ -3463,8 +3127,6 @@ public final class dlgVentas extends javax.swing.JDialog {
     private static javax.swing.JMenuItem itemSalir;
     private javax.swing.JMenuItem itemTicket_de_Venta;
     private javax.swing.JMenuItem itemVolverdeFactura;
-    private javax.swing.JMenuItem item_ConfirmarTicket;
-    private javax.swing.JMenuItem item_VolverdeTicket;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -3472,22 +3134,15 @@ public final class dlgVentas extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel19;
-    private javax.swing.JLabel jLabel20;
-    private javax.swing.JLabel jLabel24;
-    private javax.swing.JLabel jLabel25;
-    private javax.swing.JLabel jLabel26;
-    private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu3;
-    private javax.swing.JMenu jMenu4;
     private javax.swing.JMenu jMenu5;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuBar jMenuBar3;
-    private javax.swing.JMenuBar jMenuBar4;
     private javax.swing.JMenuBar jMenuBar5;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JPanel jPanel1;
@@ -3495,13 +3150,10 @@ public final class dlgVentas extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel16;
-    private javax.swing.JPanel jPanel17;
-    private javax.swing.JPanel jPanel18;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
-    private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JScrollPane jScrollPane1;
@@ -3511,19 +3163,19 @@ public final class dlgVentas extends javax.swing.JDialog {
     private javax.swing.JPopupMenu.Separator jSeparator4;
     private javax.swing.JPopupMenu.Separator jSeparator5;
     private javax.swing.JSeparator jSeparator6;
-    private javax.swing.JSeparator jSeparator7;
-    private javax.swing.JPopupMenu.Separator jSeparator8;
     private javax.swing.JPopupMenu.Separator jSeparator9;
     private javax.swing.JTabbedPane jTabbedPane2;
-    private javax.swing.JTabbedPane jTabbedPane3;
     private static javax.swing.JLabel lbBF;
-    private static javax.swing.JLabel lbBT;
+    private static javax.swing.JLabel lbBF1;
+    private static javax.swing.JLabel lbBF2;
+    private static javax.swing.JLabel lbBF3;
+    private static javax.swing.JLabel lbBF4;
     private javax.swing.JLabel lbComprobante;
     public static javax.swing.JLabel lbCond;
     public static javax.swing.JLabel lbCred;
     public static javax.swing.JLabel lbEmpleadoF;
-    public static javax.swing.JLabel lbEmpleadoT;
     private javax.swing.JLabel lbTimbrado;
+    private static javax.swing.JLabel lbTitulo;
     private javax.swing.JLabel lbValidaz;
     private javax.swing.JPopupMenu menuEmergente;
     public static javax.swing.JRadioButton rContado;
@@ -3536,21 +3188,18 @@ public final class dlgVentas extends javax.swing.JDialog {
     public static javax.swing.JTextField txt5L;
     public static javax.swing.JTextField txt5libre;
     public static javax.swing.JTextField txtAbonoF;
-    public static javax.swing.JTextField txtAbonoT;
     public static javax.swing.JTextField txtArt;
-    private static javax.swing.JTextField txtBoletaFactura;
-    private static javax.swing.JTextField txtBoletaTicket;
+    private static javax.swing.JTextField txtBoletaQRFactura;
+    private static javax.swing.JTextField txtBoletaTFactura;
     public static javax.swing.JTextField txtCaja;
     public static javax.swing.JTextField txtCant;
     public static javax.swing.JTextField txtCod;
     public static javax.swing.JTextField txtCodArticulo;
     public static javax.swing.JTextField txtCodCliente;
     public static javax.swing.JTextField txtCodF;
-    public static javax.swing.JTextField txtCodT;
     public static javax.swing.JTextField txtCodVendedorF;
-    public static javax.swing.JTextField txtCodVendedorT;
     public static javax.swing.JTextField txtDescuentoL;
-    public static javax.swing.JTextField txtEPE;
+    private static javax.swing.JTextField txtEfectivoLegal;
     public static javax.swing.JTextField txtEmision;
     public static javax.swing.JTextField txtEmision1;
     public static javax.swing.JTextField txtEstablecimiento;
@@ -3563,14 +3212,15 @@ public final class dlgVentas extends javax.swing.JDialog {
     public static javax.swing.JTextField txtHora;
     private static javax.swing.JTextField txtIdBoca;
     public static javax.swing.JTextField txtNetoL;
+    private static javax.swing.JTextField txtQRLegal;
     public static javax.swing.JTextField txtRazonS;
     public static javax.swing.JTextField txtRuc;
-    public static javax.swing.JTextField txtTicketN;
+    public static javax.swing.JTextField txtTipo;
     public static javax.swing.JTextField txtTotal;
     public static javax.swing.JTextField txtTotalCosto;
     public static javax.swing.JTextField txtTotalL;
+    private static javax.swing.JTextField txtTransferenciaLegal;
     public static javax.swing.JTextField txtVueltoF;
-    public static javax.swing.JTextField txtVueltoT;
     public static javax.swing.JTextField txtdisponibleL;
     public static javax.swing.JTextField txtfechaF;
     public static javax.swing.JTextField txtidEmision;

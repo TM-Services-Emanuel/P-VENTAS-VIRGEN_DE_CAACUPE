@@ -34,8 +34,8 @@ public class dlgRegistroValores extends javax.swing.JDialog {
         lbCaja.setText("");
         Invisible();
     }
-    
-    private void Invisible(){
+
+    private void Invisible() {
         txtCaja.setVisible(false);
         txtIDBoca.setVisible(false);
         btnListarDatos.setVisible(false);
@@ -781,6 +781,15 @@ public class dlgRegistroValores extends javax.swing.JDialog {
         // TODO add your handling code here:
         int rpta = Mensajes.confirmar("¿Seguro que desea salir del formulario?");
         if (rpta == 0) {
+            try {
+                dlgCajaDia.Inicializacion();
+            } catch (Exception e) {
+            }
+            
+            try {
+                dlgCajaDia2.Inicializacion();
+            } catch (Exception e) {
+            }
             this.dispose();
         }
     }//GEN-LAST:event_btnSalirActionPerformed
@@ -1096,13 +1105,13 @@ public static void imprimirTicket() {
         Ticket += "RESUMEN GASTOS:          " + txtGastos.getText() + "\n";
         Ticket += "RESUMEN RETIROS:         " + txtRetiros.getText() + "\n";
         Ticket += "CIERRE:                  " + txtCierres.getText() + "\n";
-        int resumen = Integer.parseInt(txtRetiros.getText().replace(".", "").replace(",", ""))+Integer.parseInt(txtCierres.getText().replace(".", "").replace(",", ""));
+        int resumen = Integer.parseInt(txtRetiros.getText().replace(".", "").replace(",", "")) + Integer.parseInt(txtCierres.getText().replace(".", "").replace(",", ""));
         Ticket += "RETIROS+CIERRE:          " + formateador.format(resumen) + "\n";
         Ticket += "===============================================\n";
         Ticket += "CAJA NRO: " + txtCaja.getText().trim() + "\n";
         Ticket += "FECHA DE LA CAJA: " + txtFechaCaja.getText() + "\n";
         Ticket += "ESTADO: " + txtEstado.getText() + "\n";
-        Ticket += "IDBOCA: " + txtIDBoca.getText().trim() +" - " +cboBocaCobranza.getSelectedItem().toString() +"\n";
+        Ticket += "IDBOCA: " + txtIDBoca.getText().trim() + " - " + cboBocaCobranza.getSelectedItem().toString() + "\n";
         Ticket += "\n";
         Ticket += "\n";
         Ticket += "\n";

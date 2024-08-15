@@ -186,9 +186,11 @@ public class dlgConsultarFacturas extends javax.swing.JDialog {
         txtRuc.setText("");
         txtRazonSocial.setText("");
         txtVendedor.setText("");
-        txtMet_pago.setText("");
-        txtBoleta.setText("");
-        txtAbonado.setText("");
+        txtEfectivo.setText("");
+        txtTransferencia.setText("");
+        txtTransfBoleta.setText("");
+        txtQR.setText("");
+        txtQRBoleta.setText("");
         txtVuelto.setText("");
         txtV.setText("");
         txtE.setText("");
@@ -196,7 +198,7 @@ public class dlgConsultarFacturas extends javax.swing.JDialog {
         txt10.setText("");
     }
 
-    public static void imprimirTicket(int idEmision, int total, String Condicion, String Numeracion, String Fecha, String Hora, String Vendedor, String RazonSocial, String RUC, String f_pago, int abon, int vuel) {
+    public static void imprimirTicket(int idEmision, int total, String Condicion, String Numeracion, String Fecha, String Hora, String Vendedor, String RazonSocial, String RUC, int efectivo, int tranf, int qr, int abon, int vuel) {
         //Impresora matricial tmu-220
         if (Tickets.getImpresora() == null) {
             Mensajes.Alerta("No se encuentra instalada la impresora predeterminada para este punto de impresión");
@@ -211,23 +213,23 @@ public class dlgConsultarFacturas extends javax.swing.JDialog {
             int filas = tblDetalle.getRowCount();
             DecimalFormat formateador = new DecimalFormat("#,###");
             String tot = formateador.format(total);
-            String Ticket = "         " + Empresa.getEmpresa() + "\n";
-            Ticket += "           VENTAS DE LACTEOS LACTOLANDA\n";
-            Ticket += "                 RUC: " + Empresa.getRUC() + "\n";
-            Ticket += "               CEL: " + Empresa.getCelular() + "\n";
-            Ticket += Empresa.getDireccion() + "\n";
-            Ticket += "     CNEL. OVIEDO - DPTO. DE CAAGUAZU - PY\n";
-            Ticket += "-----------------------------------------------\n";
-            Ticket += "TICKET " + Condicion + " NRO: " + Numeracion + "\n";
-            Ticket += "FECHA/HORA: " + Fecha + " " + Hora + "\n";
-            Ticket += "VENDEDOR: " + Vendedor + "\n";
-            Ticket += "\n";
-            Ticket += "CLIENTE: " + RazonSocial + "\n";
-            Ticket += "RUC/CI: " + RUC + "\n";
+            String Ticket = "         " + Empresa.getEmpresa() + "\r\n";
+            Ticket += "           VENTAS DE LACTEOS LACTOLANDA\r\n";
+            Ticket += "                 RUC: " + Empresa.getRUC() + "\r\n";
+            Ticket += "               CEL: " + Empresa.getCelular() + "\r\n";
+            Ticket += Empresa.getDireccion() + "\r\n";
+            Ticket += "     CNEL. OVIEDO - DPTO. DE CAAGUAZU - PY\r\n";
+            Ticket += "-----------------------------------------------\r\n";
+            Ticket += "TICKET " + Condicion + " NRO: " + Numeracion + "\r\n";
+            Ticket += "FECHA/HORA: " + Fecha + " " + Hora + "\r\n";
+            Ticket += "VENDEDOR: " + Vendedor + "\r\n";
+            Ticket += "\r\n";
+            Ticket += "CLIENTE: " + RazonSocial + "\r\n";
+            Ticket += "RUC/CI: " + RUC + "\r\n";
             Ticket += "-----------------------------------------------\n";
             Ticket += String.format("%1$1s %2$10s %3$1s %4$12s %5$16s", "IVA", "CANT", "", "PRECIO", "   SUBTOTAL");
-            Ticket += "\n";
-            Ticket += "-----------------------------------------------\n";
+            Ticket += "\r\n";
+            Ticket += "-----------------------------------------------\r\n";
             for (int i = 0; i < filas; i++) {
                 String codB = tblDetalle.getValueAt(i, 4).toString().trim() + " " + tblDetalle.getValueAt(i, 8).toString().trim();
                 String Descripcion = tblDetalle.getValueAt(i, 5).toString().trim();
@@ -248,25 +250,29 @@ public class dlgConsultarFacturas extends javax.swing.JDialog {
                 }
 
                 //Ticket += String.format("%1$1s", codB + "-" + Descripcion + "\n");
-                Ticket += String.format("%1$1s", codB + "\n");
-                Ticket += String.format("%1$1s", Descripcion + "\n");
+                Ticket += String.format("%1$1s", codB + "\r\n");
+                Ticket += String.format("%1$1s", Descripcion + "\r\n");
                 Ticket += String.format("%1$-9s %2$-12s %3$-14s %4$-10s", iva, cant, formateador.format(Integer.parseInt(Punit.replace(".", "").replace(",", ""))), formateador.format(Integer.parseInt(Mont.replace(".", "").replace(",", ""))));
             }
-            Ticket += "\n";
-            Ticket += "===============================================\n";
-            Ticket += String.format("%1$5s %2$20s", "TOTAL A PAGAR Gs:", tot) + "\n";
-            Ticket += "===============================================\n";
-            Ticket += "\n";
-            Ticket += "METODO DE PAGO: " + f_pago + "\n";
-            Ticket += "ABONADO: " + formateador.format(abon) + "\n";
-            Ticket += "VUELTO:  " + formateador.format(vuel) + "\n";
-            Ticket += "\n";
-            Ticket += "         " + Empresa.getEmpresa() + "\n";
-            Ticket += "             AGRADECE SU PREFERENCIA\n";
-            Ticket += "\n";
-            Ticket += "\n";
-            Ticket += "\n";
-            Ticket += "\n";
+            Ticket += "\r\n";
+            Ticket += "===============================================\r\n";
+            Ticket += String.format("%1$5s %2$20s", "TOTAL A PAGAR Gs:", tot) + "\r\n";
+            Ticket += "===============================================\r\n";
+            Ticket += "\r\n";
+            Ticket += "DETALLE DE PAGO\r\n";
+            Ticket += "EFECTIVO:         " + formateador.format(efectivo) + "\r\n";
+            Ticket += "TRANSF. BANCARIA: " + formateador.format(tranf) + "\r\n";
+            Ticket += "QR:               " + formateador.format(qr) + "\r\n";
+            Ticket += "\r\n";
+            Ticket += "TOTAL ABONADO:    " + formateador.format(abon) + "\r\n";
+            Ticket += "VUELTO:           " + formateador.format(vuel) + "\r\n";
+            Ticket += "\r\n";
+            Ticket += "         " + Empresa.getEmpresa() + "\r\n";
+            Ticket += "             AGRADECE SU PREFERENCIA\r\n";
+            Ticket += "\r\n";
+            Ticket += "\r\n";
+            Ticket += "\r\n";
+            Ticket += "\r\n";
 
             //printerService.printString(Ticket);
             //print some stuff
@@ -287,7 +293,7 @@ public class dlgConsultarFacturas extends javax.swing.JDialog {
     }
 
     public static void imprimirFacturaOriginal(String estado, int idEmision, int Total, String Timbrad, String Desde, String Hasta, String Condicion, String NroFactura,
-            String Fecha, String Hora, String Vendedor, String Cliente, String Ruc, String Exenta, String Cinco, String Diez, int iv5, int iv10, String f_pago, int abonado, int vuelto) {
+            String Fecha, String Hora, String Vendedor, String Cliente, String Ruc, String Exenta, String Cinco, String Diez, int iv5, int iv10, int efectivo, int tranf, int qr, int abonado, int vuelto) {
         //Impresora matricial tmu-220
         if (Timbrado.getImpresora() == null) {
             Mensajes.Alerta("No se encuentra instalada la impresora predeterminada para este punto de impresión");
@@ -301,28 +307,28 @@ public class dlgConsultarFacturas extends javax.swing.JDialog {
             int filas = tblDetalle.getRowCount();
             DecimalFormat formateador = new DecimalFormat("#,###");
             String tot = formateador.format(Total);
-            String Ticket = "                " + estado + "\n";
-            Ticket += "         " + Empresa.getEmpresa() + "\n";
-            Ticket += "           VENTAS DE LACTEOS LACTOLANDA\n";
-            Ticket += "                 RUC: " + Empresa.getRUC() + "\n";
-            Ticket += "               CEL: " + Empresa.getCelular() + "\n";
-            Ticket += Empresa.getDireccion() + "\n";
-            Ticket += "     CNEL. OVIEDO - DPTO. DE CAAGUAZU - PY\n";
-            Ticket += "-----------------------------------------------\n";
-            Ticket += "              TIMBRADO: " + Timbrad + "\n";
-            Ticket += "  VALIDO DESDE: " + Desde + " HASTA: " + Hasta + "\n";
-            Ticket += "               I.V.A. INCLUIDO\n";
-            Ticket += "----------------------------------------------\n";
-            Ticket += "FACTURA " + Condicion + " NRO: " + NroFactura + "\n";
-            Ticket += "FECHA/HORA: " + Fecha + " " + Hora + "\n";
-            Ticket += "VENDEDOR: " + Vendedor + "\n";
-            Ticket += "\n";
-            Ticket += "CLIENTE: " + Cliente + "\n";
-            Ticket += "RUC/CI: " + Ruc + "\n";
+            String Ticket = "                " + estado + "\r\n";
+            Ticket += "         " + Empresa.getEmpresa() + "\r\n";
+            Ticket += "           VENTAS DE LACTEOS LACTOLANDA\r\n";
+            Ticket += "                 RUC: " + Empresa.getRUC() + "\r\n";
+            Ticket += "               CEL: " + Empresa.getCelular() + "\r\n";
+            Ticket += Empresa.getDireccion() + "\r\n";
+            Ticket += "     CNEL. OVIEDO - DPTO. DE CAAGUAZU - PY\r\n";
+            Ticket += "-----------------------------------------------\r\n";
+            Ticket += "              TIMBRADO: " + Timbrad + "\r\n";
+            Ticket += "  VALIDO DESDE: " + Desde + " HASTA: " + Hasta + "\r\n";
+            Ticket += "               I.V.A. INCLUIDO\r\n";
+            Ticket += "----------------------------------------------\r\n";
+            Ticket += "FACTURA " + Condicion + " NRO: " + NroFactura + "\r\n";
+            Ticket += "FECHA/HORA: " + Fecha + " " + Hora + "\r\n";
+            Ticket += "VENDEDOR: " + Vendedor + "\r\n";
+            Ticket += "\r\n";
+            Ticket += "CLIENTE: " + Cliente + "\r\n";
+            Ticket += "RUC/CI: " + Ruc + "\r\n";
             Ticket += "----------------------------------------------\n";
             Ticket += String.format("%1$1s %2$10s %3$1s %4$12s %5$16s", "IVA", "CANT", "", "PRECIO", "   SUBTOTAL");
-            Ticket += "\n";
-            Ticket += "----------------------------------------------\n";
+            Ticket += "\r\n";
+            Ticket += "----------------------------------------------\r\n";
             for (int i = 0; i < filas; i++) {
                 String codB = tblDetalle.getValueAt(i, 4).toString().trim() + " " + tblDetalle.getValueAt(i, 8).toString().trim();
                 String Descripcion = tblDetalle.getValueAt(i, 5).toString().trim();
@@ -343,48 +349,52 @@ public class dlgConsultarFacturas extends javax.swing.JDialog {
                 }
 
                 //Ticket += String.format("%1$1s", codB + "-" + Descripcion + "\n");
-                Ticket += String.format("%1$1s", codB + "\n");
-                Ticket += String.format("%1$1s", Descripcion + "\n");
+                Ticket += String.format("%1$1s", codB + "\r\n");
+                Ticket += String.format("%1$1s", Descripcion + "\r\n");
                 Ticket += String.format("%1$-9s %2$-12s %3$-14s %4$-10s", iva, cant, formateador.format(Integer.parseInt(Punit.replace(".", "").replace(",", ""))), formateador.format(Integer.parseInt(Mont.replace(".", "").replace(",", ""))));
             }
-            Ticket += "\n";
-            Ticket += "==============================================\n";
-            Ticket += String.format("%1$5s %2$20s", "TOTAL A PAGAR Gs:", tot) + "\n";
+            Ticket += "\r\n";
+            Ticket += "==============================================\r\n";
+            Ticket += String.format("%1$5s %2$20s", "TOTAL A PAGAR Gs:", tot) + "\r\n";
             //Ticket += "           TOTAL Gs.:"+tot+"\n";
-            Ticket += "==============================================\n";
+            Ticket += "==============================================\r\n";
             String letras = d.Convertir(tot.replace(".", "").replace(",", ""), true);
-            Ticket += String.format("%1$1s", letras + "\n");
+            Ticket += String.format("%1$1s", letras + "\r\n");
             //Ticket += "\n";
-            Ticket += "==============================================\n";
-            Ticket += "\n";
-            Ticket += "-------------- TOTALES GRAVADA ---------------\n";
-            Ticket += "EXENTAS     ------>              " + formateador.format(Integer.parseInt(Exenta.replace(".", "").replace(",", ""))) + "\n";
-            Ticket += "GRAVADA 5%  ------>              " + formateador.format(Integer.parseInt(Cinco.replace(".", "").replace(",", ""))) + "\n";
-            Ticket += "GRAVADA 10% ------>              " + formateador.format(Integer.parseInt(Diez.replace(".", "").replace(",", ""))) + "\n";
-            Ticket += "----------- LIQUIDACION DEL I.V.A. -----------\n";
+            Ticket += "==============================================\r\n";
+            Ticket += "\r\n";
+            Ticket += "-------------- TOTALES GRAVADA ---------------\r\n";
+            Ticket += "EXENTAS     ------>              " + formateador.format(Integer.parseInt(Exenta.replace(".", "").replace(",", ""))) + "\r\n";
+            Ticket += "GRAVADA 5%  ------>              " + formateador.format(Integer.parseInt(Cinco.replace(".", "").replace(",", ""))) + "\r\n";
+            Ticket += "GRAVADA 10% ------>              " + formateador.format(Integer.parseInt(Diez.replace(".", "").replace(",", ""))) + "\r\n";
+            Ticket += "----------- LIQUIDACION DEL I.V.A. -----------\r\n";
             //int iv5 = Redondeo.redondearI(Integer.parseInt(Cinco.replace(".", "").replace(",", "")) / 21);
-            Ticket += "I.V.A. 5%   ------>              " + formateador.format(iv5) + "\n";
+            Ticket += "I.V.A. 5%   ------>              " + formateador.format(iv5) + "\r\n";
             //int iv10 = Redondeo.redondearI(Integer.parseInt(Diez.replace(".", "").replace(",", "")) / 11);
-            Ticket += "I.V.A. 10%  ------>              " + formateador.format(iv10) + "\n";
-            Ticket += "----------------------------------------------\n";
+            Ticket += "I.V.A. 10%  ------>              " + formateador.format(iv10) + "\r\n";
+            Ticket += "----------------------------------------------\r\n";
             String totaliva = String.valueOf(iv5 + iv10);
             //Ticket += String.format("%1$5s %2$23s", "TOTAL I.V.A.", formateador.format(Integer.parseInt(totaliva.replace(".", "").replace(",", "")))) + "\n";
-            Ticket += "TOTAL I.V.A.: " + formateador.format(Integer.parseInt(totaliva.replace(".", "").replace(",", ""))) + "\n";
-            Ticket += "----------------------------------------------\n";
-            Ticket += "\n";
-            Ticket += "METODO DE PAGO: " + f_pago + "\n";
-            Ticket += "ABONADO: " + formateador.format(abonado) + "\n";
-            Ticket += "VUELTO:  " + formateador.format(vuelto) + "\n";
-            Ticket += "\n";
-            Ticket += "ORIGINAL:  CLIENTE\n";
+            Ticket += "TOTAL I.V.A.: " + formateador.format(Integer.parseInt(totaliva.replace(".", "").replace(",", ""))) + "\r\n";
+            Ticket += "----------------------------------------------\r\n";
+            Ticket += "\r\n";
+            Ticket += "DETALLE DE PAGO\r\n";
+            Ticket += "EFECTIVO:         " + formateador.format(efectivo) + "\r\n";
+            Ticket += "TRANSF. BANCARIA: " + formateador.format(tranf) + "\r\n";
+            Ticket += "QR:               " + formateador.format(qr) + "\r\n";
+            Ticket += "\r\n";
+            Ticket += "TOTAL ABONADO:    " + formateador.format(abonado) + "\r\n";
+            Ticket += "VUELTO:           " + formateador.format(vuelto) + "\r\n";
+            Ticket += "\r\n";
+            Ticket += "ORIGINAL:  CLIENTE\r\n";
             // Ticket += "DUPLICADO: Archivo Tributario\n";
-            Ticket += "\n";
-            Ticket += "         " + Empresa.getEmpresa() + "\n";
-            Ticket += "             AGRADECE SU PREFERENCIA\n";
-            Ticket += "\n";
-            Ticket += "\n";
-            Ticket += "\n";
-            Ticket += "\n";
+            Ticket += "\r\n";
+            Ticket += "         " + Empresa.getEmpresa() + "\r\n";
+            Ticket += "             AGRADECE SU PREFERENCIA\r\n";
+            Ticket += "\r\n";
+            Ticket += "\r\n";
+            Ticket += "\r\n";
+            Ticket += "\r\n";
 
             try {
                 printerService.printString2(Timbrado.getImpresora(), Ticket);
@@ -568,14 +578,16 @@ public class dlgConsultarFacturas extends javax.swing.JDialog {
             }
         };
         L5 = new javax.swing.JLabel();
-        txtMet_pago = new javax.swing.JTextField();
-        L6 = new javax.swing.JLabel();
-        txtBoleta = new javax.swing.JTextField();
-        L7 = new javax.swing.JLabel();
-        txtAbonado = new javax.swing.JTextField();
+        txtEfectivo = new javax.swing.JTextField();
+        txtTransferencia = new javax.swing.JTextField();
+        txtTransfBoleta = new javax.swing.JTextField();
         L8 = new javax.swing.JLabel();
         txtVuelto = new javax.swing.JTextField();
         divisor = new javax.swing.JSeparator();
+        L6 = new javax.swing.JLabel();
+        L7 = new javax.swing.JLabel();
+        txtQR = new javax.swing.JTextField();
+        txtQRBoleta = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         PanelContenedor1 = new rojeru_san.rspanel.RSPanelImage();
@@ -627,7 +639,6 @@ public class dlgConsultarFacturas extends javax.swing.JDialog {
             }
         ));
         tblFactura.setGridColor(new java.awt.Color(204, 204, 204));
-        tblFactura.setRowHeight(20);
         tblFactura.setSelectionBackground(new java.awt.Color(0, 102, 102));
         tblFactura.setShowGrid(true);
         tblFactura.setShowVerticalLines(false);
@@ -661,7 +672,6 @@ public class dlgConsultarFacturas extends javax.swing.JDialog {
         txtVendedor.setBackground(new java.awt.Color(255, 255, 255));
         txtVendedor.setFont(new java.awt.Font("Roboto", 0, 10)); // NOI18N
         txtVendedor.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
-        txtVendedor.setOpaque(false);
         txtVendedor.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtVendedorActionPerformed(evt);
@@ -677,7 +687,6 @@ public class dlgConsultarFacturas extends javax.swing.JDialog {
         txtCodCliente.setBackground(new java.awt.Color(255, 255, 255));
         txtCodCliente.setFont(new java.awt.Font("Roboto", 0, 10)); // NOI18N
         txtCodCliente.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
-        txtCodCliente.setOpaque(false);
         txtCodCliente.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtCodClienteActionPerformed(evt);
@@ -693,7 +702,6 @@ public class dlgConsultarFacturas extends javax.swing.JDialog {
         txtRazonSocial.setBackground(new java.awt.Color(255, 255, 255));
         txtRazonSocial.setFont(new java.awt.Font("Roboto", 0, 10)); // NOI18N
         txtRazonSocial.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
-        txtRazonSocial.setOpaque(false);
         txtRazonSocial.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtRazonSocialActionPerformed(evt);
@@ -709,7 +717,6 @@ public class dlgConsultarFacturas extends javax.swing.JDialog {
         txtRuc.setBackground(new java.awt.Color(255, 255, 255));
         txtRuc.setFont(new java.awt.Font("Roboto", 0, 10)); // NOI18N
         txtRuc.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
-        txtRuc.setOpaque(false);
         txtRuc.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtRucActionPerformed(evt);
@@ -733,7 +740,6 @@ public class dlgConsultarFacturas extends javax.swing.JDialog {
             }
         ));
         tblDetalle.setGridColor(new java.awt.Color(204, 204, 204));
-        tblDetalle.setRowHeight(20);
         tblDetalle.setSelectionBackground(new java.awt.Color(0, 102, 102));
         tblDetalle.setShowGrid(true);
         tblDetalle.setShowVerticalLines(false);
@@ -741,74 +747,98 @@ public class dlgConsultarFacturas extends javax.swing.JDialog {
         tblDetalle.getTableHeader().setReorderingAllowed(false);
         jScrollPane2.setViewportView(tblDetalle);
 
-        jPanel2.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 45, 1067, 266));
+        jPanel2.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 67, 1067, 244));
 
         L5.setFont(new java.awt.Font("Roboto", 1, 10)); // NOI18N
-        L5.setText("METODO DE PAGO:");
+        L5.setText("EFECTIVO:");
         jPanel2.add(L5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 23, -1, 17));
 
-        txtMet_pago.setEditable(false);
-        txtMet_pago.setBackground(new java.awt.Color(255, 255, 255));
-        txtMet_pago.setFont(new java.awt.Font("Roboto", 0, 10)); // NOI18N
-        txtMet_pago.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
-        txtMet_pago.setOpaque(false);
-        txtMet_pago.addActionListener(new java.awt.event.ActionListener() {
+        txtEfectivo.setEditable(false);
+        txtEfectivo.setBackground(new java.awt.Color(255, 255, 255));
+        txtEfectivo.setFont(new java.awt.Font("Roboto", 0, 10)); // NOI18N
+        txtEfectivo.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtEfectivo.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
+        txtEfectivo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtMet_pagoActionPerformed(evt);
+                txtEfectivoActionPerformed(evt);
             }
         });
-        jPanel2.add(txtMet_pago, new org.netbeans.lib.awtextra.AbsoluteConstraints(105, 23, 170, 18));
+        jPanel2.add(txtEfectivo, new org.netbeans.lib.awtextra.AbsoluteConstraints(65, 23, 120, 18));
 
-        L6.setFont(new java.awt.Font("Roboto", 1, 10)); // NOI18N
-        L6.setText("BOLETA NRO:");
-        jPanel2.add(L6, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 23, -1, 17));
-
-        txtBoleta.setEditable(false);
-        txtBoleta.setBackground(new java.awt.Color(255, 255, 255));
-        txtBoleta.setFont(new java.awt.Font("Roboto", 0, 10)); // NOI18N
-        txtBoleta.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
-        txtBoleta.setOpaque(false);
-        txtBoleta.addActionListener(new java.awt.event.ActionListener() {
+        txtTransferencia.setEditable(false);
+        txtTransferencia.setBackground(new java.awt.Color(255, 255, 255));
+        txtTransferencia.setFont(new java.awt.Font("Roboto", 0, 10)); // NOI18N
+        txtTransferencia.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtTransferencia.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
+        txtTransferencia.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtBoletaActionPerformed(evt);
+                txtTransferenciaActionPerformed(evt);
             }
         });
-        jPanel2.add(txtBoleta, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 23, 140, 18));
+        jPanel2.add(txtTransferencia, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 23, 120, 18));
 
-        L7.setFont(new java.awt.Font("Roboto", 1, 10)); // NOI18N
-        L7.setText("ABONADO:");
-        jPanel2.add(L7, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 23, -1, 17));
-
-        txtAbonado.setEditable(false);
-        txtAbonado.setBackground(new java.awt.Color(255, 255, 255));
-        txtAbonado.setFont(new java.awt.Font("Roboto", 0, 10)); // NOI18N
-        txtAbonado.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
-        txtAbonado.setOpaque(false);
-        txtAbonado.addActionListener(new java.awt.event.ActionListener() {
+        txtTransfBoleta.setEditable(false);
+        txtTransfBoleta.setBackground(new java.awt.Color(255, 255, 255));
+        txtTransfBoleta.setFont(new java.awt.Font("Roboto", 0, 10)); // NOI18N
+        txtTransfBoleta.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtTransfBoleta.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
+        txtTransfBoleta.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtAbonadoActionPerformed(evt);
+                txtTransfBoletaActionPerformed(evt);
             }
         });
-        jPanel2.add(txtAbonado, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 23, 90, 18));
+        jPanel2.add(txtTransfBoleta, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 45, 120, 18));
 
         L8.setFont(new java.awt.Font("Roboto", 1, 10)); // NOI18N
-        L8.setText("ABONADO:");
-        jPanel2.add(L8, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 23, -1, 17));
+        L8.setText("VUELTO:");
+        jPanel2.add(L8, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 23, -1, 17));
 
         txtVuelto.setEditable(false);
         txtVuelto.setBackground(new java.awt.Color(255, 255, 255));
         txtVuelto.setFont(new java.awt.Font("Roboto", 0, 10)); // NOI18N
+        txtVuelto.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         txtVuelto.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
-        txtVuelto.setOpaque(false);
         txtVuelto.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtVueltoActionPerformed(evt);
             }
         });
-        jPanel2.add(txtVuelto, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 23, 90, 18));
+        jPanel2.add(txtVuelto, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 23, 120, 18));
 
         divisor.setForeground(new java.awt.Color(204, 204, 204));
         jPanel2.add(divisor, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 22, 1056, 1));
+
+        L6.setFont(new java.awt.Font("Roboto", 1, 10)); // NOI18N
+        L6.setText("TRANSF. BANC:");
+        jPanel2.add(L6, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 23, -1, 17));
+
+        L7.setFont(new java.awt.Font("Roboto", 1, 10)); // NOI18N
+        L7.setText("QR");
+        jPanel2.add(L7, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 23, -1, 18));
+
+        txtQR.setEditable(false);
+        txtQR.setBackground(new java.awt.Color(255, 255, 255));
+        txtQR.setFont(new java.awt.Font("Roboto", 0, 10)); // NOI18N
+        txtQR.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtQR.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
+        txtQR.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtQRActionPerformed(evt);
+            }
+        });
+        jPanel2.add(txtQR, new org.netbeans.lib.awtextra.AbsoluteConstraints(435, 23, 120, 18));
+
+        txtQRBoleta.setEditable(false);
+        txtQRBoleta.setBackground(new java.awt.Color(255, 255, 255));
+        txtQRBoleta.setFont(new java.awt.Font("Roboto", 0, 10)); // NOI18N
+        txtQRBoleta.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtQRBoleta.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
+        txtQRBoleta.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtQRBoletaActionPerformed(evt);
+            }
+        });
+        jPanel2.add(txtQRBoleta, new org.netbeans.lib.awtextra.AbsoluteConstraints(435, 45, 120, 18));
 
         Blanco.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(1, 359, 1066, 311));
 
@@ -1081,7 +1111,7 @@ public class dlgConsultarFacturas extends javax.swing.JDialog {
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addComponent(Blanco, javax.swing.GroupLayout.DEFAULT_SIZE, 1068, Short.MAX_VALUE)
+        .addComponent(Blanco, javax.swing.GroupLayout.DEFAULT_SIZE, 1067, Short.MAX_VALUE)
     );
     layout.setVerticalGroup(
         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1142,17 +1172,17 @@ public class dlgConsultarFacturas extends javax.swing.JDialog {
         // TODO add your handling code here:
     }//GEN-LAST:event_tblFacturaMouseReleased
 
-    private void txtMet_pagoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtMet_pagoActionPerformed
+    private void txtEfectivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtEfectivoActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtMet_pagoActionPerformed
+    }//GEN-LAST:event_txtEfectivoActionPerformed
 
-    private void txtBoletaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBoletaActionPerformed
+    private void txtTransferenciaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTransferenciaActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtBoletaActionPerformed
+    }//GEN-LAST:event_txtTransferenciaActionPerformed
 
-    private void txtAbonadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtAbonadoActionPerformed
+    private void txtTransfBoletaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTransfBoletaActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtAbonadoActionPerformed
+    }//GEN-LAST:event_txtTransfBoletaActionPerformed
 
     private void txtVueltoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtVueltoActionPerformed
         // TODO add your handling code here:
@@ -1207,20 +1237,22 @@ public class dlgConsultarFacturas extends javax.swing.JDialog {
             String DIEZ = txt10.getText();
             int iv5 = Integer.parseInt(dlgConsultarFacturas.tblFactura.getValueAt(x, 15).toString());
             int iv10 = Integer.parseInt(dlgConsultarFacturas.tblFactura.getValueAt(x, 16).toString());
-            String metodo_pago = dlgConsultarFacturas.tblFactura.getValueAt(x, 20).toString();
-            int abonado = Integer.parseInt(dlgConsultarFacturas.tblFactura.getValueAt(x, 22).toString());
-            int vuelto = Integer.parseInt(dlgConsultarFacturas.tblFactura.getValueAt(x, 23).toString());
+            int efectivo = Integer.parseInt(dlgConsultarFacturas.tblFactura.getValueAt(x, 20).toString());
+            int tranf = Integer.parseInt(dlgConsultarFacturas.tblFactura.getValueAt(x, 21).toString());
+            int qr = Integer.parseInt(dlgConsultarFacturas.tblFactura.getValueAt(x, 23).toString());
+            int abonado = efectivo+tranf+qr;
+            int vuelto = Integer.parseInt(dlgConsultarFacturas.tblFactura.getValueAt(x, 25).toString());
 
             int rpta = Mensajes.confirmar("¿Seguro que desea Re-Imprimir esta Venta?");
             if (rpta == 0) {
                 if (tipo.equals("FACTURA LEGAL")) {
                     try {
-                        imprimirFacturaOriginal(estado, idEmision, Integer.parseInt(Total), Timbrado, Desde, Hasta, Condicion, Numeracion, Fecha, Hora, Vendedor, RazonSocial, RUC, EXENTA, CINCO, DIEZ, iv5, iv10, metodo_pago, abonado, vuelto);
+                        imprimirFacturaOriginal(estado, idEmision, Integer.parseInt(Total), Timbrado, Desde, Hasta, Condicion, Numeracion, Fecha, Hora, Vendedor, RazonSocial, RUC, EXENTA, CINCO, DIEZ, iv5, iv10, efectivo, tranf, qr, abonado, vuelto);
                         // imprimirFacturaDuplicado(estado, idEmision, Integer.parseInt(Total), Timbrado, Desde, Hasta, Condicion, Numeracion, Fecha, Hora, Vendedor, RazonSocial, RUC, EXENTA, CINCO, DIEZ, iv5, iv10);
                     } catch (NumberFormatException e) {
                     }
                 } else if (tipo.equals("TICKET")) {
-                    imprimirTicket(idEmision, Integer.parseInt(Total), Condicion, Numeracion, Fecha, Hora, Vendedor, RazonSocial, RUC, metodo_pago, abonado, vuelto);
+                    imprimirTicket(idEmision, Integer.parseInt(Total), Condicion, Numeracion, Fecha, Hora, Vendedor, RazonSocial, RUC, efectivo, tranf, qr, abonado, vuelto);
                 }
             }
         }
@@ -1299,6 +1331,14 @@ public class dlgConsultarFacturas extends javax.swing.JDialog {
     private void cbVendedoresKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cbVendedoresKeyPressed
         // TODO add your handling code here:
     }//GEN-LAST:event_cbVendedoresKeyPressed
+
+    private void txtQRActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtQRActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtQRActionPerformed
+
+    private void txtQRBoletaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtQRBoletaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtQRBoletaActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1382,14 +1422,16 @@ public class dlgConsultarFacturas extends javax.swing.JDialog {
     public static javax.swing.JTable tblFactura;
     private static javax.swing.JTextField txt10;
     private static javax.swing.JTextField txt5;
-    public static javax.swing.JTextField txtAbonado;
-    public static javax.swing.JTextField txtBoleta;
     public static javax.swing.JTextField txtCodCliente;
     private javax.swing.JTextField txtDesde;
     public static javax.swing.JTextField txtE;
-    public static javax.swing.JTextField txtMet_pago;
+    public static javax.swing.JTextField txtEfectivo;
+    public static javax.swing.JTextField txtQR;
+    public static javax.swing.JTextField txtQRBoleta;
     public static javax.swing.JTextField txtRazonSocial;
     public static javax.swing.JTextField txtRuc;
+    public static javax.swing.JTextField txtTransfBoleta;
+    public static javax.swing.JTextField txtTransferencia;
     private static javax.swing.JTextField txtV;
     public static javax.swing.JTextField txtVendedor;
     public static javax.swing.JTextField txtVuelto;

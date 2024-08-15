@@ -203,7 +203,7 @@ public class GestionarVendedor {
         return v;
     }
 
-    public static Vendedor busVendedorTicket(String cod) {
+    /*public static Vendedor busVendedorTicket(String cod) {
         Vendedor v = null;
         StringBuilder sql = new StringBuilder("SELECT * FROM v_usuario WHERE CodVend =");
         sql.append(cod);
@@ -222,7 +222,7 @@ public class GestionarVendedor {
             dlgVentas.txtCodVendedorT.selectAll();
         }
         return v;
-    }
+    }*/
 
     public static String delVendedor(String cod, String usuario) {
         String msg;

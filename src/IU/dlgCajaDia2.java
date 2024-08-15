@@ -27,9 +27,9 @@ import javax.swing.JOptionPane;
 public final class dlgCajaDia2 extends javax.swing.JDialog {
 
     public static String NCaja;
-    public int ING;
-    public int GAS;
-    public int INI;
+    public static int ING;
+    public static int GAS;
+    public static int INI;
 
     public Reporte jasper;
     static DataSourceService1 dss1 = new DataSourceService1();
@@ -68,7 +68,13 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
         } catch (NumberFormatException e) {
             System.out.println(e.getMessage());
         }
+        
+        Inicializacion();
 
+        
+    }
+    
+    public static void Inicializacion() {
         totalVentasCont();
         totalVentasContOtros();
         totalVentasContOtros1();
@@ -83,13 +89,10 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
         totalCaja();
         calcular();
         totalVentasContBoca1();
-        //Opcion_1();
         Boca_1();
         Gastos_1();
         calcularDiferencia1();
-        //
         totalVentasContBoca2();
-        //Opcion_2();
         Boca_2();
         Gastos_2();
         calcularDiferencia2();
@@ -98,7 +101,7 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
         DiferenciaGral();
     }
 
-    void abrirRegistroValores() {
+    static void abrirRegistroValores() {
         try {
             dlgRegistroValores rv = new dlgRegistroValores(null, true);
             rv.setLocationRelativeTo(null);
@@ -121,7 +124,7 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
         }
     }
 
-    public void calcular() {
+    public static void calcular() {
         int entregar, gastos, entregado, dif;
         entregar = Integer.parseInt(txtEntregar.getText().trim().replace(",", "").replace(".", ""));
         entregado = Integer.parseInt(txtEntregado.getText().trim().replace(",", "").replace(".", ""));
@@ -906,7 +909,7 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
                 .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(56, Short.MAX_VALUE))
         );
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
@@ -1015,7 +1018,7 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(7, Short.MAX_VALUE))
         );
         BlancoLayout.setVerticalGroup(
             BlancoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1280,7 +1283,7 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
         txtOpcion2.setVisible(false);
     }
 
-    void EntregadoGral() {
+    static void EntregadoGral() {
         int Entregado1, Entregado2;
         Entregado1 = Integer.parseInt(txtEntregado_boca_1.getText().replace(".", "").replace(",", ""));
         Entregado2 = Integer.parseInt(txtEntregado_boca_2.getText().replace(".", "").replace(",", ""));
@@ -1289,7 +1292,7 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
         txtEntregado.setText(df.format(Suma));
     }
 
-    void GastosGral() {
+    static void GastosGral() {
         int Gasto1, Gasto2;
         Gasto1 = Integer.parseInt(txtGastos_boca_1.getText().replace(".", "").replace(",", ""));
         Gasto2 = Integer.parseInt(txtGastos_boca_2.getText().replace(".", "").replace(",", ""));
@@ -1298,7 +1301,7 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
         txtGastos.setText(df.format(Suma));
     }
 
-    void DiferenciaGral() {
+    static void DiferenciaGral() {
         int Dif1, Dif2;
         Dif1 = Integer.parseInt(txtDiferencia_boca_1.getText().replace(".", "").replace(",", ""));
         Dif2 = Integer.parseInt(txtDiferencia_boca_2.getText().replace(".", "").replace(",", ""));
@@ -1314,19 +1317,20 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
         txtDiferencia.setText(df.format(Suma));
     }
 
-    void totalVentasCont() {
+    static void totalVentasCont() {
         try {
-            String TotalVenta = (generarCodigos.getDecimales("SELECT IFNULL((select SUM(fac_totalfinal) from factura where caja_ca_id = " + NCaja + " and fac_indicador='S' and fac_tipoventa='CONTADO' and f_pago=1),0)"));
+            String TotalVenta = (generarCodigos.getDecimales("SELECT IFNULL((select SUM(monto_pago_efectivo) from factura where caja_ca_id = " + NCaja + " and fac_indicador='S' and fac_tipoventa='CONTADO'),0)"));
+            String Vuelto = (generarCodigos.getDecimales("SELECT IFNULL((select SUM(vuelto_pago) from factura where caja_ca_id = " + NCaja + " and fac_indicador='S' and fac_tipoventa='CONTADO'),0)"));
             DecimalFormat df = new DecimalFormat("#,###");
-            txtTotalVentas.setText(df.format(Integer.valueOf((TotalVenta.trim().replace(".", "").replace(",", "")))));
+            txtTotalVentas.setText(df.format((Integer.parseInt((TotalVenta.trim().replace(".", "").replace(",", ""))) - Integer.parseInt((Vuelto.trim().replace(".", "").replace(",", ""))))));
         } catch (NumberFormatException e) {
             txtTotalVentas.setText("0");
         }
     }
 
-    void totalVentasContOtros() {
+    static void totalVentasContOtros() {
         try {
-            String TotalVenta = (generarCodigos.getDecimales("SELECT IFNULL((select SUM(fac_totalfinal) from factura where caja_ca_id = " + NCaja + " and fac_indicador='S' and fac_tipoventa='CONTADO' and f_pago=2),0)"));
+            String TotalVenta = (generarCodigos.getDecimales("SELECT IFNULL((select SUM(monto_pago_transferencia) from factura where caja_ca_id = " + NCaja + " and fac_indicador='S' and fac_tipoventa='CONTADO'),0)"));
             DecimalFormat df = new DecimalFormat("#,###");
             txtTotalVentasOtros.setText(df.format(Integer.valueOf((TotalVenta.trim().replace(".", "").replace(",", "")))));
         } catch (NumberFormatException e) {
@@ -1334,9 +1338,9 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
         }
     }
     
-    void totalVentasContOtros1() {
+    static void totalVentasContOtros1() {
         try {
-            String TotalVenta = (generarCodigos.getDecimales("SELECT IFNULL((select SUM(fac_totalfinal) from factura where caja_ca_id = " + NCaja + " and fac_indicador='S' and fac_tipoventa='CONTADO' and f_pago=3),0)"));
+            String TotalVenta = (generarCodigos.getDecimales("SELECT IFNULL((select SUM(monto_pago_qr) from factura where caja_ca_id = " + NCaja + " and fac_indicador='S' and fac_tipoventa='CONTADO'),0)"));
             DecimalFormat df = new DecimalFormat("#,###");
             txtTotalVentasOtros1.setText(df.format(Integer.valueOf((TotalVenta.trim().replace(".", "").replace(",", "")))));
         } catch (NumberFormatException e) {
@@ -1344,7 +1348,7 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
         }
     }
 
-    void totalVentasCred() {
+    static void totalVentasCred() {
         try {
             String TotalVenta = (generarCodigos.getDecimales("SELECT IFNULL((select SUM(fac_totalfinal) from factura where caja_ca_id = " + NCaja + " and fac_indicador='S' and fac_tipoventa='CREDITO'),0)"));
             DecimalFormat df = new DecimalFormat("#,###");
@@ -1354,7 +1358,7 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
         }
     }
 
-    void totalCompraCont() {
+    static void totalCompraCont() {
         try {
             String TotalCompra = (generarCodigos.getDecimales("SELECT IFNULL((select SUM(com_total) from compra where caja_ca_id = " + NCaja + " and com_indicador='S' and com_condpago='CONTADO' and tipo='L'),0)"));
             DecimalFormat df = new DecimalFormat("#,###");
@@ -1365,7 +1369,7 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
 
     }
 
-    void totalCompraCred() {
+    static void totalCompraCred() {
         try {
             String TotalCompra = (generarCodigos.getDecimales("SELECT IFNULL((select SUM(com_total) from compra where caja_ca_id = " + NCaja + " and com_indicador='S' and com_condpago='CREDITO' and tipo='L'),0)"));
             DecimalFormat df = new DecimalFormat("#,###");
@@ -1376,7 +1380,7 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
 
     }
 
-    void totalGasto() {
+    static void totalGasto() {
         try {
             DecimalFormat df = new DecimalFormat("#,###");
             String TotalGasto = (generarCodigos.getDecimales("SELECT IFNULL((select SUM(ga_importe) from gastos where caja_ca_id = " + NCaja + " and ga_indicador='S' AND tipo='L'),0)"));
@@ -1396,7 +1400,7 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
         }
     }
 
-    void totalIngreso() {
+    static void totalIngreso() {
         try {
             String TotalIngreso = (generarCodigos.getDecimales("SELECT IFNULL((select SUM(ing_importe) from ingreso where caja_ca_id = " + NCaja + " and ing_indicador='S'),0)"));
             DecimalFormat df = new DecimalFormat("#,###");
@@ -1407,7 +1411,7 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
 
     }
 
-    void gastoTotal() {
+    static void gastoTotal() {
         try {
             DecimalFormat df = new DecimalFormat("#,###");
             int G = Integer.parseInt(txtTotalGastos.getText().replace(",", "").replace(".", ""));
@@ -1418,7 +1422,7 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
         }
     }
 
-    void ingresoTotal() {
+    static void ingresoTotal() {
         try {
             DecimalFormat df = new DecimalFormat("#,###");
             int IG = Integer.parseInt(txtTotalVentas.getText().replace(",", "").replace(".", "")) + Integer.parseInt(txtTotalVentasOtros.getText().replace(",", "").replace(".", "")) + Integer.parseInt(txtTotalVentasOtros1.getText().replace(",", "").replace(".", "")) + (Integer.parseInt(txtTotalIngreso.getText().replace(",", "").replace(".", "")));
@@ -1429,27 +1433,29 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
         }
     }
 
-    void totalCaja() {
+    static void totalCaja() {
         DecimalFormat df = new DecimalFormat("#,###");
         int res = (Integer.parseInt(txtTotalVentas.getText().replace(",", "").replace(".", "")) + (Integer.parseInt(txtTotalIngreso.getText().replace(",", "").replace(".", "")))) - GAS;
         txtEntregar.setText(df.format(res));
     }
 
-    void totalVentasContBoca1() {
+    static void totalVentasContBoca1() {
         try {
-            String TotalVenta = (generarCodigos.getDecimales("SELECT IFNULL((select SUM(fac_totalfinal) from factura where caja_ca_id = " + NCaja + " and fac_indicador='S' and fac_tipoventa='CONTADO' and idboca=1 and f_pago=1),0)"));
+            String TotalVenta = (generarCodigos.getDecimales("SELECT IFNULL((select SUM(monto_pago_efectivo) from factura where caja_ca_id = " + NCaja + " and fac_indicador='S' and fac_tipoventa='CONTADO' and idboca=1),0)"));
+            String Vuelto = (generarCodigos.getDecimales("SELECT IFNULL((select SUM(vuelto_pago) from factura where caja_ca_id = " + NCaja + " and fac_indicador='S' and fac_tipoventa='CONTADO' and idboca=1),0)"));
             DecimalFormat df = new DecimalFormat("#,###");
-            txtB1.setText(df.format(Integer.valueOf((TotalVenta.trim().replace(".", "").replace(",", "")))));
+            txtB1.setText(df.format((Integer.parseInt((TotalVenta.trim().replace(".", "").replace(",", "")))- Integer.parseInt((Vuelto.trim().replace(".", "").replace(",", ""))))));
         } catch (NumberFormatException e) {
             txtB1.setText("0");
         }
     }
 
-    void totalVentasContBoca2() {
+    static void totalVentasContBoca2() {
         try {
-            String TotalVenta = (generarCodigos.getDecimales("SELECT IFNULL((select SUM(fac_totalfinal) from factura where caja_ca_id = " + NCaja + " and fac_indicador='S' and fac_tipoventa='CONTADO' and idboca=2 and f_pago=1),0)"));
+            String TotalVenta = (generarCodigos.getDecimales("SELECT IFNULL((select SUM(monto_pago_efectivo) from factura where caja_ca_id = " + NCaja + " and fac_indicador='S' and fac_tipoventa='CONTADO' and idboca=2),0)"));
+            String Vuelto = (generarCodigos.getDecimales("SELECT IFNULL((select SUM(vuelto_pago) from factura where caja_ca_id = " + NCaja + " and fac_indicador='S' and fac_tipoventa='CONTADO' and idboca=2),0)"));
             DecimalFormat df = new DecimalFormat("#,###");
-            txtB2.setText(df.format(Integer.valueOf((TotalVenta.trim().replace(".", "").replace(",", "")))));
+            txtB2.setText(df.format((Integer.parseInt((TotalVenta.trim().replace(".", "").replace(",", "")))- Integer.parseInt((Vuelto.trim().replace(".", "").replace(",", ""))))));
         } catch (NumberFormatException e) {
             txtB2.setText("0");
         }
@@ -1465,7 +1471,7 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
             //txtEntregado_boca_1.setText("0");
         }
     }*/
-    void Boca_1() {
+    static void Boca_1() {
         try {
             //String boca_1 = (generarCodigos.getDecimales("SELECT IFNULL((select entregado from arreglo_caja where idcaja = " + NCaja + " and idboca= 1),0) AS entregado1"));
             String boca_1 = (generarCodigos.getDecimales("SELECT IFNULL((select SUM(entregado) from arreglo_caja_2 where idcaja =" + NCaja + " and idboca= 1 AND concepto!='G' and estado='S'),0) AS entregado1"));
@@ -1476,7 +1482,7 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
         }
     }
 
-    void Gastos_1() {
+    static void Gastos_1() {
 
         try {
             //String boca_1 = (generarCodigos.getDecimales("SELECT IFNULL((select entregado from arreglo_caja where idcaja = " + NCaja + " and idboca= 1),0) AS entregado1"));
@@ -1496,7 +1502,7 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
         }*/
     }
 
-    void calcularDiferencia1() {
+    static void calcularDiferencia1() {
         int entregar, gastos, entregado, dif;
         entregar = Integer.parseInt(txtB1.getText().trim().replace(",", "").replace(".", ""));
         entregado = Integer.parseInt(txtEntregado_boca_1.getText().trim().replace(",", "").replace(".", ""));
@@ -1526,7 +1532,7 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
             //txtEntregado_boca_1.setText("0");
         }
     }*/
-    void Boca_2() {
+    static void Boca_2() {
         try {
             String boca_2 = (generarCodigos.getDecimales("SELECT IFNULL((select SUM(entregado) from arreglo_caja_2 where idcaja = " + NCaja + " and idboca= 2 AND concepto!='G' and estado='S'),0) AS entregado2"));
             DecimalFormat df = new DecimalFormat("#,###");
@@ -1536,7 +1542,7 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
         }
     }
 
-    void Gastos_2() {
+    static void Gastos_2() {
 
         try {
             String boca_2 = (generarCodigos.getDecimales("SELECT IFNULL((select SUM(entregado) from arreglo_caja_2 where idcaja = " + NCaja + " and idboca= 2 AND concepto='G' and estado='S'),0) AS entregado2"));
@@ -1555,7 +1561,7 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
         }*/
     }
 
-    void calcularDiferencia2() {
+    static void calcularDiferencia2() {
         int entregar, gastos, entregado, dif;
         entregar = Integer.parseInt(txtB2.getText().trim().replace(",", "").replace(".", ""));
         entregado = Integer.parseInt(txtEntregado_boca_2.getText().trim().replace(",", "").replace(".", ""));
@@ -2048,10 +2054,10 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTextPane jTextPane1;
-    private javax.swing.JLabel lbEstado;
-    private javax.swing.JLabel lbFecha;
+    private static javax.swing.JLabel lbEstado;
+    private static javax.swing.JLabel lbFecha;
     private javax.swing.JLabel lbHora;
-    private javax.swing.JLabel lbInicial;
+    private static javax.swing.JLabel lbInicial;
     public static javax.swing.JLabel lbNCaja;
     private javax.swing.JLabel lbUsuI;
     private RSMaterialComponent.RSButtonIconOne rSButtonIconOne1;
@@ -2059,7 +2065,7 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
     public static javax.swing.JTextField txtB1;
     public static javax.swing.JTextField txtB2;
     private RSMaterialComponent.RSPasswordMaterialIcon txtContra;
-    private javax.swing.JTextField txtDesde;
+    private static javax.swing.JTextField txtDesde;
     public static javax.swing.JLabel txtDifAcumulada;
     public static javax.swing.JLabel txtDiferencia;
     public static javax.swing.JTextField txtDiferencia_boca_1;
@@ -2068,22 +2074,22 @@ public final class dlgCajaDia2 extends javax.swing.JDialog {
     public static javax.swing.JTextField txtEntregado_boca_1;
     public static javax.swing.JTextField txtEntregado_boca_2;
     public static javax.swing.JLabel txtEntregar;
-    private javax.swing.JTextField txtGastoTotal;
+    private static javax.swing.JTextField txtGastoTotal;
     public static javax.swing.JTextField txtGastos;
     public static javax.swing.JTextField txtGastos_boca_1;
     public static javax.swing.JTextField txtGastos_boca_2;
-    private javax.swing.JTextField txtHasta;
-    private javax.swing.JTextField txtIngresoT;
+    private static javax.swing.JTextField txtHasta;
+    private static javax.swing.JTextField txtIngresoT;
     private javax.swing.JTextField txtOpcion1;
     private javax.swing.JTextField txtOpcion2;
-    private javax.swing.JTextField txtTotalCompra;
-    private javax.swing.JTextField txtTotalCompraC;
-    private javax.swing.JTextField txtTotalGastos;
-    private javax.swing.JTextField txtTotalIngreso;
+    private static javax.swing.JTextField txtTotalCompra;
+    private static javax.swing.JTextField txtTotalCompraC;
+    private static javax.swing.JTextField txtTotalGastos;
+    private static javax.swing.JTextField txtTotalIngreso;
     public static javax.swing.JTextField txtTotalSalida;
-    private javax.swing.JTextField txtTotalVentas;
-    private javax.swing.JTextField txtTotalVentasC;
-    private javax.swing.JTextField txtTotalVentasOtros;
-    private javax.swing.JTextField txtTotalVentasOtros1;
+    private static javax.swing.JTextField txtTotalVentas;
+    private static javax.swing.JTextField txtTotalVentasC;
+    private static javax.swing.JTextField txtTotalVentasOtros;
+    private static javax.swing.JTextField txtTotalVentasOtros1;
     // End of variables declaration//GEN-END:variables
 }

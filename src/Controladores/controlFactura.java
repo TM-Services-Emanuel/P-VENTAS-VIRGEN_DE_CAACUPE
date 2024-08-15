@@ -213,12 +213,12 @@ public class controlFactura {
         return (total);
     }
 
-    public static int calCulosT() {
+   /* public static int calCulosT() {
         int total = Integer.parseInt(dlgVentas.txtTotalL.getText());
         int abono = Integer.parseInt(dlgVentas.txtAbonoT.getText().replace(".", "").replace(",", ""));
         int vuelto = abono - total;
         return (vuelto);
-    }
+    }*/
 
     public static int calCulosF() {
         int total = Integer.parseInt(dlgVentas.txtTotalL.getText());
@@ -860,6 +860,8 @@ public class controlFactura {
             fila[21].toString();
             fila[22].toString();
             fila[23].toString();
+            fila[24].toString();
+            fila[25].toString();
             tb.addRow(fila);
         }
     }
@@ -903,6 +905,8 @@ public class controlFactura {
             fila[21].toString();
             fila[22].toString();
             fila[23].toString();
+            fila[24].toString();
+            fila[25].toString();
             tb.addRow(fila);
         }
     }
@@ -1330,15 +1334,19 @@ public class controlFactura {
 
     public static void selecDatosFactura() {
         int x = dlgConsultarFacturas.tblFactura.getSelectedRow();
-        String metodo_pago = dlgConsultarFacturas.tblFactura.getValueAt(x, 20).toString();
-        String boleta = dlgConsultarFacturas.tblFactura.getValueAt(x, 21).toString();
-        int abonado = Integer.parseInt(dlgConsultarFacturas.tblFactura.getValueAt(x, 22).toString());
-        int vuelto = Integer.parseInt(dlgConsultarFacturas.tblFactura.getValueAt(x, 23).toString());
+        int efectivo = Integer.parseInt(dlgConsultarFacturas.tblFactura.getValueAt(x, 20).toString());
+        int transf = Integer.parseInt(dlgConsultarFacturas.tblFactura.getValueAt(x, 21).toString());
+        String bol_transf = (dlgConsultarFacturas.tblFactura.getValueAt(x, 22).toString());
+        int qr = Integer.parseInt(dlgConsultarFacturas.tblFactura.getValueAt(x, 23).toString());
+        String bol_qr = (dlgConsultarFacturas.tblFactura.getValueAt(x, 24).toString());
+        int vuelto = Integer.parseInt(dlgConsultarFacturas.tblFactura.getValueAt(x, 25).toString());
         DecimalFormat df = new DecimalFormat("#,###");
                 
-        dlgConsultarFacturas.txtMet_pago.setText(metodo_pago);
-        dlgConsultarFacturas.txtBoleta.setText(boleta);
-        dlgConsultarFacturas.txtAbonado.setText(df.format(abonado));
+        dlgConsultarFacturas.txtEfectivo.setText(df.format(efectivo));
+        dlgConsultarFacturas.txtTransferencia.setText(df.format(transf));
+        dlgConsultarFacturas.txtTransfBoleta.setText((bol_transf));
+        dlgConsultarFacturas.txtQR.setText(df.format(qr));
+        dlgConsultarFacturas.txtQRBoleta.setText((bol_qr));
         dlgConsultarFacturas.txtVuelto.setText(df.format(vuelto));
     }
 
