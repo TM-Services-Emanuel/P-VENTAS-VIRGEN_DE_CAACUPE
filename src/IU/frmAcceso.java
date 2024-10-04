@@ -1,5 +1,6 @@
 package IU;
 
+import Componentes.Config;
 import Componentes.Mensajes;
 import Componentes.Software;
 import Componentes.traerIP;
@@ -15,7 +16,7 @@ public final class frmAcceso extends javax.swing.JFrame {
         titulo();
         cargarIcono();
         try { 
-            lblIP.setText("HOST IP : "+traerIP.getIP());
+            lblIP.setText("HOST IP : "+traerIP.getIP()+" / IP SOFT: "+Config.getIPSoft());
             lblHost.setText("HOST: "+traerIP.getHostname());
         } catch (Exception e) {
         }
@@ -72,9 +73,9 @@ public final class frmAcceso extends javax.swing.JFrame {
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGap(195, 195, 195)
-                .addComponent(lblIP, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(43, 43, 43)
+                .addComponent(lblIP, javax.swing.GroupLayout.PREFERRED_SIZE, 296, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(21, Short.MAX_VALUE))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

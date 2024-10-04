@@ -44,13 +44,14 @@ public class cargarConfig {
                         Config.setPort((String) lineas[i]);
                     case 2 ->
                         Config.setUser((String) lineas[i]);
-                    case 3 -> {
+                    case 3 ->
                         Config.setPassword((String) lineas[i]);
-                    }
                     case 4 ->
                         Config.setBD((String) lineas[i]);
                     case 5 ->
                         Config.setBDM((String) lineas[i]);
+                    case 6 ->
+                        Config.setIPSoft((String) lineas[i]);
                     default -> {
                     }
                 }

@@ -1,5 +1,6 @@
 package Controladores;
 
+import Componentes.Config;
 import Componentes.DataSourceService;
 import Componentes.DataSourceService1;
 import Componentes.Empresa;
@@ -91,7 +92,7 @@ public class ControlLogeo {
 
     public static void Timbrado_Ticket() {
         try {
-            String sql = "SELECT * FROM v_puntoemision4 WHERE ip='" + traerIP.getIP() + "' AND tipo='L' AND tipo2='F' AND estado='Activo'";
+            String sql = "SELECT * FROM v_puntoemision4 WHERE ip='" + Config.getIPSoft() + "' AND tipo='L' AND tipo2='F' AND estado='Activo'";
             try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql);) {
                 rs.last();
                 if (rs.getRow() != 0) {
@@ -158,7 +159,7 @@ public class ControlLogeo {
         }
 
         try {
-            String sql = "SELECT * FROM v_puntoemision4 WHERE ip='" + traerIP.getIP() + "' AND tipo='L' AND tipo2='T' AND estado='Activo'";
+            String sql = "SELECT * FROM v_puntoemision4 WHERE ip='" + Config.getIPSoft() + "' AND tipo='L' AND tipo2='T' AND estado='Activo'";
             try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql);) {
                 rs.last();
                 if (rs.getRow() != 0) {

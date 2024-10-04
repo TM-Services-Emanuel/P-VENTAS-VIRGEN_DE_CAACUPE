@@ -1,5 +1,6 @@
 package IU;
 
+import Componentes.Config;
 import Componentes.DataSourceService;
 import Componentes.DataSourceService1;
 import Componentes.Empresa;
@@ -255,7 +256,7 @@ public final class dlgVentas extends javax.swing.JDialog {
 
     private static void obtenerNFactura() {
         int facturaactual1;
-        String sql = "SELECT * FROM v_puntoemision4 WHERE ip='" + traerIP.getIP() + "' AND tipo='L' AND tipo2='F' AND estado='Activo'";
+        String sql = "SELECT * FROM v_puntoemision4 WHERE ip='" + Config.getIPSoft() + "' AND tipo='L' AND tipo2='F' AND estado='Activo'";
         try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
             rs.first();
             do {
@@ -453,7 +454,7 @@ public final class dlgVentas extends javax.swing.JDialog {
         String cod = GestionarFactura.getCodigo();
         //txtCodT.setText(cod);
         txtCodF.setText(cod);
-        String sql = "SELECT * FROM v_puntoemision4 WHERE ip='" + traerIP.getIP() + "' AND tipo='L' AND tipo2='T' AND estado='Activo'";
+        String sql = "SELECT * FROM v_puntoemision4 WHERE ip='" + Config.getIPSoft() + "' AND tipo='L' AND tipo2='T' AND estado='Activo'";
         try (Connection cn = dss1.getDataSource().getConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
             if (rs != null) {
                 rs.first();

@@ -1,5 +1,6 @@
 package IU;
 
+import Componentes.Config;
 import Componentes.DataSourceService;
 import Componentes.Empresa;
 import Componentes.Fecha;
@@ -127,7 +128,7 @@ public final class frmPrincipal extends javax.swing.JFrame {
         } catch (Exception e) {
             System.out.println("Informacion Gral: " + e.getMessage());
         }
-        lbIp.setText("HOST IP : " + traerIP.getIP());
+        lbIp.setText("HOST IP : " + traerIP.getIP()+" / IP SOFT: "+Config.getIPSoft());
     }
 
     @SuppressWarnings("unchecked")

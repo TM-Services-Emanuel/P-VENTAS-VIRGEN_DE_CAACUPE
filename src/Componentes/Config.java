@@ -103,5 +103,21 @@ public class Config {
     }
 
     private static String BDM = "";
+    
+    /**
+     * @return the IPSoft
+     */
+    public static String getIPSoft() {
+        return IPSoft;
+    }
+
+    /**
+     * @param aIPSoft the IPSoft to set
+     */
+    public static void setIPSoft(String aIPSoft) {
+        IPSoft = aIPSoft;
+    }
+
+    private static String IPSoft = "";
 
 }
